@@ -46,13 +46,20 @@ if ($Download) {
     foreach ($p in $profiles) {
         if ($count -ge $ProfileLimit) { break }
         
+        $uuid = if ($p.ID) { $p.ID } else { $p.id }
+        $actualExe = if ($p.exeName) { $p.exeName } else { $p.exename }
+        if (-not $uuid -or -not $actualExe) { continue }
+        
         # Deluxe zip naming: <exeName>_<id>.zip
-        $targetFile = Join-Path $DownloadDir "$($p.exeName)_$($p.id).zip"
+        $targetFile = Join-Path $DownloadDir "$($actualExe)_$($uuid).zip"
         $sidecar    = $targetFile + ".json"
         
         if (-not (Test-Path $targetFile)) {
-            $url = "$ProfilesUrlBase/$($p.exeName)/$($p.id)"
-            Write-Host "Downloading $($p.gameName) ($($p.exeName)) from $url..." -ForegroundColor Gray
+            $cleanId = $uuid.Replace("-", "").ToLower()
+            $encodedExe = [uri]::EscapeDataString($actualExe)
+            $url = "$ProfilesUrlBase/$encodedExe/$cleanId"
+            
+            Write-Host "Downloading $($p.gameName) ($actualExe) from $url..." -ForegroundColor Gray
             try {
                 $delay = Get-Random -Minimum 500 -Maximum 1500
                 Start-Sleep -Milliseconds $delay # Randomized stealth delay
@@ -72,7 +79,10 @@ if ($Download) {
                     "remarks"      = $p.remarks
                 }
 
-                $headers = @{ "User-Agent" = "UEVRDeluxe" }
+                $headers = @{ 
+                    "User-Agent" = "UEVRDeluxe"
+                    "Accept"     = "application/json"
+                }
                 Invoke-WebRequest -Uri $url -Headers $headers -OutFile $targetFile -ErrorAction Stop
                 
                 # Save metadata sidecar
@@ -96,9 +106,14 @@ if ($Extract) {
         # Use sidecar if available, else try to find in allprofiles.json
         $extraMeta = if (Test-Path $sidecar) { Get-Content $sidecar -Raw | ConvertFrom-Json } else { $null }
         $p = if (Test-Path $MetadataJson) {
-            $id = $z.BaseName -replace '^.*?_'
+            # Deluxe zip naming is <exeName>_<id>.zip. Grab the last part for the ID.
+            $idStr = ($z.BaseName -split '_')[-1]
             $cached = Get-Content $MetadataJson -Raw | ConvertFrom-Json
-            $cached | Where-Object { $_.id -eq $id } | Select-Object -First 1
+            $cached | Where-Object { 
+                $thisId = if ($_.ID) { $_.ID } else { $_.id }
+                if (-not $thisId) { return $false }
+                $thisId -ieq $idStr -or $thisId.Replace("-","") -ieq $idStr.Replace("-","") 
+            } | Select-Object -First 1
         } else { $null }
 
         if (-not $p -and -not $extraMeta) { continue }
@@ -112,7 +127,8 @@ if ($Extract) {
         foreach ($d in $discovered) {
             $variant = $d.Variant
             $tempDir = $d.Path
-            $uuid = $p.id # Preserve Original UUID
+            $uuid = if ($p.ID) { $p.ID } elseif ($p.id) { $p.id } elseif ($extraMeta.ID) { $extraMeta.ID } else { $extraMeta.id }
+            $uuid = Get-OrCreateUUID $uuid
             
             $targetDir = Join-Path $ProfilesDir $uuid
             if ($variant -and $variant -ne "[Root]") {
@@ -130,28 +146,29 @@ if ($Extract) {
             Get-ChildItem -Path $tempDir | Move-Item -Destination $targetDir -Force
             Remove-Item $tempDir -Recurse -Force
 
-            $sourceUrl = "$ProfilesUrlBase/$($p.exeName)/$($p.id)"
+            $cleanId = $uuid.Replace("-", "").ToLower()
+            $encodedExe = [uri]::EscapeDataString($actualExe)
+            $sourceUrl = "$ProfilesUrlBase/$encodedExe/$cleanId"
             $latestDate = if ($p.history) { ($p.history | Sort-Object modifiedDate -Descending | Select-Object -First 1).modifiedDate } else { $p.modifiedDate }
             $oldestDate = if ($p.history) { ($p.history | Sort-Object modifiedDate | Select-Object -First 1).modifiedDate } else { $p.modifiedDate }
 
-            $gameName = if ($extraMeta.gameName) { $extraMeta.gameName } else { $p.gameName }
-            $actualExe = if ($extraMeta.exeName) { $extraMeta.exeName } else { $p.exeName }
-            $displayVariant = Get-CleanVariantName $variant $actualExe
-            $finalGameName = $gameName
+            $finalExe = if ($extraMeta.exeName) { $extraMeta.exeName } elseif ($p.exeName) { $p.exeName } else { $p.exename }
+            $finalAuthor = if ($extraMeta.authorName) { $extraMeta.authorName } elseif ($p.authorName) { $p.authorName } else { $p.author }
+            $displayVariant = Get-CleanVariantName $variant $finalExe
 
             $metaProps = [ordered]@{
                 "ID"                = $uuid
-                "exeName"           = $(if ($extraMeta.exeName) { $extraMeta.exeName } else { $p.exeName })
-                "gameName"          = $finalGameName
-                "authorName"        = $(if ($extraMeta.authorName) { $extraMeta.authorName } else { $p.authorName })
+                "exeName"           = $finalExe
+                "gameName"          = if ($extraMeta.gameName) { $extraMeta.gameName } else { $p.gameName }
+                "authorName"        = $finalAuthor
                 "modifiedDate"      = Format-ISO8601Date $(if ($extraMeta.modifiedDate) { $extraMeta.modifiedDate } else { $latestDate })
                 "createdDate"       = Format-ISO8601Date $(if ($extraMeta.createdDate) { $extraMeta.createdDate } else { $oldestDate })
                 "sourceName"        = $SourceName
-                "sourceUrl"         = $(if ($extraMeta.sourceUrl) { $extraMeta.sourceUrl } else { $sourceUrl })
-                "sourceDownloadUrl" = $(if ($extraMeta.sourceDownloadUrl) { $extraMeta.sourceDownloadUrl } else { $sourceUrl })
+                "sourceUrl"         = if ($extraMeta.sourceUrl) { $extraMeta.sourceUrl } else { $sourceUrl }
+                "sourceDownloadUrl" = if ($extraMeta.sourceDownloadUrl) { $extraMeta.sourceDownloadUrl } else { $sourceUrl }
                 "downloadDate"      = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
                 "zipHash"           = $zipHash
-                "downloadUrl"       = Get-ProfileDownloadUrl $uuid $(if ($extraMeta.exeName) { $extraMeta.exeName } else { $p.exeName })
+                "downloadUrl"       = Get-ProfileDownloadUrl $uuid $finalExe
             }
 
             # Handle Tags (Heuristics only for Deluxe)

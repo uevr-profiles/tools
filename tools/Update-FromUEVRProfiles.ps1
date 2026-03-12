@@ -36,18 +36,47 @@ if ($Download) {
         $meta = Invoke-ProfileRequest $FirestoreUrl
         $allProfiles = @()
         foreach ($doc in $meta.documents) {
-            $f = $doc.fields
-            $obj = @{
-                "id"           = Split-Path $doc.name -Leaf
-                "gameName"     = $f.gameName.stringValue
-                "authorName"   = $f.authorName.stringValue
-                "modifiedDate" = $f.modifiedDate.timestampValue
-                "createdDate"  = $f.createdDate.timestampValue
-                "exeName"      = $f.exeName.stringValue
-                "downloadUrl"  = $f.downloadUrl.stringValue
-                "remarks"      = $f.remarks.stringValue
+            $gameName = $doc.fields.gameName.stringValue
+            $topExe   = $doc.fields.exeName.stringValue
+            
+            # Profiles in uevr-profiles.com are in a nested array
+            $variants = $doc.fields.profiles.arrayValue.values
+            if (-not $variants) { continue }
+            
+            foreach ($v in $variants) {
+                $vf = $v.mapValue.fields
+                $profileId = $vf.id.stringValue
+                if (-not $profileId) { continue }
+                
+                # Construct direct download URL (fallback)
+                $dlUrl = "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2f$($profileId).zip?alt=media"
+                
+                # Extract archive filename from links if present
+                $archiveFile = $null
+                try {
+                    $links = $vf.links.arrayValue.values
+                    foreach ($linkObj in $links) {
+                        $lFields = $linkObj.mapValue.fields
+                        if ($lFields.archive.stringValue) {
+                            $archiveFile = $lFields.archive.stringValue
+                            break
+                        }
+                    }
+                } catch {}
+
+                $obj = @{
+                    "id"           = $profileId
+                    "gameName"     = $gameName
+                    "authorName"   = $vf.author.stringValue
+                    "modifiedDate" = $vf.creationDate.timestampValue
+                    "createdDate"  = $vf.creationDate.timestampValue
+                    "exeName"      = if ($topExe) { $topExe } else { "" }
+                    "downloadUrl"  = $dlUrl
+                    "archive"      = if ($archiveFile) { $archiveFile } else { "$($profileId).zip" }
+                    "remarks"      = $vf.description.stringValue
+                }
+                $allProfiles += $obj
             }
-            $allProfiles += $obj
         }
         $allProfiles | ConvertTo-Json | Set-Content $MetadataJson -Encoding utf8
     } catch {
@@ -65,17 +94,35 @@ if ($Download) {
         if (-not (Test-Path $targetFile)) {
             Write-Host "Downloading: $($p.gameName) ($($p.exeName))..." -ForegroundColor Gray
             try {
-                $payload = @{ "url" = $p.downloadUrl } | ConvertTo-Json
                 $delay = Get-Random -Minimum 500 -Maximum 1500
                 Start-Sleep -Milliseconds $delay # Stealth delay
                 
-                Invoke-WebRequest -Method Post -Uri $DownloadFuncUrl -Body $payload -ContentType "application/json" -OutFile $targetFile -ErrorAction Stop
+                # Try direct download first as it's more reliable than the cloud function
+                $UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                Invoke-WebRequest -Uri $p.downloadUrl -OutFile $targetFile -UserAgent $UA -ErrorAction Stop
                 
                 # Save metadata sidecar for extraction phase
                 $p | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
                 $count++
             } catch {
-                Write-Host "  [!] Failed: $($_.Exception.Message)" -ForegroundColor Red
+                Write-Host "  [!] Direct download failed, trying cloud function..." -ForegroundColor Yellow
+                try {
+                    # Firebase Callable Functions expect the payload wrapped in a "data" object
+                    $payload = @{ "data" = @{ "file" = $p.archive } } | ConvertTo-Json
+                    
+                    $UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                    $response = Invoke-RestMethod -Method Post -Uri $DownloadFuncUrl -Body $payload -ContentType "application/json" -UserAgent $UA -ErrorAction Stop
+                    
+                    if ($response.result.url) {
+                        Invoke-WebRequest -Uri $response.result.url -OutFile $targetFile -UserAgent $UA -ErrorAction Stop
+                        $p | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
+                        $count++
+                    } else {
+                        throw "Cloud function did not return a valid download URL."
+                    }
+                } catch {
+                    Write-Host "  [!] Failed: $($_.Exception.Message)" -ForegroundColor Red
+                }
             }
         }
     }
@@ -122,13 +169,15 @@ if ($Extract) {
             Get-ChildItem -Path $tempDir | Move-Item -Destination $targetDir -Force
             Remove-Item $tempDir -Recurse -Force
 
-            $displayVariant = Get-CleanVariantName $variant $p.exeName
+            $finalExe = if ($extraMeta.exeName) { $extraMeta.exeName } elseif ($p.exeName) { $p.exeName } else { $p.exename }
+            $finalAuthor = if ($extraMeta.authorName) { $extraMeta.authorName } elseif ($p.authorName) { $p.authorName } else { $p.author }
+            $displayVariant = Get-CleanVariantName $variant $finalExe
             
             $metaProps = [ordered]@{
                 "ID"                = $uuid
-                "exeName"           = $p.exeName
+                "exeName"           = $finalExe
                 "gameName"          = $p.gameName
-                "authorName"        = $p.authorName
+                "authorName"        = $finalAuthor
                 "modifiedDate"      = Format-ISO8601Date $p.modifiedDate
                 "createdDate"       = Format-ISO8601Date $p.createdDate
                 "sourceName"        = $SourceName

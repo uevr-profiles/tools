@@ -51,13 +51,13 @@ function Update-GlobalPropsJson($zipPath, $variant, $metaObj) {
     # Unique sub-key for this specific iteration
     $occKey = "$occId | $([DateTimeOffset]::Now.ToUnixTimeMilliseconds())_$(Get-Random)"
 
-    foreach ($prop in $metaObj.PSObject.Properties) {
-        $name = $prop.Name
-        $val  = $prop.Value
+    foreach ($name in $metaObj.PSObject.Properties.Name) {
+        $val = $metaObj.$name
         if (-not $Global:TrackingProps.PSObject.Properties[$name]) {
-            Add-Member -InputObject $Global:TrackingProps -MemberType NoteProperty -Name $name -Value ([ordered]@{})
+            Add-Member -InputObject $Global:TrackingProps -MemberType NoteProperty -Name $name -Value @{}
         }
-        $Global:TrackingProps.$name."$occKey" = $val
+        $targetBucket = $Global:TrackingProps.$name
+        $targetBucket[$occKey] = $val
     }
 }
 
@@ -297,11 +297,15 @@ function Expand-Archive-Smart($path, $destination) {
 function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $maxDepth = 5) {
     if ($maxDepth -le 0) { return @() }
     
-    $tempBase = Join-Path $env:TEMP "uevr_extract_$(New-Guid)"
+    # Create temp base and ensure we have the full, long path to avoid string mapping issues
+    $tempBaseDir = New-Item -ItemType Directory -Path (Join-Path $env:TEMP "uevr_extract_$(New-Guid)") -Force
+    $tempBase = $tempBaseDir.FullName
+    
     try {
         Expand-Archive-Smart $sourceArchive $tempBase
     } catch {
         Write-Error "    [!] Fatal error during extraction of $sourceArchive"
+        Remove-Item $tempBase -Recurse -Force -ErrorAction SilentlyContinue
         return @()
     }
     
@@ -310,23 +314,11 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
     # 1. Look for nested archives
     $archives = Get-ChildItem -Path $tempBase -Recurse -Include "*.zip", "*.7z", "*.rar", "*.tar", "*.gz", "*.bz2", "*.xz"
     foreach ($a in $archives) {
-        $aFull = (Get-Item $a.FullName).FullName
-        $tFull = (Get-Item $tempBase).FullName
-        $relA = ""
-        if ($aFull.Length -gt $tFull.Length) {
-            $relA = $aFull.Substring($tFull.Length).TrimStart('\')
-        }
-        $baseName = $a.Name.Replace($a.Extension, "")
-        $subContext = if ($relA -match "\\") { 
-            ($relA.Substring(0, $relA.LastIndexOf('\')) + "\" + $baseName).Replace('\', ' / ')
-        } else { 
-            $baseName 
-        }
-
+        $subContext = $a.FullName.Substring($tempBase.Length).TrimStart('\').Replace('\', ' / ').Replace('.zip', '')
         $subProfiles = Extract-And-Discover-Profiles $a.FullName $whitelist $blacklist ($maxDepth - 1)
         foreach ($sp in $subProfiles) {
-            # Prepend the archive's path context to the sub-profile's variant
-            if ($sp.Variant) {
+            # Update variant to include sub-archive context
+            if ($sp.Variant -and $sp.Variant -ne "[Root]") {
                 $sp.Variant = "$subContext / $($sp.Variant)"
             } else {
                 $sp.Variant = $subContext
@@ -341,10 +333,10 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
     }
 
     # 2. Look for profile folders
-    $candidateFolders = Get-ChildItem -Path $tempBase -Recurse -Directory | Where-Object { Is-ProfileFolder $_.FullName }
-    if (Is-ProfileFolder $tempBase) { $candidateFolders += Get-Item $tempBase }
+    $candidateDirs = Get-ChildItem -Path $tempBase -Recurse -Directory | Where-Object { Is-ProfileFolder $_.FullName }
+    if (Is-ProfileFolder $tempBase) { $candidateDirs += Get-Item $tempBase }
 
-    $sortedCandidates = $candidateFolders | Sort-Object { $_.FullName.Length }
+    $sortedCandidates = $candidateDirs | Sort-Object { $_.FullName.Length }
     Write-Host "    Found $($sortedCandidates.Count) candidate profile roots..." -ForegroundColor Gray
     
     $uniqueProfiles = @()
@@ -356,46 +348,51 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
         if (-not $alreadyFound) { $uniqueProfiles += $f }
     }
 
-    foreach ($folder in $uniqueProfiles) {
-        $rel = $folder.FullName.Substring($tempBase.Length).TrimStart('\')
+    foreach ($folderItem in $uniqueProfiles) {
+        $folderPath = $folderItem.FullName
+        $rel = $folderPath.Substring($tempBase.Length).TrimStart('\')
         $variant = if ($rel) { $rel.Replace('\', ' / ') } else { "[Root]" }
         
         $targetDir = Join-Path $env:TEMP "uevr_profile_tmp_$(New-Guid)"
         New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
         
         # Determine ProfileName (folder name)
-        $pName = if ($rel) { $folder.Name } else { "" }
+        $pName = if ($rel) { $folderItem.Name } else { "" }
 
-        # Smart Copy: Only whitelisted and non-blacklisted
-        $allFiles = Get-ChildItem -Path $folder.FullName -Recurse -File
+        # Smart Copy: Only filter if switches are active
+        $allFiles = Get-ChildItem -Path $folderPath -Recurse -File
         foreach ($f in $allFiles) {
-            $fRel = $f.FullName.Substring($folder.FullName.Length).TrimStart('\')
-            if ($whitelist -and (Test-Whitelisted $fRel)) {
-                if ($blacklist -and (Test-Blacklisted $fRel)) { continue }
+            $fRel = $f.FullName.Substring($folderPath.Length).TrimStart('\')
+            
+            $isWhitelisted = if ($whitelist) { Test-Whitelisted $fRel } else { $true }
+            $isBlacklisted = if ($blacklist) { Test-Blacklisted $fRel } else { $false }
+
+            if ($isWhitelisted -and -not $isBlacklisted) {
                 $fTarget = Join-Path $targetDir $fRel
                 $fParent = Split-Path $fTarget -Parent
                 if (-not (Test-Path $fParent)) { New-Item -ItemType Directory -Path $fParent -Force | Out-Null }
                 Copy-Item $f.FullName -Destination $fTarget -Force
-                Write-Host "    Keeping: $fRel" -ForegroundColor DarkGray
             } else {
-                Write-Host "    Removed non-whitelisted: $fRel" -ForegroundColor DarkRed
+                Write-Host "    Filtered: $fRel (WH:$isWhitelisted, BL:$isBlacklisted)" -ForegroundColor DarkRed
             }
         }
         
         if ((Get-ChildItem $targetDir).Count -gt 0) {
-            $profilesFound += @{ Path = $targetDir; Variant = $variant; ProfileName = $pName }
+            $profilesFound += [PSCustomObject]@{ Path = $targetDir; Variant = $variant; ProfileName = $pName }
         } else {
             Remove-Item $targetDir -Recurse -Force
         }
     }
     
-    Remove-Item $tempBase -Recurse -Force
+    Remove-Item $tempBase -Recurse -Force -ErrorAction SilentlyContinue
     return $profilesFound
 }
 
 function Get-OrCreateUUID($originalId) {
-    if ($originalId -and ($originalId -match "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")) {
-        return $originalId
+    if ($originalId -and ($originalId -match "^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$")) {
+        try {
+            return ([guid]$originalId).ToString()
+        } catch {}
     }
     return [guid]::NewGuid().ToString()
 }
@@ -461,13 +458,13 @@ function Test-Metadata($json, $path) {
 function Remove-NullProperties($obj) {
     if ($null -eq $obj) { return $null }
     $newObj = [ordered]@{}
-    foreach ($prop in $obj.PSObject.Properties) {
-        $val = $prop.Value
-        if ($null -ne $val) {
-            if ($val -is [string]) { $val = $val.Trim() }
-            if (($val -as [string]) -ne "") {
-                $newObj[$prop.Name] = $val
-            }
+    
+    $names = if ($obj -is [System.Collections.IDictionary]) { $obj.Keys } else { $obj.PSObject.Properties.Name }
+
+    foreach ($name in $names) {
+        $val = if ($obj -is [System.Collections.IDictionary]) { $obj[$name] } else { $obj.$name }
+        if ($null -ne $val -and "$val" -ne "") {
+            $newObj[$name] = $val
         }
     }
     return [PSCustomObject]$newObj
