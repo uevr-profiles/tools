@@ -65,7 +65,7 @@ if ($Download) {
         if (-not (Test-Path $targetFile)) {
             Write-Host "Downloading: $($p.gameName) ($($p.exeName))..." -ForegroundColor Gray
             try {
-                $payload = @{ "fileUrl" = $p.downloadUrl } | ConvertTo-Json
+                $payload = @{ "url" = $p.downloadUrl } | ConvertTo-Json
                 $delay = Get-Random -Minimum 500 -Maximum 1500
                 Start-Sleep -Milliseconds $delay # Stealth delay
                 
