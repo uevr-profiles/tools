@@ -41,3 +41,5 @@ luac.out
 
 # Custom
 repo.json
+update.log
+update_log.txt
