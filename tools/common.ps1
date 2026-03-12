@@ -13,6 +13,166 @@ $RepoRoot    = Split-Path $PSScriptRoot -Parent
 $ProfilesDir = Join-Path $RepoRoot "profiles"
 $SchemaFile  = Join-Path $RepoRoot "schemas" "ProfileMeta.schema.json"
 
+function Format-ISO8601Date($date) {
+    if ($null -eq $date -or "$date" -eq "") { return [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ") }
+    try {
+        $dt = [DateTime]::Parse($date, [System.Globalization.CultureInfo]::InvariantCulture)
+        return $dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+    } catch {
+        try {
+            $dt = [DateTime]::Parse($date)
+            return $dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+        } catch {
+            return [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
+        }
+    }
+}
+
+# Global tracking for diagnostics
+$BaseTempDir     = Join-Path $env:TEMP "uevr_profiles"
+$GlobalFilesList = Join-Path $BaseTempDir "files.txt"
+$GlobalPropsJson = Join-Path $BaseTempDir "props.json"
+
+# Initialize global memory storage
+$Global:TrackingFiles = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+$Global:TrackingProps = [ordered]@{}
+
+function Update-GlobalFilesList($relPaths) {
+    if ($null -eq $relPaths) { return }
+    foreach ($p in $relPaths) {
+        $Global:TrackingFiles.Add($p) | Out-Null
+    }
+}
+
+function Update-GlobalPropsJson($zipPath, $variant, $metaObj) {
+    if ($null -eq $metaObj) { return }
+    
+    $occId = if ($variant -and $variant -ne "[Root]") { "$zipPath | $variant" } else { "$zipPath" }
+    # Unique sub-key for this specific iteration
+    $occKey = "$occId | $([DateTimeOffset]::Now.ToUnixTimeMilliseconds())_$(Get-Random)"
+
+    foreach ($prop in $metaObj.PSObject.Properties) {
+        $name = $prop.Name
+        $val  = $prop.Value
+        if (-not $Global:TrackingProps.PSObject.Properties[$name]) {
+            Add-Member -InputObject $Global:TrackingProps -MemberType NoteProperty -Name $name -Value ([ordered]@{})
+        }
+        $Global:TrackingProps.$name."$occKey" = $val
+    }
+}
+
+function Finalize-GlobalTracking {
+    if (-not (Test-Path $BaseTempDir)) { New-Item -ItemType Directory -Path $BaseTempDir -Force | Out-Null }
+
+    # 1. Write unique files list
+    if ($Global:TrackingFiles.Count -gt 0) {
+        Write-Host "Flushing tracked files to disk ($($Global:TrackingFiles.Count))..." -ForegroundColor Cyan
+        $existing = if (Test-Path $GlobalFilesList) { Get-Content $GlobalFilesList -ErrorAction SilentlyContinue } else { @() }
+        foreach ($e in $existing) { $Global:TrackingFiles.Add($e) | Out-Null }
+        $sorted = $Global:TrackingFiles | Sort-Object
+        $sorted | Set-Content $GlobalFilesList -Encoding utf8
+    }
+
+    # 2. Write props JSON
+    if ($Global:TrackingProps.PSObject.Properties.Count -gt 0) {
+        Write-Host "Flushing tracked properties to disk..." -ForegroundColor Cyan
+        $existing = if (Test-Path $GlobalPropsJson) { 
+            try { Get-Content $GlobalPropsJson -Raw | ConvertFrom-Json } catch { [ordered]@{} }
+        } else { [ordered]@{} }
+        
+        # Merge existing into current
+        foreach ($p in $existing.PSObject.Properties) {
+            $name = $p.Name
+            if (-not $Global:TrackingProps.PSObject.Properties[$name]) {
+                Add-Member -InputObject $Global:TrackingProps -MemberType NoteProperty -Name $name -Value $p.Value
+            } else {
+                # Merge sub-properties
+                foreach ($sub in $p.Value.PSObject.Properties) {
+                    if (-not $Global:TrackingProps.$name.PSObject.Properties[$sub.Name]) {
+                        Add-Member -InputObject $Global:TrackingProps.$name -MemberType NoteProperty -Name $sub.Name -Value $sub.Value
+                    }
+                }
+            }
+        }
+        $Global:TrackingProps | ConvertTo-Json -Depth 10 | Set-Content $GlobalPropsJson -Encoding utf8
+    }
+}
+
+function Get-HeuristicTags($profileDir, $meta, $variant) {
+    $tagSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    
+    # 0. Technical Signals (Strongest)
+    $hasMC = $false
+    $hasUObject = $false
+    if (Test-Path $profileDir) {
+        $uDir = Join-Path $profileDir "uobjecthook"
+        if (Test-Path $uDir) {
+            $hasUObject = $true
+            if (Get-ChildItem -Path $uDir -Filter "*_mc_state.json" -Recurse) { $hasMC = $true }
+        }
+    }
+
+    if ($hasMC) {
+        $tagSet.Add("6DOF") | Out-Null
+        $tagSet.Add("Motion Controls") | Out-Null
+    } elseif ($hasUObject) {
+        $tagSet.Add("3DOF") | Out-Null
+    }
+
+    # 1. Textual Analysis (Metadata & Files)
+    $textSources = @()
+    if ($meta.remarks) { $textSources += $meta.remarks }
+    if ($meta.gameName) { $textSources += $meta.gameName }
+    if ($variant) { $textSources += $variant }
+    
+    # Gather content from top-level non-binary files
+    if (Test-Path $profileDir) {
+        $files = Get-ChildItem -Path $profileDir -File | Where-Object { $_.Extension -match "txt|md|json|lua" }
+        foreach ($f in $files) {
+            try {
+                $content = Get-Content $f.FullName -Raw -ErrorAction SilentlyContinue
+                if ($content) { $textSources += $content }
+            } catch {}
+        }
+    }
+
+    $allText = $textSources -join "`n"
+    
+    # Keyword Detection
+    $foundMotion = $allText -match "motion\s+controls"
+    $found6DOF   = $allText -match "6\s*dof"
+    $found3DOF   = $allText -match "3\s*dof"
+
+    # Contextual Filtering: If variant explicitly identifies as one mode, be skeptical of the other in text
+    $is3DOFVariant = $variant -match "3\s*dof"
+    $is6DOFVariant = $variant -match "6\s*dof"
+
+    if ($foundMotion) {
+        if (-not $is3DOFVariant -or $variant -match "motion") { $tagSet.Add("Motion Controls") | Out-Null }
+    }
+    if ($found6DOF) {
+        if (-not $is3DOFVariant) { $tagSet.Add("6DOF") | Out-Null }
+    }
+    if ($found3DOF) {
+        if (-not $is6DOFVariant) { $tagSet.Add("3DOF") | Out-Null }
+    }
+
+    # Final Conflict Strip: If we are certain this is a 3DOF variant, remove any 6DOF tags that bled in
+    $finalTags = [System.Collections.Generic.List[string]]::new($tagSet)
+    if ($is3DOFVariant) {
+        for ($i = $finalTags.Count - 1; $i -ge 0; $i--) {
+            if ($finalTags[$i] -match "6\s*dof") { $finalTags.RemoveAt($i) }
+        }
+    }
+    if ($is6DOFVariant) {
+        for ($i = $finalTags.Count - 1; $i -ge 0; $i--) {
+            if ($finalTags[$i] -match "3\s*dof") { $finalTags.RemoveAt($i) }
+        }
+    }
+
+    return [string[]]($finalTags | Sort-Object | Select-Object -Unique)
+}
+
 # Ensure essential directories exist
 if (-not (Test-Path $ProfilesDir)) { New-Item -ItemType Directory -Path $ProfilesDir -Force | Out-Null }
 
@@ -36,7 +196,7 @@ function Get-WhitelistPatterns {
         "^user_script\.txt$",
         "^scripts/.*\.lua$",
         "^plugins/.*\.(dll|so)$",
-        "^uobjecthook/.*(_props|_mc_state)\.json$",
+        "^uobjecthook/.*\.json$",
         "^(_EXTRAS|data|libs|paks)/.+"
     )
 }
@@ -52,9 +212,7 @@ function Test-Whitelisted($relPath) {
 
 function Is-ProfileFolder($path) {
     if (-not (Test-Path $path)) { return $false }
-    # A profile root MUST contain at least one of these essential files
-    $essentials = @("config.txt", "cameras.txt", "actions.json", "user_script.txt", "cvardump.json", "cvars_data.txt")
-    
+    $essentials = @("config.txt", "ProfileMeta.json")
     $files = Get-ChildItem -Path $path -File
     foreach ($f in $files) {
         if ($essentials -contains $f.Name) { return $true }
@@ -125,10 +283,14 @@ function Get-Archive-Entries($path) {
 
 function Expand-Archive-Smart($path, $destination) {
     if (-not (Test-Path $destination)) { New-Item -ItemType Directory -Path $destination -Force | Out-Null }
-    # Try 7z first
-    & 7z x $path "-o$destination" -y | Out-Null
+    # Try 7z first - suppress all output to handle errors internally
+    & 7z x $path "-o$destination" -y >$null 2>$null
     if ($LASTEXITCODE -ne 0 -and $path.EndsWith(".zip")) {
-        Expand-Archive -Path $path -DestinationPath $destination -Force
+        try {
+            Expand-Archive -Path $path -DestinationPath $destination -Force -ErrorAction SilentlyContinue
+        } catch {
+            Write-Warning "    [!] Failed to extract $path with both 7z and Expand-Archive."
+        }
     }
 }
 
@@ -136,7 +298,12 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
     if ($maxDepth -le 0) { return @() }
     
     $tempBase = Join-Path $env:TEMP "uevr_extract_$(New-Guid)"
-    Expand-Archive-Smart $sourceArchive $tempBase
+    try {
+        Expand-Archive-Smart $sourceArchive $tempBase
+    } catch {
+        Write-Error "    [!] Fatal error during extraction of $sourceArchive"
+        return @()
+    }
     
     $profilesFound = @()
     
@@ -189,151 +356,117 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
         if (-not $alreadyFound) { $uniqueProfiles += $f }
     }
 
-    foreach ($f in $uniqueProfiles) {
-        $profileId = New-Guid
-        $cleanTarget = Join-Path $env:TEMP "uevr_profile_$profileId"
-        New-Item -ItemType Directory -Path $cleanTarget -Force | Out-Null
+    foreach ($folder in $uniqueProfiles) {
+        $rel = $folder.FullName.Substring($tempBase.Length).TrimStart('\')
+        $variant = if ($rel) { $rel.Replace('\', ' / ') } else { "[Root]" }
         
-        $fFull = (Get-Item $f.FullName).FullName
-        $tFull = (Get-Item $tempBase).FullName
-        $relPath = ""
-        if ($fFull.Length -gt $tFull.Length) {
-            $relPath = $fFull.Substring($tFull.Length).TrimStart('\')
-        }
+        $targetDir = Join-Path $env:TEMP "uevr_profile_tmp_$(New-Guid)"
+        New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
         
-        Write-Host "    Processing discovered profile root: $(if ($relPath) { $relPath } else { '[Root]' })" -ForegroundColor Gray
-        Copy-Item -Path "$($fFull)\*" -Destination $cleanTarget -Recurse -Force
-        
-        $profileName = $null
-        $variant = $relPath.Replace('\', ' / ')
-        if ($relPath) {
-            $profileName = $relPath.Split('\')[-1]
-        }
+        # Determine ProfileName (folder name)
+        $pName = if ($rel) { $folder.Name } else { "" }
 
-        Remove-NonWhitelisted $cleanTarget -applyWhitelist:$whitelist -applyBlacklist:$blacklist
-        
-        $finalFiles = Get-ChildItem -Path $cleanTarget -Recurse | Where-Object { -not $_.PSIsContainer }
-        if ($finalFiles.Count -gt 0) {
-            $profilesFound += @{
-                Path        = $cleanTarget
-                Variant     = $variant
-                ProfileName = $profileName
+        # Smart Copy: Only whitelisted and non-blacklisted
+        $allFiles = Get-ChildItem -Path $folder.FullName -Recurse -File
+        foreach ($f in $allFiles) {
+            $fRel = $f.FullName.Substring($folder.FullName.Length).TrimStart('\')
+            if ($whitelist -and (Test-Whitelisted $fRel)) {
+                if ($blacklist -and (Test-Blacklisted $fRel)) { continue }
+                $fTarget = Join-Path $targetDir $fRel
+                $fParent = Split-Path $fTarget -Parent
+                if (-not (Test-Path $fParent)) { New-Item -ItemType Directory -Path $fParent -Force | Out-Null }
+                Copy-Item $f.FullName -Destination $fTarget -Force
+                Write-Host "    Keeping: $fRel" -ForegroundColor DarkGray
+            } else {
+                Write-Host "    Removed non-whitelisted: $fRel" -ForegroundColor DarkRed
             }
+        }
+        
+        if ((Get-ChildItem $targetDir).Count -gt 0) {
+            $profilesFound += @{ Path = $targetDir; Variant = $variant; ProfileName = $pName }
         } else {
-            Write-Host "    [!] Profile variant '$variant' was empty after filtering." -ForegroundColor Yellow
-            Remove-Item $cleanTarget -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item $targetDir -Recurse -Force
         }
     }
     
+    Remove-Item $tempBase -Recurse -Force
     return $profilesFound
 }
 
-function Remove-NonWhitelisted($targetDir, $applyWhitelist, $applyBlacklist) {
-    if (-not (Test-Path $targetDir)) { return }
-    Flatten-Folder $targetDir
-    
-    $basePath = (Get-Item $targetDir).FullName.TrimEnd('\')
-    $allItems = Get-ChildItem -Path $basePath -Recurse
-    foreach ($item in $allItems) {
-        if (-not (Test-Path $item.FullName)) { continue }
-        
-        $rel = $item.FullName.Substring($basePath.Length).TrimStart('\').Replace('\', '/')
-        if ($null -eq $rel -or $rel -eq "") { continue }
-        
-        $isDir = $item.PSIsContainer
-        if ($applyBlacklist -and (Test-Blacklisted $rel)) {
-            Write-Host "    Removed blacklist match: $rel" -ForegroundColor Gray
-            Remove-Item $item.FullName -Recurse -Force -ErrorAction SilentlyContinue
-            continue
-        }
-        
-        if ($applyWhitelist -and -not (Test-Whitelisted $rel)) {
-            if (-not $isDir) {
-                Write-Host "    Removed non-whitelisted: $rel" -ForegroundColor Gray
-                Remove-Item $item.FullName -Force -ErrorAction SilentlyContinue
-            }
-        }
-    }
-    
-    $foundEmpty = $true
-    while ($foundEmpty) {
-        $foundEmpty = $false
-        $dirs = Get-ChildItem -Path $targetDir -Recurse -Directory
-        foreach ($d in $dirs) {
-            if ((Get-ChildItem $d.FullName).Count -eq 0) {
-                Remove-Item $d.FullName -Force -ErrorAction SilentlyContinue
-                $foundEmpty = $true
-            }
-        }
-    }
-}
-
 function Get-OrCreateUUID($originalId) {
-    if ($originalId -and $originalId -match '^[0-9a-fA-F]{8}-' -and $originalId -ne "00000000-0000-0000-0000-000000000000") { return $originalId }
+    if ($originalId -and ($originalId -match "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")) {
+        return $originalId
+    }
     return [guid]::NewGuid().ToString()
 }
 
-function Find-ExistingProfileFolder($uuid) {
-    $path = Join-Path $ProfilesDir $uuid
-    if (Test-Path $path) { return $path }
-    return $null
+function Finalize-ProfileMetadata($targetDir, $meta, $profileName) {
+    $readmeFile = Join-Path $targetDir "README.md"
+    $legacyDesc = Join-Path $targetDir "ProfileDescription.md"
+    $readmeText = if (Test-Path $readmeFile) { Get-Content $readmeFile -Raw } else { "" }
+    
+    # 0. Set simple fields
+    $meta["profileName"] = if ($profileName -and $profileName -ne "[Root]") { $profileName } else { $null }
+
+    # 1. Look for description in README or sidecar
+    $rawDesc = $null
+    if ($readmeText) { $rawDesc = $readmeText }
+    elseif (Test-Path $legacyDesc) { $rawDesc = Get-Content $legacyDesc -Raw }
+    if ($rawDesc) {
+        $meta["description"] = Convert-MarkdownToText $rawDesc 100
+    }
+    if (Test-Path $legacyDesc) { Remove-Item $legacyDesc -Force }
+    return $meta
+}
+
+function Print-ProfileInfo($meta, $zipPath) {
+    Write-Host "  - Profile $($meta.ID)" -ForegroundColor Cyan
+    Write-Host "    - Game:       $($meta.gameName) ($($meta.exeName))" -ForegroundColor Gray
+    Write-Host "    - Author:     $($meta.authorName)" -ForegroundColor Gray
+    Write-Host "    - Source:     $($meta.sourceName) ($($meta.sourceUrl))" -ForegroundColor Gray
+    Write-Host "    - ZIP:        $(if ($zipPath) { Split-Path $zipPath -Leaf } else { 'N/A' })" -ForegroundColor Gray
+    Write-Host "    - Hash:       $($meta.zipHash)" -ForegroundColor Gray
+    Write-Host "    - URL:        $($meta.sourceDownloadUrl)" -ForegroundColor Gray
+    
+    if ($zipPath -and (Test-Path $zipPath)) {
+        Write-Host "  - ZIP Content List:" -ForegroundColor Cyan
+        try {
+            Add-Type -AssemblyName System.IO.Compression.FileSystem -ErrorAction SilentlyContinue
+            $zip = [System.IO.Compression.ZipFile]::OpenRead($zipPath)
+            $zip.Entries | ForEach-Object { Write-Host "    $($_.FullName)" -ForegroundColor DarkGray }
+            $zip.Dispose()
+        } catch {
+            Write-Host "    [!] Failed to list ZIP contents: $($_.Exception.Message)" -ForegroundColor Red
+        }
+    } else {
+        Write-Host "  - [!] ZIP file not found at $zipPath" -ForegroundColor Red
+    }
 }
 
 function Get-FileHashMD5($path) {
     if (-not (Test-Path $path)) { return $null }
-    return (Get-FileHash -Path $path -Algorithm MD5).Hash
-}
-
-function Find-ProfileByHash($hash) {
-    if (-not $hash) { return $null }
-    $foundId = $null
-    Get-ChildItem -Path $ProfilesDir -Filter "ProfileMeta.json" -Recurse | ForEach-Object {
-        try {
-            if ($null -ne $foundId) { return }
-            $m = Get-Content $_.FullName -Raw | ConvertFrom-Json
-            if ($m.zipHash -eq $hash) { $foundId = $m.ID }
-        } catch {}
-    }
-    return $foundId
+    return (Get-FileHash -Path $path -Algorithm MD5).Hash.ToLower()
 }
 
 function Test-Metadata($json, $path) {
     if (-not (Test-Path $SchemaFile)) { return $true }
-    return Test-Json -Json $json -SchemaFile $SchemaFile
+    # Silently validate, only report errors if we have them
+    $res = Test-Json -Json $json -SchemaFile $SchemaFile -ErrorAction SilentlyContinue
+    if (-not $res) {
+        Write-Warning "    [!] Metadata validation failed for $(Split-Path $path -Parent | Split-Path -Leaf)"
+    }
+    return $res
 }
 
 function Remove-NullProperties($obj) {
     if ($null -eq $obj) { return $null }
     $newObj = [ordered]@{}
-    $dateRegex = "^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"
-    
-    if ($obj -is [System.Collections.IDictionary]) {
-        foreach ($key in $obj.Keys) {
-            $val = $obj[$key]
-            if ($null -ne $val) {
-                if ($val -is [string]) { $val = $val.Trim() }
-                if (($val -as [string]) -ne "") {
-                    if ($key -match "Date$" -or ($val -match "^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}")) {
-                        try {
-                            $dt = [DateTime]::Parse($val)
-                            $val = $dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-                        } catch {}
-                    }
-                    $newObj[$key] = $val
-                }
-            }
-        }
-    } else {
-        foreach ($prop in $obj.PSObject.Properties) {
-            $val = $prop.Value
-            if ($null -ne $val) {
-                if ($val -is [string]) { $val = $val.Trim() }
-                if (($val -as [string]) -ne "") {
-                    if ($prop.Name -match "Date$" -and $val -match $dateRegex) {
-                        try { $val = [DateTime]::Parse($val).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ") } catch {}
-                    }
-                    $newObj[$prop.Name] = $val
-                }
+    foreach ($prop in $obj.PSObject.Properties) {
+        $val = $prop.Value
+        if ($null -ne $val) {
+            if ($val -is [string]) { $val = $val.Trim() }
+            if (($val -as [string]) -ne "") {
+                $newObj[$prop.Name] = $val
             }
         }
     }
@@ -371,90 +504,4 @@ function Convert-MarkdownToText($md, $maxLen = 100) {
         return $txt.Substring(0, $maxLen - 3) + "..."
     }
     return $txt
-}
-
-function Finalize-ProfileMetadata($targetDir, $meta, $profileName) {
-    $readmeFile = Join-Path $targetDir "README.md"
-    $legacyDesc = Join-Path $targetDir "ProfileDescription.md"
-    $readmeText = if (Test-Path $readmeFile) { Get-Content $readmeFile -Raw } else { "" }
-    $descText   = if (Test-Path $legacyDesc) { Get-Content $legacyDesc -Raw } else { "" }
-    
-    $rawDesc = if ($readmeText -and $descText) {
-        $readmeText + "`n`n" + $descText
-    } elseif ($readmeText) {
-        $readmeText
-    } else {
-        $descText
-    }
-    
-    if ($profileName) {
-        $escapedName = [regex]::Escape($profileName)
-        $rawDesc = $rawDesc -replace "(?m)^\s*#\s+$escapedName\s*", ""
-    }
-    $rawDesc = $rawDesc.Trim()
-
-    $appLink = if ($meta.appID) { "https://steamdb.info/app/$($meta.appID)" } else { "" }
-    $gamePart = if ($appLink) { "[$($meta.gameName)]($appLink)" } else { $meta.gameName }
-    $pName = if ($profileName) { $profileName } else { "Profile" }
-    
-    $header = "# $pName by $($meta.authorName) for $gamePart"
-    $banner = if ($meta.headerPictureUrl) { "![$($meta.gameName)]($($meta.headerPictureUrl))" } else { "" }
-
-    $table = "| Prop | Value |`n| --- | --- |"
-    $skipRows = @("description", "profileName", "appID", "authorName", "headerPictureUrl", "gameName", "sourceUrl", "sourceDownloadUrl")
-    foreach ($key in $meta.Keys) {
-        if ($skipRows -contains $key) { continue }
-        $val = $meta[$key]
-        if ($null -eq $val -or "$val" -eq "") { continue }
-        $cleanVal = "$val".Replace('|', '\|')
-        if ($key -eq "sourceName" -and $meta.sourceUrl) {
-            $cleanVal = "[$cleanVal]($($meta.sourceUrl))"
-        } elseif ($key -eq "zipHash" -and $meta.sourceDownloadUrl) {
-            $cleanVal = "[$cleanVal]($($meta.sourceDownloadUrl))"
-        }
-        $table += "`n| **$key** | $cleanVal |"
-    }
-
-    $finalMd = @"
-$header
-$banner
-
-$table
-"@
-
-    if ($rawDesc) {
-        $finalMd += "`n`n## Description:`n$rawDesc"
-    }
-
-    $finalMd.Trim() | Set-Content $readmeFile -Encoding utf8
-    if ($rawDesc) {
-        $meta["description"] = Convert-MarkdownToText $rawDesc 100
-    }
-    if (Test-Path $legacyDesc) { Remove-Item $legacyDesc -Force }
-    if ($profileName) { $meta["profileName"] = $profileName }
-    return $meta
-}
-
-function Print-ProfileInfo($meta, $zipPath) {
-    Write-Host "  - Profile $($meta.ID)" -ForegroundColor Cyan
-    Write-Host "    - Game:       $($meta.gameName) ($($meta.exeName))" -ForegroundColor Gray
-    Write-Host "    - Author:     $($meta.authorName)" -ForegroundColor Gray
-    Write-Host "    - Source:     $($meta.sourceName) ($($meta.sourceUrl))" -ForegroundColor Gray
-    Write-Host "    - ZIP:        $(if ($zipPath) { Split-Path $zipPath -Leaf } else { 'N/A' })" -ForegroundColor Gray
-    Write-Host "    - Hash:   $($meta.zipHash)" -ForegroundColor Gray
-    Write-Host "    - URL:   $($meta.sourceDownloadUrl)" -ForegroundColor Gray
-    
-    if ($zipPath -and (Test-Path $zipPath)) {
-        Write-Host "  - ZIP Content List:" -ForegroundColor Cyan
-        try {
-            Add-Type -AssemblyName System.IO.Compression.FileSystem -ErrorAction SilentlyContinue
-            $zip = [System.IO.Compression.ZipFile]::OpenRead($zipPath)
-            $zip.Entries | ForEach-Object { Write-Host "    $($_.FullName)" -ForegroundColor DarkGray }
-            $zip.Dispose()
-        } catch {
-            Write-Host "    [!] Failed to list ZIP contents: $($_.Exception.Message)" -ForegroundColor Red
-        }
-    } else {
-        Write-Host "  - [!] ZIP file not found at $zipPath" -ForegroundColor Red
-    }
 }
