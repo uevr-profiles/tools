@@ -35,6 +35,12 @@ Get-ChildItem -Path $ProfilesDir -Directory | ForEach-Object {
 
         try {
             $meta = $jsonText | ConvertFrom-Json
+            
+            # If exeName is an array, join it with commas for repo.json or handle it as a collection
+            if ($meta.exeName -is [System.Collections.IEnumerable] -and $meta.exeName -isnot [string]) {
+                $meta.exeName = ($meta.exeName | Sort-Object -Unique) -join ", "
+            }
+
             $allMeta += $meta
         } catch {
             Write-Warning "Could not parse JSON in $metaFile"
@@ -43,6 +49,7 @@ Get-ChildItem -Path $ProfilesDir -Directory | ForEach-Object {
     }
 }
 
+$allMeta = $allMeta | Sort-Object gameName
 $allMeta | ConvertTo-Json -Depth 10 | Set-Content $OutputFile -Encoding utf8
 Write-Host "Done. repo.json contains $($allMeta.Count) profiles." -ForegroundColor Green
 if ($errors -gt 0) {
