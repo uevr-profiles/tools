@@ -1,0 +1,48 @@
+name: Publish Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Build repo.json
+        shell: pwsh
+        run: |
+          $profilesDir = ".\profiles"
+          $allMeta = @()
+
+          Get-ChildItem -Path $profilesDir -Directory | ForEach-Object {
+            $metaFile = Join-Path $_.FullName "ProfileMeta.json"
+            if (Test-Path $metaFile) {
+              try {
+                $meta = Get-Content $metaFile -Raw | ConvertFrom-Json
+                $allMeta += $meta
+              } catch {
+                Write-Warning "Could not parse $metaFile: $_"
+              }
+            }
+          }
+
+          $allMeta | ConvertTo-Json -Depth 10 | Set-Content ".\repo.json" -Encoding utf8
+          Write-Host "repo.json contains $($allMeta.Count) profiles."
+
+      - name: Create release with repo.json
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag   = "release-$(Get-Date -Format 'yyyy-MM-dd-HHmm')"
+          $title = "$(Get-Date -Format 'yyyy-MM-dd HH:mm') UTC"
+
+          gh release create $tag `
+            --title $title `
+            --notes "Automated profile index release." `
+            .\repo.json
