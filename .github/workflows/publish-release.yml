@@ -16,23 +16,7 @@ jobs:
       - name: Build repo.json
         shell: pwsh
         run: |
-          $profilesDir = ".\profiles"
-          $allMeta = @()
-
-          Get-ChildItem -Path $profilesDir -Directory | ForEach-Object {
-            $metaFile = Join-Path $_.FullName "ProfileMeta.json"
-            if (Test-Path $metaFile) {
-              try {
-                $meta = Get-Content $metaFile -Raw | ConvertFrom-Json
-                $allMeta += $meta
-              } catch {
-                Write-Warning "Could not parse $metaFile: $_"
-              }
-            }
-          }
-
-          $allMeta | ConvertTo-Json -Depth 10 | Set-Content ".\repo.json" -Encoding utf8
-          Write-Host "repo.json contains $($allMeta.Count) profiles."
+          .\tools\Build-UEVRRepo.ps1 -ProfilesDir ".\profiles" -SchemaFile ".\schemas\ProfileMeta.schema.json" -OutputFile ".\repo.json"
 
       - name: Create release with repo.json
         shell: pwsh

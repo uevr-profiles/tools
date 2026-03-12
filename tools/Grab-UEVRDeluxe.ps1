@@ -4,45 +4,51 @@ param(
     [int]$DownloadLimit = 99999
 )
 
-$SourceName    = "UEVRDeluxe"
-$RepoRoot      = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent  # repo root
+$SourceName    = "uevrdeluxe.org"
+$RepoRoot      = Split-Path $PSScriptRoot -Parent  # tools -> repo root
 $ProfilesDir   = Join-Path $RepoRoot "profiles"
 $DownloadDir   = Join-Path $env:TEMP "uevr_profiles\$SourceName"
 $MetaCacheDir  = Join-Path $env:TEMP "uevr_profiles\meta_cache"
 $ProfilesJson  = Join-Path $MetaCacheDir "uevrdeluxe_allprofiles.json"
 $ApiUrl        = "https://uevrdeluxefunc.azurewebsites.net/api/allprofiles"
 $ProfilesUrlBase = "https://uevrdeluxefunc.azurewebsites.net/api/profiles"
+$SchemaFile    = Join-Path $RepoRoot "schemas\ProfileMeta.schema.json"
 
 foreach ($d in @($DownloadDir, $MetaCacheDir, $ProfilesDir)) {
     if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
 }
 
-# ── Whitelist ────────────────────────────────────────────────────────────────
-$WhitelistFile = Join-Path $RepoRoot ".gitkeep"
-$WhitelistPatterns = Get-Content $WhitelistFile |
-    Where-Object { $_ -notmatch '^\s*#' -and $_.Trim() -ne '' } |
-    ForEach-Object { $_.Trim() }
+# ── Whitelist & Duplication Checks ────────────────────────────────────────────
+$WhitelistFile = Join-Path $PSScriptRoot "whitelist.json"
+$WhitelistRegexes = @()
+
+if (Test-Path $WhitelistFile) {
+    $wl = Get-Content $WhitelistFile -Raw | ConvertFrom-Json
+    foreach ($p in $wl.exact) { $WhitelistRegexes += "^" + [regex]::Escape($p) + "$" }
+    foreach ($p in $wl.recursive_folders) { $WhitelistRegexes += "^" + [regex]::Escape($p.TrimEnd('/')) + "(/|$)" }
+    foreach ($p in $wl.globs) {
+        $r = [regex]::Escape($p)
+        $r = $r.Replace("\\*\\*/", ".*").Replace("\\*\\*", ".*").Replace("\\*", ".*")
+        $WhitelistRegexes += "^" + $r + "$"
+    }
+}
 
 function Test-Whitelisted($relPath) {
-    # Normalise to forward slashes for matching
-    $rel = $relPath.Replace("\\", "/")
-    foreach ($pattern in $WhitelistPatterns) {
-        # Exact match (file or folder entry like "paks/" -> "paks")
-        $p = $pattern.TrimEnd("/")
-        if ($rel -eq $p -or $rel -eq ($p + "/")) { return $true }
-        # Glob match via PowerShell -like operator
-        if ($rel -like $pattern) { return $true }
+    $rel = $relPath.Replace("\\", "/").Trim('/')
+    if ($rel -eq "") { return $true }
+    foreach ($re in $WhitelistRegexes) {
+        if ($rel -match $re) { return $true }
+        # Also allow parent directories of anything whitelisted
+        $patternWithoutAnchors = $re.TrimStart('^').TrimEnd('$')
+        if ($patternWithoutAnchors.StartsWith($rel + "/")) { return $true }
     }
     return $false
 }
 
 function Remove-NonWhitelisted($targetDir) {
-    # Walk all items; delete anything not covered by the whitelist
     Get-ChildItem -Path $targetDir -Recurse | Sort-Object FullName -Descending | ForEach-Object {
-        $rel = $_.FullName.Substring($targetDir.Length).TrimStart("\\","/")
-        if ($_ -is [System.IO.DirectoryInfo]) { $rel += "/" }
+        $rel = $_.FullName.Substring($targetDir.Length) -replace '^[\\/]+', ''
         if (-not (Test-Whitelisted $rel)) {
-            # If it's a dir, only remove if now empty (children already deleted above)
             if ($_ -is [System.IO.DirectoryInfo]) {
                 if ((Get-ChildItem $_.FullName).Count -eq 0) {
                     Remove-Item $_.FullName -Force -ErrorAction SilentlyContinue
@@ -52,6 +58,33 @@ function Remove-NonWhitelisted($targetDir) {
                 Remove-Item $_.FullName -Force
                 Write-Host "  Removed unlisted file: $rel" -ForegroundColor DarkGray
             }
+        }
+    }
+}
+
+function Find-ProfileByHash($hash) {
+    if ($null -eq $hash) { return $null }
+    $metaFiles = Get-ChildItem -Path $ProfilesDir -Filter "ProfileMeta.json" -Recurse -ErrorAction SilentlyContinue
+    foreach ($f in $metaFiles) {
+        try {
+            # Fast check: skip if file is way too big
+            if ($f.Length -gt 10kb) { continue }
+            $json = Get-Content $f.FullName -Raw | ConvertFrom-Json
+            if ($json.zipHash -eq $hash) { return $f.Directory.Name }
+        } catch {}
+    }
+    return $null
+}
+
+function Test-Metadata($jsonText, $path) {
+    if (Test-Path $SchemaFile) {
+        $isValid = Test-Json -Json $jsonText -SchemaFile $SchemaFile -ErrorAction SilentlyContinue
+        if (-not $isValid) {
+            Write-Host "[!] Metadata validation FAILED for $path" -ForegroundColor Red
+            try {
+                $detailed = Test-Json -Json $jsonText -SchemaFile $SchemaFile -Detailed
+                foreach ($e in $detailed.Errors) { Write-Host "    - $e" -ForegroundColor Yellow }
+            } catch {}
         }
     }
 }
@@ -139,12 +172,19 @@ if ($Extract) {
         if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }
 
         try {
-            $hash     = Get-FileHashMD5 $zipPath
+            $zipHash = Get-FileHashMD5 $zipPath
             $cleanId  = $latest.ID.ToString().Replace("-", "")
             $sourceUrl = "$ProfilesUrlBase/$($latest.exeName)/$cleanId"
-
-            Expand-Archive -Path $zipPath -DestinationPath $targetDir -Force
-            Remove-NonWhitelisted $targetDir
+            $existingId = Find-ProfileByHash $zipHash
+            if ($existingId) {
+                Write-Host "  Found existing profile with same hash: $existingId. Skipping extraction." -ForegroundColor Gray
+                # Update metadata if needed, but skip extraction
+                $targetDir = Join-Path $ProfilesDir $existingId
+                $uuid = $existingId
+            } else {
+                Expand-Archive -Path $zipPath -DestinationPath $targetDir -Force
+                Remove-NonWhitelisted $targetDir
+            }
 
             $meta = [ordered]@{
                 "ID"           = $uuid
@@ -154,10 +194,12 @@ if ($Extract) {
                 "modifiedDate" = $latest.modifiedDate
                 "sourceName"   = $SourceName
                 "sourceUrl"    = $sourceUrl
-                "downloadDate" = (Get-Date -Format "yyyy-MM-ddTHH:mm:ss")
-                "zipHash"      = $hash
+                "downloadDate" = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+                "zipHash"      = $zipHash
             }
-            $meta | ConvertTo-Json | Set-Content (Join-Path $targetDir "ProfileMeta.json") -Encoding utf8
+            $json = $meta | ConvertTo-Json
+            Test-Metadata $json (Join-Path $targetDir "ProfileMeta.json")
+            $json | Set-Content (Join-Path $targetDir "ProfileMeta.json") -Encoding utf8
         } catch {
             Write-Host "  Extraction error: $($_.Exception.Message)" -ForegroundColor Yellow
         }
