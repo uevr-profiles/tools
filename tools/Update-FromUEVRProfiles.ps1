@@ -160,6 +160,15 @@ if ($Extract) {
         if ($null -eq $profilesField -or $profilesField -eq "") { continue }
         if (-not ($profilesField -is [System.Collections.IEnumerable])) { $profilesField = @($profilesField) }
 
+        # Extract Game Tags
+        $gameTags = @()
+        $tagsField = $fields.tags.arrayValue.values
+        if ($tagsField -is [System.Collections.IEnumerable]) {
+            foreach ($t in $tagsField) {
+                if ($t.stringValue) { $gameTags += $t.stringValue }
+            }
+        }
+
         foreach ($p in $profilesField) {
             $p_fields = $p.mapValue.fields
             $dateStr = $p_fields.creationDate.timestampValue
@@ -195,6 +204,7 @@ if ($Extract) {
                         Description      = $p_fields.description.stringValue
                         AppID            = $appID
                         HeaderPictureUrl = $headerUrl
+                        Tags             = $gameTags
                     }
                 }
             }
@@ -219,9 +229,9 @@ if ($Extract) {
                 continue
             }
 
-            foreach ($p in $discovered) {
-                $tempDir = $p.Path
-                $variant = $p.Variant
+            foreach ($item in $discovered) {
+                $tempDir = $item.Path
+                $variant = $item.Variant
                 
                 $targetExe = $info.ExeName
                 if (-not $targetExe) {
@@ -229,7 +239,7 @@ if ($Extract) {
                 }
 
                 # Resolve UUID: If single profile, keep original. If multi, first gets original, others get new.
-                $uuid = if ($discovered.Count -eq 1 -or ($p -eq $discovered[0])) { Get-OrCreateUUID $info.RawID } else { Get-OrCreateUUID $null }
+                $uuid = if ($discovered.Count -eq 1 -or ($item -eq $discovered[0])) { Get-OrCreateUUID $info.RawID } else { Get-OrCreateUUID $null }
                 
                 $targetDir = Join-Path $ProfilesDir $uuid
                 if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }
@@ -238,10 +248,10 @@ if ($Extract) {
                 Get-ChildItem -Path $tempDir | Move-Item -Destination $targetDir -Force
                 Remove-Item $tempDir -Recurse -Force
                 
-                # Write Description if available
-                $descPath = Join-Path $targetDir "ProfileDescription.md"
-                if ($info.Description -and -not (Test-Path $descPath)) {
-                    $info.Description | Set-Content $descPath -Encoding utf8
+                # Write README if available
+                $readmePath = Join-Path $targetDir "README.md"
+                if ($info.Description -and -not (Test-Path $readmePath)) {
+                    $info.Description | Set-Content $readmePath -Encoding utf8
                 }
 
                 $sourceDownloadUrl = $null
@@ -259,7 +269,18 @@ if ($Extract) {
                     $sourceDownloadUrl = $null
                 }
 
-                $finalGameName = if ($variant) { "$game ($variant)" } else { $game }
+                $displayVariant = Get-CleanVariantName $variant $targetExe
+                $finalGameName = $game
+
+                # Handle Tags
+                $tags = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+                if ($info.Tags) { foreach ($t in $info.Tags) { $tags.Add($t) | Out-Null } }
+                
+                # Heuristic Tags from Variant
+                $variantText = "$variant"
+                if ($variantText -match "motion\s+controls") { $tags.Add("Motion Controls") | Out-Null }
+                if ($variantText -match "6\s*dof")           { $tags.Add("6DOF") | Out-Null }
+                if ($variantText -match "3\s*dof")           { $tags.Add("3DOF") | Out-Null }
 
                 $metaProps = [ordered]@{
                     "ID"                = $uuid
@@ -276,10 +297,13 @@ if ($Extract) {
                     "zipHash"           = $zipHash
                     "downloadUrl"       = Get-ProfileDownloadUrl $uuid $targetExe
                 }
+                if ($tags.Count -gt 0) {
+                    $metaProps["tags"] = [string[]]($tags | Sort-Object)
+                }
                 if ($null -ne $sourceDownloadUrl) {
                     $metaProps["sourceDownloadUrl"] = $sourceDownloadUrl
                 }
-                $meta = Finalize-ProfileMetadata $targetDir $metaProps $item.ProfileName
+                $meta = Finalize-ProfileMetadata $targetDir $metaProps $displayVariant
                 $meta = Remove-NullProperties $meta
                 $json = $meta | ConvertTo-Json
                 Test-Metadata $json (Join-Path $targetDir "ProfileMeta.json")

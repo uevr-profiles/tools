@@ -19,7 +19,7 @@ if (-not (Test-Path $ProfilesDir)) { New-Item -ItemType Directory -Path $Profile
 # ── Whitelist Pattern Definitions ────────────────────────────────────────────
 function Get-WhitelistPatterns {
     return @(
-        "^ProfileDescription\.md$",
+        "^README\.md$",
         "^ProfileMeta\.json$",
         "^_interaction_profiles_oculus_touch_controller\.json$",
         "^actions\.json$",
@@ -30,15 +30,14 @@ function Get-WhitelistPatterns {
         "^bindings_vive_controller\.json$",
         "^cameras\.txt$",
         "^config\.txt$",
-        "^cvardump\.json$",
         "^cvars_data\.txt$",
         "^cvars_standard\.txt$",
         "^uevr_nightly_build\.txt$",
         "^user_script\.txt$",
         "^scripts/.*\.lua$",
-        "^(_EXTRAS|data|libs|paks|plugins|scripts|uobjecthook)(/|$)",
-        # "^sdkdump/.*\.(cpp|hpp)$",
-        "^uobjecthook/.*(_props|_mc_state)\.json$"
+        "^plugins/.*\.(dll|so)$",
+        "^uobjecthook/.*(_props|_mc_state)\.json$",
+        "^(_EXTRAS|data|libs|paks)/.+"
     )
 }
 
@@ -67,8 +66,11 @@ function Is-ProfileFolder($path) {
 
 function Get-BlacklistPatterns {
     return @(
-        "^sdkdump(/|$)",
-        "^plugins/.*\.pdb$"
+        "^sdkdump/.*\.(cpp|hpp)$",
+        "^plugins/.*\.pdb$",
+        "\.bak$",
+        "\.org$",
+        "^cvardump\.json$"
     )
 }
 
@@ -140,9 +142,7 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
     
     # 1. Look for nested archives
     $archives = Get-ChildItem -Path $tempBase -Recurse -Include "*.zip", "*.7z", "*.rar", "*.tar", "*.gz", "*.bz2", "*.xz"
-    # 1. Nested archive handling: Extract them and collect profiles from within
     foreach ($a in $archives) {
-        # Calculate relative path of the archive within the current extraction root
         $aFull = (Get-Item $a.FullName).FullName
         $tFull = (Get-Item $tempBase).FullName
         $relA = ""
@@ -164,20 +164,20 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
             } else {
                 $sp.Variant = $subContext
             }
+            # Also update ProfileName if it was null/empty (meaning it was root in sub-archive)
+            if (-not $sp.ProfileName) {
+                $sp.ProfileName = $subContext.Split('/')[-1].Trim()
+            }
             $profilesFound += $sp
         }
         Remove-Item $a.FullName -Force
     }
 
-    # 2. Look for profile folders (containing any whitelisted file/folder)
+    # 2. Look for profile folders
     $candidateFolders = Get-ChildItem -Path $tempBase -Recurse -Directory | Where-Object { Is-ProfileFolder $_.FullName }
-    
-    # If the root itself is a profile folder, add it
     if (Is-ProfileFolder $tempBase) { $candidateFolders += Get-Item $tempBase }
 
-    # Sort by path length to process shallowest folders first
     $sortedCandidates = $candidateFolders | Sort-Object { $_.FullName.Length }
-    
     Write-Host "    Found $($sortedCandidates.Count) candidate profile roots..." -ForegroundColor Gray
     
     $uniqueProfiles = @()
@@ -194,7 +194,6 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
         $cleanTarget = Join-Path $env:TEMP "uevr_profile_$profileId"
         New-Item -ItemType Directory -Path $cleanTarget -Force | Out-Null
         
-        # Reliable relative path from tempBase
         $fFull = (Get-Item $f.FullName).FullName
         $tFull = (Get-Item $tempBase).FullName
         $relPath = ""
@@ -203,19 +202,16 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
         }
         
         Write-Host "    Processing discovered profile root: $(if ($relPath) { $relPath } else { '[Root]' })" -ForegroundColor Gray
-        
         Copy-Item -Path "$($fFull)\*" -Destination $cleanTarget -Recurse -Force
         
         $profileName = $null
+        $variant = $relPath.Replace('\', ' / ')
         if ($relPath) {
-            $variant = $relPath.Replace('\', ' / ')
-            # The last part of the path is usually the most specific "profile name"
             $profileName = $relPath.Split('\')[-1]
         }
 
         Remove-NonWhitelisted $cleanTarget -applyWhitelist:$whitelist -applyBlacklist:$blacklist
         
-        # Only add if not empty
         $finalFiles = Get-ChildItem -Path $cleanTarget -Recurse | Where-Object { -not $_.PSIsContainer }
         if ($finalFiles.Count -gt 0) {
             $profilesFound += @{
@@ -229,8 +225,6 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
         }
     }
     
-    # Cleanup main temp: Disabling for now per user request to avoid constant re-downloads/cleanups during testing
-    # Remove-Item $tempBase -Recurse -Force -ErrorAction SilentlyContinue
     return $profilesFound
 }
 
@@ -238,18 +232,15 @@ function Remove-NonWhitelisted($targetDir, $applyWhitelist, $applyBlacklist) {
     if (-not (Test-Path $targetDir)) { return }
     Flatten-Folder $targetDir
     
-    # Pre-calculate base path to ensure it doesn't end with a slash for substring math
     $basePath = (Get-Item $targetDir).FullName.TrimEnd('\')
     $allItems = Get-ChildItem -Path $basePath -Recurse
     foreach ($item in $allItems) {
         if (-not (Test-Path $item.FullName)) { continue }
         
-        # Calculate relative path using substring to avoid string replacement case-sensitivity bugs
         $rel = $item.FullName.Substring($basePath.Length).TrimStart('\').Replace('\', '/')
         if ($null -eq $rel -or $rel -eq "") { continue }
         
         $isDir = $item.PSIsContainer
-        
         if ($applyBlacklist -and (Test-Blacklisted $rel)) {
             Write-Host "    Removed blacklist match: $rel" -ForegroundColor Gray
             Remove-Item $item.FullName -Recurse -Force -ErrorAction SilentlyContinue
@@ -258,14 +249,12 @@ function Remove-NonWhitelisted($targetDir, $applyWhitelist, $applyBlacklist) {
         
         if ($applyWhitelist -and -not (Test-Whitelisted $rel)) {
             if (-not $isDir) {
-                # Only delete FILES that aren't whitelisted. Dirs are cleaned later if empty.
                 Write-Host "    Removed non-whitelisted: $rel" -ForegroundColor Gray
                 Remove-Item $item.FullName -Force -ErrorAction SilentlyContinue
             }
         }
     }
     
-    # Cleanup empty dirs
     $foundEmpty = $true
     while ($foundEmpty) {
         $foundEmpty = $false
@@ -318,14 +307,12 @@ function Remove-NullProperties($obj) {
     $newObj = [ordered]@{}
     $dateRegex = "^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"
     
-    # Extract keys and values to avoid internal dictionary properties
     if ($obj -is [System.Collections.IDictionary]) {
         foreach ($key in $obj.Keys) {
             $val = $obj[$key]
             if ($null -ne $val) {
                 if ($val -is [string]) { $val = $val.Trim() }
                 if (($val -as [string]) -ne "") {
-                    # Normalize Dates for schema (strip milliseconds/microseconds)
                     if ($key -match "Date$" -or ($val -match "^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}")) {
                         try {
                             $dt = [DateTime]::Parse($val)
@@ -353,38 +340,98 @@ function Remove-NullProperties($obj) {
     return [PSCustomObject]$newObj
 }
 
-function Convert-MarkdownToText($md) {
+function Get-CleanVariantName($variant, $currentExe) {
+    if (-not $variant) { return $null }
+    $segments = $variant.Split(@(" / "), [System.StringSplitOptions]::RemoveEmptyEntries) | ForEach-Object { $_.Trim() }
+    $validSegments = @()
+    foreach ($s in $segments) {
+        if ($s -ieq "Root") { continue }
+        $cleanS = $s.Replace("-Win64-Shipping", "").Replace("-Win64-DebugGame", "").Replace(".zip", "").Trim()
+        $cleanE = if ($currentExe) { $currentExe.Replace("-Win64-Shipping", "").Replace("-Win64-DebugGame", "").Trim() } else { "" }
+        if ($cleanE -and $cleanS -ieq $cleanE) { continue }
+        if ($s -match "-Win64-(Shipping|DebugGame|Development|Test)$") { continue }
+        $validSegments += $s
+    }
+    if ($validSegments.Count -eq 0) { return $null }
+    return $validSegments -join " / "
+}
+
+function Convert-MarkdownToText($md, $maxLen = 100) {
     if ($null -eq $md) { return "" }
-    # Very basic de-markdownifier
-    $txt = $md -replace '(?m)^#+\s+', ''               # Headers
-    $txt = $txt -replace '\*\*|__', ''                 # Bold
-    $txt = $txt -replace '\*|_', ''                    # Italic
-    $txt = $txt -replace '\[([^\]]+)\]\([^\)]+\)', '$1' # Links [text](url) -> text
-    $txt = $txt -replace '`', ''                       # Code
-    $txt = $txt -replace '(?m)^\s*>\s+', ''            # Blockquotes
-    $txt = $txt -replace '(?m)^\s*[-*+]\s+', ''        # List markers
-    $txt = $txt -replace '\r?\n', ' '                  # Newlines to spaces
-    return $txt.Trim()
+    $txt = $md -replace '(?m)^#+\s+', ''
+    $txt = $txt -replace '\*\*|__', ''
+    $txt = $txt -replace '\*|_', ''
+    $txt = $txt -replace '\[([^\]]+)\]\([^\)]+\)', '$1'
+    $txt = $txt -replace '`', ''
+    $txt = $txt -replace '(?m)^\s*>\s+', ''
+    $txt = $txt -replace '(?m)^\s*[-*+]\s+', ''
+    $txt = $txt -replace '\r?\n', ' '
+    $txt = $txt.Trim()
+    if ($txt.Length -gt $maxLen) {
+        return $txt.Substring(0, $maxLen - 3) + "..."
+    }
+    return $txt
 }
 
 function Finalize-ProfileMetadata($targetDir, $meta, $profileName) {
-    $descFile = Join-Path $targetDir "ProfileDescription.md"
-    $descText = ""
+    $readmeFile = Join-Path $targetDir "README.md"
+    $legacyDesc = Join-Path $targetDir "ProfileDescription.md"
+    $readmeText = if (Test-Path $readmeFile) { Get-Content $readmeFile -Raw } else { "" }
+    $descText   = if (Test-Path $legacyDesc) { Get-Content $legacyDesc -Raw } else { "" }
     
-    if (Test-Path $descFile) {
-        $descText = Get-Content $descFile -Raw
+    $rawDesc = if ($readmeText -and $descText) {
+        $readmeText + "`n`n" + $descText
+    } elseif ($readmeText) {
+        $readmeText
+    } else {
+        $descText
     }
     
-    # Prepend profileName as title if not there
-    if ($profileName -and -not ($descText -match "^\s*#\s+\Q$profileName\E")) {
-        $descText = "# $profileName`n`n$descText"
-        $descText | Set-Content $descFile -Encoding utf8
+    if ($profileName) {
+        $escapedName = [regex]::Escape($profileName)
+        $rawDesc = $rawDesc -replace "(?m)^\s*#\s+$escapedName\s*", ""
+    }
+    $rawDesc = $rawDesc.Trim()
+
+    $appLink = if ($meta.appID) { "https://steamdb.info/app/$($meta.appID)" } else { "" }
+    $gamePart = if ($appLink) { "[$($meta.gameName)]($appLink)" } else { $meta.gameName }
+    $pName = if ($profileName) { $profileName } else { "Profile" }
+    
+    $header = "# $pName by $($meta.authorName) for $gamePart"
+    $banner = if ($meta.headerPictureUrl) { "![$($meta.gameName)]($($meta.headerPictureUrl))" } else { "" }
+
+    $table = "| Prop | Value |`n| --- | --- |"
+    $skipRows = @("description", "profileName", "appID", "authorName", "headerPictureUrl", "gameName", "sourceUrl", "sourceDownloadUrl")
+    foreach ($key in $meta.Keys) {
+        if ($skipRows -contains $key) { continue }
+        $val = $meta[$key]
+        if ($null -eq $val -or "$val" -eq "") { continue }
+        $cleanVal = "$val".Replace('|', '\|')
+        if ($key -eq "sourceName" -and $meta.sourceUrl) {
+            $cleanVal = "[$cleanVal]($($meta.sourceUrl))"
+        } elseif ($key -eq "zipHash" -and $meta.sourceDownloadUrl) {
+            $cleanVal = "[$cleanVal]($($meta.sourceDownloadUrl))"
+        }
+        $table += "`n| **$key** | $cleanVal |"
     }
 
-    if ($descText) {
-        $meta["description"] = Convert-MarkdownToText $descText
+    $finalMd = @"
+$header
+$banner
+
+$table
+"@
+
+    if ($rawDesc) {
+        $finalMd += "`n`n## Description:`n$rawDesc"
     }
-    
+
+    $finalMd.Trim() | Set-Content $readmeFile -Encoding utf8
+    if ($rawDesc) {
+        $meta["description"] = Convert-MarkdownToText $rawDesc 100
+    }
+    if (Test-Path $legacyDesc) { Remove-Item $legacyDesc -Force }
+    if ($profileName) { $meta["profileName"] = $profileName }
     return $meta
 }
 

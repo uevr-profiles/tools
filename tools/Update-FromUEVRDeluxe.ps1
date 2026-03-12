@@ -126,7 +126,8 @@ if ($Extract) {
             $oldest  = $p.history | Sort-Object modifiedDate -Ascending  | Select-Object -First 1
 
             $gameName = if ($extraMeta.gameName) { $extraMeta.gameName } else { $p.gameName }
-            $finalGameName = if ($variant) { "$gameName ($variant)" } else { $gameName }
+            $displayVariant = Get-CleanVariantName $variant (if ($extraMeta.exeName) { $extraMeta.exeName } else { $p.exeName })
+            $finalGameName = $gameName
 
             $metaProps = [ordered]@{
                 "ID"                = $uuid
@@ -142,7 +143,7 @@ if ($Extract) {
                 "zipHash"           = $zipHash
                 "downloadUrl"       = Get-ProfileDownloadUrl $uuid $p.exeName
             }
-            $meta = Finalize-ProfileMetadata $targetDir $metaProps $item.ProfileName
+            $meta = Finalize-ProfileMetadata $targetDir $metaProps $displayVariant
             $meta = Remove-NullProperties $meta
             $json = $meta | ConvertTo-Json
             Test-Metadata $json (Join-Path $targetDir "ProfileMeta.json")

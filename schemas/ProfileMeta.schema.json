@@ -145,6 +145,20 @@
                 "null"
             ]
         },
+        "description": {
+            "description": "Non-formatted, plain text description of the profile.",
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "profileName": {
+            "description": "Short identifying name of the profile variant.",
+            "type": [
+                "string",
+                "null"
+            ]
+        },
         "fileCopies": {
             "description": "Optional list of files to copy from the profile folder into the game directory.",
             "type": [
@@ -170,6 +184,16 @@
                     "destinationFolderRelGameEXE"
                 ],
                 "additionalProperties": false
+            }
+        },
+        "tags": {
+            "description": "Optional list of tags describing the profile's state or features.",
+            "type": [
+                "array",
+                "null"
+            ],
+            "items": {
+                "type": "string"
             }
         }
     },
