@@ -1,54 +1,145 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "description": "",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "ProfileMeta",
+    "description": "Metadata file for a UEVR game profile.",
     "type": "object",
     "properties": {
         "ID": {
+            "description": "Unique identifier for the profile (UUID v4 or all-zero sentinel).",
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        },
+        "exeName": {
+            "description": "The game executable name (without .exe), used as the profile folder name.",
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[^\\\\/:*?\"<>|]+$"
+        },
+        "gameName": {
+            "description": "Human-readable name of the game.",
+            "type": "string",
+            "minLength": 1
+        },
+        "gameVersion": {
+            "description": "Optional game version(s) this profile was made for.",
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "authorName": {
+            "description": "Name of the profile author.",
             "type": "string",
             "minLength": 1
         },
         "modifiedDate": {
+            "description": "ISO 8601 date-time when the profile was last modified.",
             "type": "string",
-            "minLength": 1
-        },
-        "sourceName": {
-            "type": "string",
-            "minLength": 1
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(Z|[+-]\\d{2}:\\d{2})?$"
         },
         "downloadDate": {
+            "description": "ISO 8601 date-time when the profile was downloaded by the sync script.",
             "type": "string",
-            "minLength": 1
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(Z|[+-]\\d{2}:\\d{2})?$"
         },
-        "authorName": {
+        "sourceName": {
+            "description": "Name of the source the profile was obtained from.",
             "type": "string",
-            "minLength": 1
+            "enum": [
+                "uevrdeluxe.org",
+                "uevr-profiles.com",
+                "discord.gg/flat2vr"
+            ]
         },
         "sourceUrl": {
+            "description": "URL to the profile source or download endpoint.",
             "type": "string",
-            "minLength": 1
-        },
-        "exeName": {
-            "type": "string",
-            "minLength": 1
-        },
-        "gameName": {
-            "type": "string",
-            "minLength": 1
+            "format": "uri"
         },
         "zipHash": {
+            "description": "MD5 hash (uppercase hex) of the downloaded profile ZIP file.",
             "type": "string",
-            "minLength": 1
+            "pattern": "^[A-F0-9]{32}$"
+        },
+        "remarks": {
+            "description": "Free-form notes about the profile, e.g. version info or special instructions.",
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "donateURL": {
+            "description": "Optional URL for donating to the profile author.",
+            "type": [
+                "string",
+                "null"
+            ],
+            "format": "uri"
+        },
+        "minUEVRNightlyNumber": {
+            "description": "Minimum UEVR nightly build number required for this profile.",
+            "type": [
+                "integer",
+                "null"
+            ],
+            "minimum": 0
+        },
+        "maxUEVRNightlyNumber": {
+            "description": "Maximum UEVR nightly build number supported by this profile (null = no upper limit).",
+            "type": [
+                "integer",
+                "null"
+            ],
+            "minimum": 0
+        },
+        "nullifyPlugins": {
+            "description": "Whether UEVR should nullify plugins when using this profile.",
+            "type": [
+                "boolean",
+                "null"
+            ]
+        },
+        "lateInjection": {
+            "description": "Whether UEVR should use late injection mode for this game.",
+            "type": [
+                "boolean",
+                "null"
+            ]
+        },
+        "fileCopies": {
+            "description": "Optional list of files to copy from the profile folder into the game directory.",
+            "type": [
+                "array",
+                "null"
+            ],
+            "items": {
+                "type": "object",
+                "properties": {
+                    "sourceFileRelProfile": {
+                        "description": "Path to the source file, relative to the profile folder.",
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "destinationFolderRelGameEXE": {
+                        "description": "Destination folder path, relative to the game EXE directory.",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                },
+                "required": [
+                    "sourceFileRelProfile",
+                    "destinationFolderRelGameEXE"
+                ],
+                "additionalProperties": false
+            }
         }
     },
     "required": [
         "ID",
-        "modifiedDate",
-        "sourceName",
-        "downloadDate",
-        "authorName",
-        "sourceUrl",
         "exeName",
         "gameName",
-        "zipHash"
-    ]
+        "authorName",
+        "modifiedDate"
+    ],
+    "additionalProperties": false
 }
