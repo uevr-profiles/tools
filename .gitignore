@@ -40,11 +40,3 @@ luac.out
 *.hex
 
 
-# Ignored Profile Files and Folders
-sdkdump/
-crash.dmp
-log.txt
-cvars_standart.txt
-imgui.txt
-lua.log
-cvardump.txt

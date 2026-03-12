@@ -1,4 +1,4 @@
-name: Grab UEVRDeluxe Profiles
+name: Grab UEVR-Profiles.com Profiles
 
 on:
   workflow_dispatch:
@@ -18,12 +18,12 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Run Grab-UEVRDeluxe
+      - name: Run Update-FromUEVRProfiles
         shell: pwsh
         run: |
           $limit = [int]"${{ github.event.inputs.download_limit }}"
           if ($limit -le 0) { $limit = 99999 }
-          .\tools\Grab-UEVRDeluxe.ps1 -Download -Extract -DownloadLimit $limit
+          .\tools\Update-FromUEVRProfiles.ps1 -Download -Extract -DownloadLimit $limit
 
       - name: Commit & push profile changes
         shell: pwsh
@@ -34,6 +34,6 @@ jobs:
           if (git diff --cached --quiet) {
             Write-Host "No changes to commit."
           } else {
-            git commit -m "chore: sync UEVRDeluxe profiles [$(Get-Date -Format 'yyyy-MM-dd HH:mm')]"
+            git commit -m "chore: sync uevr-profiles.com profiles [$(Get-Date -Format 'yyyy-MM-dd HH:mm')]"
             git push
           }
