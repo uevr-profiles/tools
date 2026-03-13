@@ -137,12 +137,12 @@ class ProfileMetadata {
         return $meta
     }
 
-    [void] Finalize([string]$targetDir, [string]$variant) {
+    [void] Finalize([string]$targetDir, [string]$profile) {
         $readmeFile = Join-Path $targetDir "README.md"
         
         # 0. Set simple fields
-        if ($variant -and $variant -ne "[Root]") {
-            $this.profileName = $variant
+        if ($profile -and $profile -ne "[Root]") {
+            $this.profileName = $profile
         }
 
         # 1. Determine the "Master Description"
@@ -199,13 +199,13 @@ class ProfileMetadata {
         return $res
     }
 
-    [void] Save([string]$targetDir, [string]$zipPath, [string]$variant) {
+    [void] Save([string]$targetDir, [string]$archivePath, [string]$profile) {
         if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }
         
-        $this.Finalize($targetDir, $variant)
+        $this.Finalize($targetDir, $profile)
         
         # 2. Update Global Tracking
-        Update-GlobalPropsJson $zipPath $variant ($this.GetCleanObject())
+        Update-GlobalPropsJson $archivePath $profile ($this.GetCleanObject())
         
         # 3. Save to disk
         $jsonFile = Join-Path $targetDir "ProfileMeta.json"
@@ -293,10 +293,10 @@ function Update-GlobalFilesList($relPaths) {
     }
 }
 
-function Update-GlobalPropsJson($zipPath, $variant, $metaObj) {
+function Update-GlobalPropsJson($archivePath, $profile, $metaObj) {
     if ($null -eq $metaObj) { return }
     
-    $occId = if ($variant -and $variant -ne "[Root]") { "$zipPath | $variant" } else { "$zipPath" }
+    $occId = if ($profile -and $profile -ne "[Root]") { "$archivePath | $profile" } else { "$archivePath" }
     # Unique sub-key for this specific iteration
     $occKey = "$occId | $([DateTimeOffset]::Now.ToUnixTimeMilliseconds())_$(Get-Random)"
 
@@ -385,7 +385,7 @@ function Finalize-GlobalTracking {
     }
 }
 
-function Get-HeuristicTags($profileDir, $meta, $variant) {
+function Get-HeuristicTags($profileDir, $meta, $profile) {
     $tagSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
     
     # 0. Technical Signals (Strongest)
@@ -410,7 +410,7 @@ function Get-HeuristicTags($profileDir, $meta, $variant) {
     $textSources = @()
     if ($meta.description) { $textSources += $meta.description }
     if ($meta.gameName) { $textSources += $meta.gameName }
-    if ($variant) { $textSources += $variant }
+    if ($profile) { $textSources += $profile }
     
     # Gather content from top-level non-binary files
     if (Test-Path $profileDir) {
@@ -430,28 +430,28 @@ function Get-HeuristicTags($profileDir, $meta, $variant) {
     $found6DOF   = $allText -match "6\s*dof"
     $found3DOF   = $allText -match "3\s*dof"
 
-    # Contextual Filtering: If variant explicitly identifies as one mode, be skeptical of the other in text
-    $is3DOFVariant = $variant -match "3\s*dof"
-    $is6DOFVariant = $variant -match "6\s*dof"
+    # Contextual Filtering: If profile explicitly identifies as one mode, be skeptical of the other in text
+    $is3DOFProfile = $profile -match "3\s*dof"
+    $is6DOFProfile = $profile -match "6\s*dof"
 
     if ($foundMotion) {
-        if (-not $is3DOFVariant -or $variant -match "motion") { $tagSet.Add("Motion Controls") | Out-Null }
+        if (-not $is3DOFProfile -or $profile -match "motion") { $tagSet.Add("Motion Controls") | Out-Null }
     }
     if ($found6DOF) {
-        if (-not $is3DOFVariant) { $tagSet.Add("6DOF") | Out-Null }
+        if (-not $is3DOFProfile) { $tagSet.Add("6DOF") | Out-Null }
     }
     if ($found3DOF) {
-        if (-not $is6DOFVariant) { $tagSet.Add("3DOF") | Out-Null }
+        if (-not $is6DOFProfile) { $tagSet.Add("3DOF") | Out-Null }
     }
 
-    # Final Conflict Strip: If we are certain this is a 3DOF variant, remove any 6DOF tags that bled in
+    # Final Conflict Strip: If we are certain this is a 3DOF profile, remove any 6DOF tags that bled in
     $finalTags = [System.Collections.Generic.List[string]]::new($tagSet)
-    if ($is3DOFVariant) {
+    if ($is3DOFProfile) {
         for ($i = $finalTags.Count - 1; $i -ge 0; $i--) {
             if ($finalTags[$i] -match "6\s*dof") { $finalTags.RemoveAt($i) }
         }
     }
-    if ($is6DOFVariant) {
+    if ($is6DOFProfile) { # Changed from $is6DOFVariant to $is6DOFProfile
         for ($i = $finalTags.Count - 1; $i -ge 0; $i--) {
             if ($finalTags[$i] -match "3\s*dof") { $finalTags.RemoveAt($i) }
         }
@@ -583,7 +583,7 @@ function Expand-Archive-Smart($path, $destination) {
     }
 }
 
-function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $maxDepth = 5) {
+function Extract-And-Discover-Profiles($sourceArchiveroot, $whitelist, $blacklist, $maxDepth = 5) {
     if ($maxDepth -le 0) { return @() }
     
     # Create temp base and ensure we have the full, long path
@@ -592,31 +592,31 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
     $Global:TempFolders += $tempBase
     
     try {
-        Expand-Archive-Smart $sourceArchive $tempBase
+        Expand-Archive-Smart $sourceArchiveroot $tempBase
     } catch {
-        Write-Error "    [!] Fatal error during extraction of $sourceArchive"
+        Write-Error "    [!] Fatal error during extraction of $sourceArchiveroot"
         return @()
     }
     
-    $profilesFound = @()
+    $extracted_archives = @() # Renamed from $profilesFound
     
     # 1. Look for nested archives
-    $archives = Get-ChildItem -Path $tempBase -Recurse -Include "*.zip", "*.7z", "*.rar", "*.tar", "*.gz", "*.bz2", "*.xz"
-    foreach ($a in $archives) {
+    $archiveroots = Get-ChildItem -Path $tempBase -Recurse -Include "*.zip", "*.7z", "*.rar", "*.tar", "*.gz", "*.bz2", "*.xz"
+    foreach ($a in $archiveroots) {
         $subContext = $a.FullName.Substring($tempBase.Length).TrimStart('\').Replace('\', ' / ').Replace('.zip', '')
         $subProfiles = Extract-And-Discover-Profiles $a.FullName $whitelist $blacklist ($maxDepth - 1)
         foreach ($sp in $subProfiles) {
-            # Update variant to include sub-archive context
-            if ($sp.Variant -and $sp.Variant -ne "[Root]") {
-                $sp.Variant = "$subContext / $($sp.Variant)"
+            # Update profile name to include sub-archive context
+            if ($sp.Profile -and $sp.Profile -ne "[Root]") {
+                $sp.Profile = "$subContext / $($sp.Profile)"
             } else {
-                $sp.Variant = $subContext
+                $sp.Profile = $subContext
             }
             # Also update ProfileName if it was null/empty (meaning it was root in sub-archive)
             if (-not $sp.ProfileName) {
                 $sp.ProfileName = $subContext.Split('/')[-1].Trim()
             }
-            $profilesFound += $sp
+            $extracted_archives += $sp # Renamed from $profilesFound
         }
         Remove-Item $a.FullName -Force -ErrorAction SilentlyContinue
     }
@@ -640,7 +640,7 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
     foreach ($folderItem in $uniqueProfiles) {
         $folderPath = $folderItem.FullName
         $rel = $folderPath.Substring($tempBase.Length).TrimStart('\')
-        $variant = if ($rel) { $rel.Replace('\', ' / ') } else { "[Root]" }
+        $profile = if ($rel) { $rel.Replace('\', ' / ') } else { "[Root]" }
         
         $targetDir = Join-Path $env:TEMP "uevr_profile_tmp_$(New-Guid)"
         New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
@@ -668,14 +668,14 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
         }
         
         if ((Get-ChildItem $targetDir).Count -gt 0) {
-            $profilesFound += [PSCustomObject]@{ Path = $targetDir; Variant = $variant; ProfileName = $pName }
+            $extracted_archives += [PSCustomObject]@{ Path = $targetDir; Profile = $profile; ProfileName = $pName } # Renamed from $profilesFound
         } else {
             # Partial cleanup if empty
             Remove-Item $targetDir -Recurse -Force -ErrorAction SilentlyContinue 2>$null
         }
     }
     # Cleanup postponed until script end via $Global:TempFolders
-    return $profilesFound
+    return $extracted_archives # Renamed from $profilesFound
 }
 
 function Get-DeterministicGuid($seed) {
@@ -701,7 +701,7 @@ function Get-OrCreateUUID($p) {
     elseif ($p.sourceDownloadUrl) { $seedParts += $p.sourceDownloadUrl }
     elseif ($id) { $seedParts += $id }
     
-    if ($p.archive) { $seedParts += $p.archive }
+    if ($p.archiveroot) { $seedParts += $p.archiveroot } # Changed from $p.archive
     
     $seed = $seedParts -join "|"
     if (-not $seed) { return [guid]::NewGuid().ToString() }
@@ -710,20 +710,23 @@ function Get-OrCreateUUID($p) {
 }
 
 
-function Print-ProfileInfo($meta, $zipPath) {
+function Print-ProfileInfo($meta, $archiveroot, $profile) { # Changed from $zipPath to $archiveroot, added $profile
     Write-Host "  - Profile $($meta.ID)" -ForegroundColor Cyan
     Write-Host "    - Game:       $($meta.gameName) ($($meta.exeName))" -ForegroundColor Gray
     Write-Host "    - Author:     $($meta.authorName)" -ForegroundColor Gray
     Write-Host "    - Source:     $($meta.sourceName) ($($meta.sourceUrl))" -ForegroundColor Gray
-    Write-Host "    - ZIP:        $(if ($zipPath) { Split-Path $zipPath -Leaf } else { 'N/A' })" -ForegroundColor Gray
+    Write-Host "    - ZIP:        $(if ($archiveroot) { Split-Path $archiveroot -Leaf } else { 'N/A' })" -ForegroundColor Gray # Changed from $zipPath to $archiveroot
     Write-Host "    - Hash:       $($meta.zipHash)" -ForegroundColor Gray
     Write-Host "    - URL:        $($meta.sourceDownloadUrl)" -ForegroundColor Gray
     
-    if ($zipPath -and (Test-Path $zipPath)) {
+    if ($profile -and $profile -ne "[Root]") {
+        Write-Host "    - Profile:    $profile" -ForegroundColor Gray
+    }
+    if ($archiveroot -and (Test-Path $archiveroot)) { # Changed from $zipPath to $archiveroot
         Write-Host "  - ZIP Content List:" -ForegroundColor Cyan
         try {
             Add-Type -AssemblyName System.IO.Compression.FileSystem -ErrorAction SilentlyContinue
-            $zip = [System.IO.Compression.ZipFile]::OpenRead($zipPath)
+            $zip = [System.IO.Compression.ZipFile]::OpenRead($archiveroot) # Changed from $zipPath to $archiveroot
             $zip.Entries | ForEach-Object { Write-Host "    $($_.FullName)" -ForegroundColor DarkGray }
             $zip.Dispose()
         } catch {
@@ -741,9 +744,9 @@ function Get-FileHashMD5($path) {
 
 
 
-function Get-CleanVariantName($variant, $currentExe) {
-    if (-not $variant) { return $null }
-    $segments = $variant.Split(@(" / "), [System.StringSplitOptions]::RemoveEmptyEntries) | ForEach-Object { $_.Trim() }
+function Get-CleanProfileName($profile, $currentExe) {
+    if (-not $profile) { return $null }
+    $segments = $profile.Split(@(" / "), [System.StringSplitOptions]::RemoveEmptyEntries) | ForEach-Object { $_.Trim() }
     $validSegments = @()
     foreach ($s in $segments) {
         if ($s -ieq "Root") { continue }

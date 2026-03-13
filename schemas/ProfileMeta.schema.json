@@ -85,13 +85,6 @@
             ],
             "format": "uri"
         },
-        "remarks": {
-            "description": "Free-form notes about the profile, e.g. version info or special instructions.",
-            "type": [
-                "string",
-                "null"
-            ]
-        },
         "donateURL": {
             "description": "Optional URL for donating to the profile author.",
             "type": [

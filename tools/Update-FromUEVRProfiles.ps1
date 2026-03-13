@@ -36,10 +36,10 @@ function Fetch-UEVRProfilesMetadata {
             $gameName = $doc.fields.gameName.stringValue
             $topExe   = $doc.fields.exeName.stringValue
             
-            $variants = $doc.fields.profiles.arrayValue.values
-            if (-not $variants) { continue }
+            $profiles = $doc.fields.profiles.arrayValue.values
+            if (-not $profiles) { continue }
             
-            foreach ($v in $variants) {
+            foreach ($v in $profiles) {
                 $vf = $v.mapValue.fields
                 $profileId = $vf.id.stringValue
                 if (-not $profileId) { continue }
@@ -56,7 +56,7 @@ function Fetch-UEVRProfilesMetadata {
                     }
                 } catch {}
 
-                $variantExe = if ($vf.exeName.stringValue) { $vf.exeName.stringValue } else { "" }
+                $profileExe = if ($vf.exeName.stringValue) { $vf.exeName.stringValue } else { "" }
                 $encodedArchive = [uri]::EscapeDataString("profiles/$archiveFile")
                 $dlUrl = "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/$($encodedArchive)?alt=media"
 
@@ -66,7 +66,7 @@ function Fetch-UEVRProfilesMetadata {
                     "authorName"   = $vf.author.stringValue
                     "modifiedDate" = $vf.creationDate.timestampValue
                     "createdDate"  = $vf.creationDate.timestampValue
-                    "exeName"      = if ($variantExe) { $variantExe } elseif ($topExe) { $topExe } else { "" }
+                    "exeName"      = if ($profileExe) { $profileExe } elseif ($topExe) { $topExe } else { $archiveFile.Replace(".zip", "") }
                     "downloadUrl"  = $dlUrl
                     "archive"      = $archiveFile
                     "description"  = $vf.description.stringValue
@@ -127,28 +127,28 @@ function Download-UEVRProfiles {
 }
 
 function Extract-UEVRProfiles {
-    $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
-    Write-Host "Processing $($zips.Count) profiles from $SourceName..." -ForegroundColor Cyan
+    $archiveroots = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
+    Write-Host "Processing $($archiveroots.Count) profiles from $SourceName..." -ForegroundColor Cyan
 
-    foreach ($z in $zips) {
+    foreach ($archiveroot in $archiveroots) {
         try {
-            $sidecar = $z.FullName + ".json"
+            $sidecar = $archiveroot.FullName + ".json"
             if (-not (Test-Path $sidecar)) { continue }
             $p = Get-Content $sidecar -Raw | ConvertFrom-Json
 
-            $zipHash = Get-FileHashMD5 $z.FullName
+            $zipHash = Get-FileHashMD5 $archiveroot.FullName
             $sourceUrl = "https://uevr-profiles.com/game/$($p.id)"
             
-            $discovered = Extract-And-Discover-Profiles $z.FullName $Whitelist $Blacklist
+            $extracted_archives = Extract-And-Discover-Profiles $archiveroot.FullName $Whitelist $Blacklist
             
-            foreach ($d in $discovered) {
-                $variant = $d.Variant
-                $tempDir = $d.Path
+            foreach ($extracted_archive in $extracted_archives) {
+                $profile = $extracted_archive.Profile
+                $tempDir = $extracted_archive.Path
                 $uuid = $p.uuid
 
                 $targetDir = Join-Path $ProfilesDir $uuid
-                if ($variant -and $variant -ne "[Root]") {
-                    $vPath = $variant -replace ' / ', '\'
+                if ($profile -and $profile -ne "[Root]") {
+                    $vPath = $profile -replace ' / ', '\'
                     $targetDir = Join-Path $targetDir $vPath
                 }
                 
@@ -177,20 +177,20 @@ function Extract-UEVRProfiles {
                 $meta.downloadUrl       = Get-ProfileDownloadUrl $uuid $p.exeName
 
                 # Handle Tags (Heuristics only for uevr-profiles)
-                $tagArray = @(Get-HeuristicTags $targetDir $meta $variant)
+                $tagArray = @(Get-HeuristicTags $targetDir $meta $profile)
                 if ($tagArray -and $tagArray.Count -gt 0) {
                     $meta.tags = $tagArray
                 }
 
-                $meta.Save($targetDir, $z.FullName, $variant)
+                $meta.Save($targetDir, $archiveroot.FullName, $profile)
 
                 if (-not $Silent) {
-                    Print-ProfileInfo $meta $z.FullName
+                    Print-ProfileInfo $meta $archiveroot.FullName $profile
                 }
             }
         } catch {
-            Write-Host "  [!] Extraction failed for $($z.Name): $($_.Exception.Message)" -ForegroundColor Red
-            if (-not $Silent) { throw "Fatal: Profile processing error for $($z.Name). Stopping because -Silent is not set." }
+            Write-Host "  [!] Extraction failed for $($archiveroot.Name): $($_.Exception.Message)" -ForegroundColor Red
+            if (-not $Silent) { throw "Fatal: Profile processing error for $($archiveroot.Name). Stopping because -Silent is not set." }
         }
     }
 }

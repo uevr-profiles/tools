@@ -105,12 +105,12 @@ function Download-UEVRDeluxeProfiles {
 }
 
 function Extract-UEVRDeluxeProfiles {
-    $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
-    Write-Host "Processing $($zips.Count) profiles from $SourceName..." -ForegroundColor Cyan
+    $archiveroots = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
+    Write-Host "Processing $($archiveroots.Count) profiles from $SourceName..." -ForegroundColor Cyan
 
-    foreach ($z in $zips) {
+    foreach ($archiveroot in $archiveroots) {
         try {
-            $sidecar = $z.FullName + ".json"
+            $sidecar = $archiveroot.FullName + ".json"
             
             # Use sidecar if available, else try to find in allprofiles.json
             if (Test-Path $sidecar) {
@@ -120,18 +120,18 @@ function Extract-UEVRDeluxeProfiles {
                 continue
             }
 
-            $zipHash = Get-FileHashMD5 $z.FullName
+            $zipHash = Get-FileHashMD5 $archiveroot.FullName
             
             # Discover profiles within archive
-            $discovered = Extract-And-Discover-Profiles $z.FullName $Whitelist $Blacklist
+            $extracted_archives = Extract-And-Discover-Profiles $archiveroot.FullName $Whitelist $Blacklist
             
-            foreach ($d in $discovered) {
-                $variant = $d.Variant
-                $tempDir = $d.Path
+            foreach ($extracted_archive in $extracted_archives) {
+                $profile = $extracted_archive.Profile
+                $tempDir = $extracted_archive.Path
                 
                 $targetDir = Join-Path $ProfilesDir $uuid
-                if ($variant -and $variant -ne "[Root]") {
-                    $vPath = $variant -replace ' / ', '\'
+                if ($profile -and $profile -ne "[Root]") {
+                    $vPath = $profile -replace ' / ', '\'
                     $targetDir = Join-Path $targetDir $vPath
                 }
                 
@@ -160,20 +160,20 @@ function Extract-UEVRDeluxeProfiles {
                 $meta.downloadUrl       = Get-ProfileDownloadUrl $uuid $extraMeta.exeName
 
                 # Handle Tags (Heuristics only for Deluxe)
-                $tagArray = @(Get-HeuristicTags $targetDir $meta $variant)
+                $tagArray = @(Get-HeuristicTags $targetDir $meta $profile)
                 if ($tagArray -and $tagArray.Count -gt 0) {
                     $meta.tags = $tagArray
                 }
 
-                $meta.Save($targetDir, $z.FullName, $variant)
+                $meta.Save($targetDir, $archiveroot.FullName, $profile)
 
                 if (-not $Silent) {
-                    Print-ProfileInfo $meta $z.FullName
+                    Print-ProfileInfo $meta $archiveroot.FullName $profile
                 }
             }
         } catch {
-            Write-Host "  [!] Extraction failed for $($z.Name): $($_.Exception.Message)" -ForegroundColor Red
-            if (-not $Silent) { throw "Fatal: Profile processing error for $($z.Name). Stopping because -Silent is not set." }
+            Write-Host "  [!] Extraction failed for $($archiveroot.Name): $($_.Exception.Message)" -ForegroundColor Red
+            if (-not $Silent) { throw "Fatal: Profile processing error for $($archiveroot.Name). Stopping because -Silent is not set." }
         }
     }
 }

@@ -20,12 +20,7 @@ if ($Update) {
     $UpdateScripts = Get-ChildItem -Path ".\tools" -Filter "Update-From*.ps1"
     foreach ($script in $UpdateScripts) {
         Write-Host ">>> Running $($script.Name) <<<" -ForegroundColor Cyan
-        # For Discord we need -Fetch as well
-        if ($script.Name -like "*Discord*") {
-            pwsh -NoProfile -File $script.FullName -Fetch -Download -Extract
-        } else {
-            pwsh -NoProfile -File $script.FullName -Download -Extract
-        }
+        pwsh -NoProfile -File $script.FullName -Fetch -Download -Extract
     }
 }
 

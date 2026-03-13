@@ -34,6 +34,10 @@ function Fetch-DiscordMetadata {
         Pop-Location
     }
 
+    $env:PROFILES_JSON   = $MetadataJson
+    $env:PROFILES_CSV    = $ProfilesCsv
+    $env:BOT_STATE_JSON  = $BotStateJson
+
     $limitArg = if ($ProfileLimit -ne [int]::MaxValue) { "--limit=$ProfileLimit" } else { "" }
     $cmd = "node index.js $limitArg"
     
@@ -82,30 +86,30 @@ function Download-DiscordProfiles {
 }
 
 function Extract-DiscordProfiles {
-    $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
-    Write-Host "Processing $($zips.Count) profiles from $SourceName... (Limit: $ProfileLimit)" -ForegroundColor Cyan
+    $archiveroots = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
+    Write-Host "Processing $($archiveroots.Count) profiles from $SourceName... (Limit: $ProfileLimit)" -ForegroundColor Cyan
 
     $eCount = 0
-    foreach ($z in $zips) {
+    foreach ($archiveroot in $archiveroots) {
         if ($eCount -ge $ProfileLimit) { break }
         try {
             $eCount++
-            $sidecar = $z.FullName + ".json"
+            $sidecar = $archiveroot.FullName + ".json"
             if (-not (Test-Path $sidecar)) { continue }
             $p = Get-Content $sidecar -Raw | ConvertFrom-Json
 
-            $zipHash = Get-FileHashMD5 $z.FullName
+            $zipHash = Get-FileHashMD5 $archiveroot.FullName
             
-            $discovered = Extract-And-Discover-Profiles $z.FullName $Whitelist $Blacklist
+            $extracted_archives = Extract-And-Discover-Profiles $archiveroot.FullName $Whitelist $Blacklist
             
-            foreach ($d in $discovered) {
-                $variant = $d.Variant
-                $tempDir = $d.Path
+            foreach ($extracted_archive in $extracted_archives) {
+                $profile = $extracted_archive.Profile
+                $tempDir = $extracted_archive.Path
                 $uuid = $p.uuid
 
                 $targetDir = Join-Path $ProfilesDir $uuid
-                if ($variant -and $variant -ne "[Root]") {
-                    $vPath = $variant -replace ' / ', '\'
+                if ($profile -and $profile -ne "[Root]") {
+                    $vPath = $profile -replace ' / ', '\'
                     $targetDir = Join-Path $targetDir $vPath
                 }
                 if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }
@@ -121,7 +125,7 @@ function Extract-DiscordProfiles {
                 # Meta creation
                 $meta = [ProfileMetadata]::new()
                 $meta.ID                = $uuid
-                $meta.exeName           = if ($p.exeName) { $p.exeName } else { $p.zipName.Replace(".zip", "") }
+                $meta.exeName           = if ($p.exeName) { $p.exeName } else { $p.archive.Replace(".zip", "") }
                 $meta.gameName          = $p.gameName
                 $meta.authorName        = $p.authorName
                 $meta.createdDate       = Format-ISO8601Date $p.createdDate
@@ -137,7 +141,7 @@ function Extract-DiscordProfiles {
                 # Handle Tags (Category + Heuristics)
                 $tagSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
                 
-                $hTags = Get-HeuristicTags $targetDir $meta $variant
+                $hTags = Get-HeuristicTags $targetDir $meta $profile
                 if ($hTags) { foreach ($t in $hTags) { $tagSet.Add($t) | Out-Null } }
 
                 $tagArray = [System.Collections.Generic.List[string]]::new($tagSet)
@@ -153,15 +157,15 @@ function Extract-DiscordProfiles {
                     $meta.tags = @($tagArray)
                 }
 
-                $meta.Save($targetDir, $z.FullName, $variant)
+                $meta.Save($targetDir, $archiveroot.FullName, $profile)
 
                 if (-not $Silent) {
-                    Print-ProfileInfo $meta $z.FullName
+                    Print-ProfileInfo $meta $archiveroot.FullName $profile
                 }
             }
         } catch {
-            Write-Host "  [!] Extraction failed for $($z.Name): $($_.Exception.Message)" -ForegroundColor Red
-            if (-not $Silent) { throw "Fatal: Profile processing error for $($z.Name). Stopping because -Silent is not set." }
+            Write-Host "  [!] Extraction failed for $($archiveroot.Name): $($_.Exception.Message)" -ForegroundColor Red
+            if (-not $Silent) { throw "Fatal: Profile processing error for $($archiveroot.Name). Stopping because -Silent is not set." }
         }
     }
 }
