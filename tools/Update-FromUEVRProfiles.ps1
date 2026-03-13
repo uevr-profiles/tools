@@ -111,9 +111,15 @@ function Download-UEVRProfiles {
 
             try {
                 Invoke-WebRequestWithRetry -url $p.downloadUrl -targetFile $targetFile -Silent $Silent -Debug:$Debug
+                $cleanExe = $p.exeName
+                if ($cleanExe -match "(_\d+)$") {
+                    $cleanExe = $cleanExe -replace "(_\d+)$", ""
+                    Debug-Log "Stripping suffix from exeName: $($p.exeName) -> $cleanExe"
+                }
+
                 $sidecarObj = [ordered]@{
                     "ID"                = $uuid
-                    "exeName"           = $p.exeName
+                    "exeName"           = $cleanExe
                     "gameName"          = $p.gameName
                     "authorName"        = $p.authorName
                     "modifiedDate"      = Format-DateISO8601 $p.modifiedDate
