@@ -32,6 +32,7 @@ function Format-ISO8601Date($date) {
 $BaseTempDir     = Join-Path $env:TEMP "uevr_profiles"
 $GlobalFilesList = Join-Path $BaseTempDir "files.txt"
 $GlobalPropsJson = Join-Path $BaseTempDir "props.json"
+$MetaCacheDir    = Join-Path $BaseTempDir "metadata"
 
 # Initialize global memory storage
 $Global:TrackingFiles = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)

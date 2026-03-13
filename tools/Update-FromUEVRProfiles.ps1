@@ -9,9 +9,8 @@ param(
 
 . "$PSScriptRoot\common.ps1"
 
-$SourceName = "uevr-profiles.com"
-$DownloadDir = Join-Path $env:TEMP "uevr_profiles\$SourceName"
-$MetaCacheDir = Join-Path $env:TEMP "uevr_profiles\metadata"
+$SourceName  = "uevr-profiles.com"
+$DownloadDir = Join-Path $BaseTempDir $SourceName
 $MetadataJson = Join-Path $MetaCacheDir "uevrprofiles_allmetadata.json"
 
 $FirestoreUrl = "https://firestore.googleapis.com/v1/projects/uevrprofiles/databases/(default)/documents/games?pageSize=500"

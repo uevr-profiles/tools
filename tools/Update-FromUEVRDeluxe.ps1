@@ -9,9 +9,8 @@ param(
 
 . "$PSScriptRoot\common.ps1"
 
-$SourceName = "uevrdeluxe.org"
-$DownloadDir = Join-Path $env:TEMP "uevr_profiles\$SourceName"
-$MetaCacheDir = Join-Path $env:TEMP "uevr_profiles\metadata"
+$SourceName  = "uevrdeluxe.org"
+$DownloadDir = Join-Path $BaseTempDir $SourceName
 $MetadataJson = Join-Path $MetaCacheDir "uevrdeluxe_allprofiles.json"
 
 $ProfilesUrlBase = "https://uevrdeluxefunc.azurewebsites.net/api/profiles"
