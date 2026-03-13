@@ -653,9 +653,6 @@ class ProfileArchive {
     }
 }
 
-# Legacy aliases/wrappers for compatibility if needed, though we should migrate away
-function Get-Archive-Entries($path) { return [ProfileArchive]::List($path) }
-function Expand-Archive-Smart($path, $destination) { [ProfileArchive]::Extract($path, $destination) }
 
 function Extract-And-Discover-Profiles($sourceArchiveroot, $whitelist, $blacklist, $maxDepth = 5) {
     if ($maxDepth -le 0) { return @() }
@@ -666,7 +663,7 @@ function Extract-And-Discover-Profiles($sourceArchiveroot, $whitelist, $blacklis
     $Global:TempFolders += $tempBase
     
     try {
-        Expand-Archive-Smart $sourceArchiveroot $tempBase
+        [ProfileArchive]::Extract($sourceArchiveroot, $tempBase)
     } catch {
         Write-Error "    [!] Fatal error during extraction of $sourceArchiveroot"
         return @()
