@@ -1,0 +1,11 @@
+{
+    "hide": false,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent SK_Outfit"
+    ],
+    "properties": [],
+    "type": "properties"
+}

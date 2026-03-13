@@ -1,0 +1,17 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "BlueprintCreatedComponents",
+        "SpotLightComponent FlashlightSpotlight",
+        "Properties",
+        "AttachParent",
+        "Properties",
+        "AttachChildren",
+        "StaticMeshComponent NODE_AddStaticMeshComponent-0_3"
+    ],
+    "properties": [],
+    "type": "properties"
+}

@@ -1,0 +1,25 @@
+{
+    "currentReticuleID": "_none",
+    "reticuleList": [
+        {
+            "class": "WidgetBlueprintGeneratedClass /Game/AQuietPlace/UI/Player/Chase/WBP_ShotgunAimingReticle.WBP_ShotgunAimingReticle_C",
+            "id": "066991a7-2a78-474c-8e94-db0d51f0c116",
+            "label": "Van Reticule",
+            "options": {
+                "collisionChannel": 0,
+                "ignorePawn": true,
+                "position_2d": [
+                    11.699999809265137,
+                    0.0
+                ],
+                "removeFromViewport": true,
+                "scale_2d": [
+                    1.0,
+                    1.0
+                ],
+                "twoSided": true
+            },
+            "type": "Widget"
+        }
+    ]
+}

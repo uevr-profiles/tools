@@ -1,0 +1,21 @@
+{
+    "disable_fix_clipping": true,
+    "test_1": false,
+    "uevr_input_config_pawnRotationMode": 4,
+    "uevr_input_config_smoothTurnSpeed": 50,
+    "uevr_input_config_snapAngle": 30,
+    "uevr_input_config_useSnapTurn": true,
+    "uevr_reticule_eye_dominance": 1,
+    "uevr_reticule_eye_dominance_offset": 0,
+    "uevr_reticule_hide": false,
+    "uevr_reticule_update_distance": 200,
+    "uevr_reticule_update_scale": 1.0,
+    "uevr_ui_headLockedUI": true,
+    "uevr_ui_headLockedUIPosition": [
+        0.0,
+        -0.28999999165534973,
+        2.0
+    ],
+    "uevr_ui_headLockedUISize": 2.0,
+    "uevr_ui_reduceMotionSickness": false
+}

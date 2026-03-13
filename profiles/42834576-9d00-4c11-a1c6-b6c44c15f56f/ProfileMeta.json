@@ -1,0 +1,17 @@
+{
+  "ID": "42834576-9d00-4c11-a1c6-b6c44c15f56f",
+  "exeName": "DeliverUsMars",
+  "gameName": "Deliver Us Mars",
+  "authorName": "Megido",
+  "modifiedDate": "2025-10-09T20:00:00Z",
+  "createdDate": "2025-10-09T20:00:00Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/",
+  "description": "Managed to completely hide the annoying helmet 2d overlays for the ZeroG/Diving sections (with the exception of when you need to see the hud for oxygen levels - you will still see some leftovers from the overlay - but it's not that immersion breaking IMHO)",
+  "downloadDate": "2026-03-13T01:14:17Z",
+  "zipHash": "B034AC3A884899992DF2049880309008",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3A%2F%2Fgithub.com%2Fuevr-profiles%2Frepo%2Ftree%2Fmain%2Fprofiles%2F42834576-9d00-4c11-a1c6-b6c44c15f56f&name=DeliverUsMars",
+  "tags": [
+    "3DOF"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "ID": "79778ce9-48eb-4fb0-8457-5de6ad19f708",
+  "exeName": "GothamKnights",
+  "gameName": "Gotham Knights",
+  "authorName": "Headset-VR",
+  "modifiedDate": "2024-02-08T22:00:00Z",
+  "createdDate": "2024-02-08T22:00:00Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/79778ce9-48eb-4fb0-8457-5de6ad19f708",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2f79778ce9-48eb-4fb0-8457-5de6ad19f708.zip?alt=media",
+  "description": "Includes the numpad ENTER key to turn off VR so the map is readable.\nThere's also a few saved camera angles that you can swap to if the camera goes weird.",
+  "downloadDate": "2026-03-13T01:14:16Z",
+  "zipHash": "01DD2070A57D847690683D0173EBDA30",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3A%2F%2Fgithub.com%2Fuevr-profiles%2Frepo%2Ftree%2Fmain%2Fprofiles%2F79778ce9-48eb-4fb0-8457-5de6ad19f708&name=GothamKnights",
+  "tags": [
+    "3DOF"
+  ]
+}

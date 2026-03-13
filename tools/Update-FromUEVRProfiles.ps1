@@ -97,54 +97,62 @@ if ($Download) {
             $msg = "Downloading: $($p.gameName)"
             if ($p.exeName) { $msg += " ($($p.exeName))" }
             Write-Host "$msg..." -ForegroundColor Gray
-            $success = $false
-            $lastErr = $null
-            for ($i = 1; $i -le 3; $i++) {
-                try {
-                    if ($i -gt 1) { Write-Host "  Retry $i/3..." -ForegroundColor Yellow }
-                    $delay = Get-Random -Minimum 500 -Maximum 1500
-                    Start-Sleep -Milliseconds $delay # Stealth delay
 
-                    $UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-                    
-                    # Try Cloud Function first
-                    Write-Host "  Trying cloud function..." -ForegroundColor Gray
+            try {
+                $UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                
+                # Internal helper for the two-tier download (Cloud Function -> Direct)
+                $dlSuccess = $false
+                for ($i = 1; $i -le 3; $i++) {
                     try {
+                        if ($i -gt 1) { Write-Host "  Retry $i/3..." -ForegroundColor Yellow }
+                        $delay = Get-Random -Minimum 500 -Maximum 1500
+                        Start-Sleep -Milliseconds $delay
+
+                        # 1. Try Cloud Function
+                        Write-Host "  Trying cloud function..."  -ForegroundColor Gray
                         $payload = @{ "data" = @{ "file" = $p.archive } } | ConvertTo-Json
                         $response = Invoke-RestMethod -Method Post -Uri $DownloadFuncUrl -Body $payload -ContentType "application/json" -UserAgent $UA -ErrorAction Stop
                         
                         if ($response.result.url) {
                             Invoke-WebRequest -Uri $response.result.url -OutFile $targetFile -UserAgent $UA -ErrorAction Stop
                             Write-Host "  [OK] Downloaded via cloud function." -ForegroundColor Green
-                            $p | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
-                            $count++
-                            $failCount = 0
-                            $success = $true
-                            break
+                            $dlSuccess = $true
                         } else {
                             throw "Cloud function did not return a valid download URL."
                         }
                     } catch {
-                        # Fallback to direct download
                         Write-Host "  [!] Cloud function failed, trying direct download..." -ForegroundColor Yellow
-                        Invoke-WebRequest -Uri $p.downloadUrl -OutFile $targetFile -UserAgent $UA -ErrorAction Stop
-                        Write-Host "  [OK] Direct download successful." -ForegroundColor Green
-                        
-                        # Save metadata sidecar for extraction phase
-                        $p | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
-                        $count++
-                        $failCount = 0
-                        $success = $true
-                        break
+                        try {
+                            Invoke-WebRequest -Uri $p.downloadUrl -OutFile $targetFile -UserAgent $UA -ErrorAction Stop
+                            Write-Host "  [OK] Direct download successful." -ForegroundColor Green
+                            $dlSuccess = $true
+                        } catch {
+                            if ($i -eq 3) { throw $_ } # Re-throw if last attempt
+                        }
                     }
-                } catch {
-                    $lastErr = $_.Exception.Message
-                    Write-Host "  [!] Attempt $i failed: $lastErr" -ForegroundColor Gray
+                    if ($dlSuccess) { break }
                 }
-            }
 
-            if (-not $success) {
-                Write-Host "  [!] All download attempts failed: $lastErr" -ForegroundColor Red
+                if ($dlSuccess) {
+                    $dates = Get-MetadataDates $p
+                    $sourceUrl = "https://uevr-profiles.com/game/$($p.id)"
+                    $sidecarObj = [ordered]@{
+                        "authorName"   = $p.authorName
+                        "gameName"     = $p.gameName
+                        "exeName"      = $p.exeName
+                        "modifiedDate" = $dates.Modified
+                        "createdDate"  = $dates.Created
+                        "sourceUrl"    = $sourceUrl
+                        "sourceDownloadUrl" = $p.downloadUrl
+                        "description"  = $p.description
+                    }
+                    $sidecarObj | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
+                    $count++
+                    $failCount = 0
+                }
+            } catch {
+                Write-Host "  [!] All download attempts failed: $($_.Exception.Message)" -ForegroundColor Red
                 $failCount++
                 if (-not $Silent) { throw "Fatal: Download failed for $($p.gameName). Stopping because -Silent is not set." }
             }
@@ -221,7 +229,7 @@ if ($Extract) {
                     "sourceUrl"         = $sourceUrl
                     "sourceDownloadUrl" = $p.downloadUrl
                     "description"       = $p.description
-                    "downloadDate"      = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+                    "downloadDate"      = Get-ISO8601Now
                     "zipHash"           = $zipHash.ToUpper()
                     "downloadUrl"       = Get-ProfileDownloadUrl $uuid $finalExe
                 }
@@ -232,16 +240,7 @@ if ($Extract) {
                     $metaProps["tags"] = $tagArray
                 }
 
-                $meta = Finalize-ProfileMetadata $targetDir $metaProps $displayVariant
-                $meta = Remove-NullProperties $meta
-                Update-GlobalPropsJson $z.FullName $variant $meta
-                
-                $jsonFile = Join-Path $targetDir "ProfileMeta.json"
-                $meta | ConvertTo-Json -Depth 5 | Set-Content $jsonFile -Encoding utf8
-                
-                if (-not (Test-Json -Path $jsonFile -Schema (Get-Content $SchemaFile -Raw))) {
-                    throw "JSON Schema validation failed for $($p.gameName) ($uuid)."
-                }
+                $meta = Save-ProfileMetadata $targetDir $metaProps $z.FullName $variant
 
                 if (-not $Silent) {
                     Print-ProfileInfo $meta $z.FullName

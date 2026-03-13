@@ -1,0 +1,35 @@
+{
+    "_profileLabels": {
+        "default": "Default",
+        "e2675ab8-fc25-4201-94c2-1eafcaf0b4a0": "Van Ride"
+    },
+    "_profileState": {
+        "currentEditingProfile": "default"
+    },
+    "default": {
+        "armsAnimationMeshName": "Pawn.Mesh",
+        "armsMeshFOVFixID": "",
+        "armsMeshName": "Pawn.Arms",
+        "bodyMeshFOVFixID": "",
+        "bodyMeshName": "Pawn.Mesh",
+        "hideAnimationArms": false,
+        "hidePawnArmsBones": true,
+        "hidePawnArmsMesh": false,
+        "hidePawnBodyMesh": false,
+        "pawnUpperArmLeft": "Spine1_M",
+        "pawnUpperArmRight": "Spine1_M"
+    },
+    "e2675ab8-fc25-4201-94c2-1eafcaf0b4a0": {
+        "armsAnimationMeshName": "Pawn.Mesh",
+        "armsMeshFOVFixID": "",
+        "armsMeshName": "Pawn.Alex_ArmsOnly",
+        "bodyMeshFOVFixID": "",
+        "bodyMeshName": "Pawn.Mesh",
+        "hideAnimationArms": false,
+        "hidePawnArmsBones": true,
+        "hidePawnArmsMesh": false,
+        "hidePawnBodyMesh": false,
+        "pawnUpperArmLeft": "Root_M",
+        "pawnUpperArmRight": "Root_M"
+    }
+}

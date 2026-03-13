@@ -1,0 +1,18 @@
+{
+    "uevr_pawn_active_profile": 2,
+    "uevr_pawn_hidePawnArmsAnimationMesh": false,
+    "uevr_pawn_hidePawnArmsBones": true,
+    "uevr_pawn_hidePawnArmsMesh": false,
+    "uevr_pawn_hidePawnBodyMesh": false,
+    "uevr_pawn_pawnArmsAnimationMeshList": 7,
+    "uevr_pawn_pawnArmsFOVFix": "",
+    "uevr_pawn_pawnArmsMeshList": 2,
+    "uevr_pawn_pawnBodyFOVFix": "",
+    "uevr_pawn_pawnBodyMeshList": 7,
+    "uevr_pawn_pawnUpperArmLeft": 3,
+    "uevr_pawn_pawnUpperArmRight": 3,
+    "uevr_pawn_rename_profile_input": "Van Ride",
+    "uevr_pawn_selectedPawnArmsAnimationMesh": "Pawn.Mesh",
+    "uevr_pawn_selectedPawnArmsMesh": "Pawn.Arms",
+    "uevr_pawn_selectedPawnBodyMesh": "Pawn.Mesh"
+}
