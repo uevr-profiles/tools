@@ -171,6 +171,22 @@ function Extract-DiscordProfiles {
 }
 
 # ──────── Main Logic Entry ────────────────────────────────────────────────────
-if ($Fetch)    { Fetch-DiscordMetadata }
-if ($Download) { Download-DiscordProfiles }
+if ($Fetch)    { 
+    Fetch-DiscordMetadata
+    if (-not $Silent -and $ProfileLimit -ne [int]::MaxValue) {
+        $results = Get-Content $MetadataJson -Raw | ConvertFrom-Json
+        if ($results.Count -lt $ProfileLimit) {
+            throw "Fatal: Discord fetch count mismatch. Expected at least $ProfileLimit, got $($results.Count). Stopping because -Silent is not set."
+        }
+    }
+}
+if ($Download) { 
+    Download-DiscordProfiles
+    if (-not $Silent -and $ProfileLimit -ne [int]::MaxValue) {
+        $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
+        if ($zips.Count -lt $ProfileLimit) {
+            throw "Fatal: Discord download count mismatch. Expected at least $ProfileLimit, got $($zips.Count). Stopping because -Silent is not set."
+        }
+    }
+}
 if ($Extract)  { Extract-DiscordProfiles }

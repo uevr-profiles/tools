@@ -179,6 +179,22 @@ function Extract-UEVRDeluxeProfiles {
 }
 
 # ──────── Main Logic Entry ────────────────────────────────────────────────────
-if ($Fetch)    { Fetch-UEVRDeluxeMetadata }
-if ($Download) { Download-UEVRDeluxeProfiles }
+if ($Fetch)    { 
+    Fetch-UEVRDeluxeMetadata
+    if (-not $Silent -and $ProfileLimit -ne [int]::MaxValue) {
+        $data = Get-Content $MetadataJson -Raw | ConvertFrom-Json
+        if ($data.Count -lt $ProfileLimit) {
+            throw "Fatal: UEVRDeluxe fetch count mismatch. Expected at least $ProfileLimit, got $($data.Count). Stopping because -Silent is not set."
+        }
+    }
+}
+if ($Download) { 
+    Download-UEVRDeluxeProfiles
+    if (-not $Silent -and $ProfileLimit -ne [int]::MaxValue) {
+        $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
+        if ($zips.Count -lt $ProfileLimit) {
+            throw "Fatal: UEVRDeluxe download count mismatch. Expected at least $ProfileLimit, got $($zips.Count). Stopping because -Silent is not set."
+        }
+    }
+}
 if ($Extract)  { Extract-UEVRDeluxeProfiles }
