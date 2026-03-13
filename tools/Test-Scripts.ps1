@@ -1,0 +1,105 @@
+param(
+    [switch]$Clean,
+    [switch]$Silent,
+    [switch]$Debug,
+    [int]$ProfileLimit = 2,
+    [switch]$SkipFetch,
+    [switch]$Fast
+)
+if ($Fast) {
+    $ProfileLimit = 1
+    $SkipFetch = $true
+}
+#endregion
+
+#region Dependencies
+. "$PSScriptRoot\common.ps1"
+#endregion
+
+#region Variables
+$Global:Debug = $Debug
+$UpdateScripts = @(
+    "Update-FromUEVRProfiles.ps1", 
+    "Update-FromUEVRDeluxe.ps1",
+    "Update-FromDiscord.ps1"
+)
+$DedupeScript = "Deduplicate-Profiles.ps1"
+$BuildScript  = "Build-UEVRRepo.ps1"
+$LogsDir      = Join-Path $RepoRoot "logs"
+$UnixTime     = [DateTimeOffset]::Now.ToUnixTimeSeconds()
+$LogFile      = Join-Path $LogsDir "$($UnixTime)_Test-Scripts.log"
+#endregion
+
+#region Main Logic
+if (-not (Test-Path $LogsDir)) { New-Item -ItemType Directory -Path $LogsDir -Force | Out-Null }
+Write-Host "Logging to $LogFile" -ForegroundColor DarkGray
+Start-Transcript -Path $LogFile -Append -Force | Out-Null
+try {
+    if ($Clean) {
+        Write-Host "Cleaning cache: $BaseTempDir" -ForegroundColor Yellow
+        Remove-Item $BaseTempDir -Recurse -Force -ErrorAction SilentlyContinue 2>$null
+        
+        Write-Host "Cleaning profiles: $ProfilesDir" -ForegroundColor Yellow
+        if (Test-Path $ProfilesDir) {
+            Get-ChildItem -Path $ProfilesDir -Directory | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue 2>$null
+        }
+    }
+
+    # 1. Test Fetch & Download
+    if (-not $SkipFetch) {
+        foreach ($s in $UpdateScripts) {
+            $scriptPath = Join-Path $PSScriptRoot $s
+            if (Test-Path $scriptPath) {
+                Write-Host "`n>>> Testing $s (Download) <<<" -ForegroundColor Cyan
+                try {
+                    & $scriptPath -Fetch -Download -ProfileLimit $ProfileLimit -Silent:$Silent -Debug:$Debug
+                } catch {
+                    Write-Host "    [!] Download test failed for ${s}: $($_.Exception.Message)" -ForegroundColor Red
+                }
+            }
+        }
+    } else {
+        Write-Host "`n>>> Skipping Fetch & Download phase <<<" -ForegroundColor Yellow
+    }
+
+    # 2. Test Deduplication
+    $dedupePath = Join-Path $PSScriptRoot $DedupeScript
+    if (Test-Path $dedupePath) {
+        Write-Host "`n>>> Testing $DedupeScript <<<" -ForegroundColor Cyan
+        try {
+            & $dedupePath -Delete -Silent:$Silent -Debug:$Debug
+        } catch {
+            Write-Host "    [!] Deduplication test failed: $($_.Exception.Message)" -ForegroundColor Red
+        }
+    }
+
+    # 3. Test Extraction
+    foreach ($s in $UpdateScripts) {
+        $scriptPath = Join-Path $PSScriptRoot $s
+        if (Test-Path $scriptPath) {
+            Write-Host "`n>>> Testing $s (Extract) <<<" -ForegroundColor Cyan
+            try {
+                & $scriptPath -Extract -ProfileLimit $ProfileLimit -Silent:$Silent -Debug:$Debug
+            } catch {
+                Write-Host "    [!] Extraction test failed for ${s}: $($_.Exception.Message)" -ForegroundColor Red
+            }
+        }
+    }
+
+    # 4. Test Build
+    $buildPath = Join-Path $PSScriptRoot $BuildScript
+    if (Test-Path $buildPath) {
+        Write-Host "`n>>> Testing $BuildScript <<<" -ForegroundColor Cyan
+        try {
+            & $buildPath -Debug:$Debug
+        } catch {
+            Write-Host "    [!] Build test failed: $($_.Exception.Message)" -ForegroundColor Red
+        }
+    }
+
+    Write-Host "`nTest run complete." -ForegroundColor Green
+} finally {
+    Stop-Transcript | Out-Null
+}
+exit 0
+#endregion

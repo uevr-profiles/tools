@@ -250,7 +250,7 @@ class ProfileArchive {
                 if ($names.Count -gt 0) { return $names }
             }
         }
-        if ($this.Path.EndsWith(".zip")) {
+        if ($this.Path -like "*.zip") {
             try {
                 Add-Type -AssemblyName System.IO.Compression.FileSystem -ErrorAction SilentlyContinue
                 $zip = [System.IO.Compression.ZipFile]::OpenRead($this.Path)
@@ -264,13 +264,19 @@ class ProfileArchive {
         if (-not (Test-Path $destination)) { New-Item -ItemType Directory -Path $destination -Force | Out-Null }
         $extracted = $false
         if (Get-Command 7z -ErrorAction SilentlyContinue) {
-            & 7z x $this.Path "-o$destination" -y >$null 2>$null
-            if ($LASTEXITCODE -eq 0) { $extracted = $true }
+            $process = Start-Process -FilePath "7z" -ArgumentList "x", "`"$($this.Path)`"", "-o$destination", "-y" -WindowStyle Hidden -PassThru -NoNewWindow
+            if ($process.WaitForExit(30000)) { # 30 second timeout
+                if ($process.ExitCode -eq 0) { $extracted = $true }
+            } else {
+                Debug-Log "[common.ps1] 7z extraction timed out for $($this.Path). Killing process."
+                $process | Stop-Process -Force -ErrorAction SilentlyContinue
+                throw "Extraction timed out after 30 seconds: $($this.Path)"
+            }
         }
-        if (-not $extracted -and $this.Path.EndsWith(".zip")) {
+        if (-not $extracted -and ($this.Path -like "*.zip")) {
             try { Expand-Archive -Path $this.Path -DestinationPath $destination -Force -ErrorAction SilentlyContinue; $extracted = $true } catch {}
         }
-        if (-not $extracted) { throw "Failed to extract archive: $($this.Path) (7z not found or extraction failed)" }
+        if (-not $extracted) { throw "Failed to extract archive: $($this.Path) (7z not found, failed, or timed out)" }
     }
 }
 #endregion
@@ -369,7 +375,10 @@ function Finalize-GlobalTracking {
     }
     if ($Global:TrackingProps.PSObject.Properties.Count -gt 0) {
         Write-Host "Flushing tracked properties to disk..." -ForegroundColor Cyan
-        $existing = (Test-Path $GlobalPropsJson) ? (try { Get-Content $GlobalPropsJson -Raw | ConvertFrom-Json } catch { [ordered]@{} }) : [ordered]@{}
+        $existing = [ordered]@{}
+        if (Test-Path $GlobalPropsJson) {
+            try { $existing = Get-Content $GlobalPropsJson -Raw | ConvertFrom-Json } catch { }
+        }
         foreach ($p in $existing.PSObject.Properties) {
             if (-not $Global:TrackingProps.PSObject.Properties[$p.Name]) {
                 Add-Member -InputObject $Global:TrackingProps -MemberType NoteProperty -Name $p.Name -Value $p.Value
@@ -599,7 +608,7 @@ function Get-SupportedArchiveExtensions {
                 }
             }
         }
-        if ($exts.Count -gt 0) { return @($exts | ForEach-Object { ".$_" } | Sort-Object) }
+        if ($exts.Count -gt 0) { return @($exts | Sort-Object | ForEach-Object { if ($_ -notmatch "^\.") { ".$_" } else { $_ } }) }
     } catch {}
     return $defaultExts | ForEach-Object { ".$_" }
 }
@@ -617,7 +626,10 @@ function Extract-And-Discover-Profiles($archivePath) {
         $profileArchive.ExtractTo($tempBase)
         
         # Profile discovery: any folder with ProfileMeta.json or known patterns
-        $candidateDirs = Get-ChildItem -Path $tempBase -Directory -Recurse | Where-Object { 
+        # We limit depth to 3 and skip folders like "sdkdump" that can contain thousands of files.
+        $searchBlacklist = @("sdkdump", "Source", "Intermediate", "Binaries", "Saved")
+        $candidateDirs = Get-ChildItem -Path $tempBase -Directory -Recurse -Depth 3 | Where-Object { 
+            if ($searchBlacklist -contains $_.Name) { return $false }
             Is-ProfileFolder $_.FullName
         }
         
@@ -721,8 +733,8 @@ function Extract-Archives($archivePaths, [switch]$Silent) {
     return $results
 }
 
-function Extract-ArchivesFolder($folderPath, [switch]$Silent) {
-    Debug-Log "[common.ps1] Entering Extract-ArchivesFolder: $folderPath"
+function Extract-ArchivesFolder($folderPath, [int]$Limit = [int]::MaxValue, [switch]$Silent) {
+    Debug-Log "[common.ps1] Entering Extract-ArchivesFolder: $folderPath (Limit: $Limit)"
     if (-not (Test-Path $folderPath)) { 
         Debug-Log "[common.ps1] Folder not found: $folderPath"
         return 
@@ -730,7 +742,13 @@ function Extract-ArchivesFolder($folderPath, [switch]$Silent) {
     $exts = Get-SupportedArchiveExtensions
     Debug-Log "[common.ps1] Searching for archives with extensions: $($exts -join ', ')"
     $archives = Get-ChildItem -Path $folderPath -File | Where-Object { $exts -contains $_.Extension }
-    Debug-Log "[common.ps1] Found $($archives.Count) archives"
+    
+    if ($Limit -lt $archives.Count) {
+        Debug-Log "[common.ps1] Limiting extraction to $Limit newest files"
+        $archives = $archives | Sort-Object LastWriteTime -Descending | Select-Object -First $Limit
+    }
+    
+    Debug-Log "[common.ps1] Found $($archives.Count) archives to extract"
     return Extract-Archives $archives.FullName -Silent:$Silent
 }
 #endregion

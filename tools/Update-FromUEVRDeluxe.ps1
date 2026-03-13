@@ -81,10 +81,10 @@ function Download-UEVRDeluxeProfiles {
         if ($count -ge $ProfileLimit) { break }
         if ($failCount -ge 5) { Write-Error "Too many consecutive failures in $SourceName. Stopping."; break }
         
-        $uuid = [guid](($p.ID -is [string]) ? $p.ID : $p.ID.ToString())
-        $uuidClean = $uuid.ToString("n")
+        $uuid = Get-OrCreateUUID $p
+        $uuidClean = ([guid]$uuid).ToString("n")
         $actualExe = $p.exeName
-        $targetFile = Join-Path $DownloadDir (Get-ProfileZipFileName $uuidClean $actualExe)
+        $targetFile = Join-Path $DownloadDir "$uuid.zip"
         $sidecar    = $targetFile + ".json"
         
         Debug-Log "[Update-FromUEVRDeluxe.ps1] ID: $uuid, Exe: $actualExe"
@@ -113,7 +113,7 @@ function Download-UEVRDeluxeProfiles {
                     "sourceUrl"         = $url
                     "sourceDownloadUrl" = $url
                     "description"       = $p.remarks
-                    "downloadUrl"       = Get-ProfileDownloadUrl $uuidClean $actualExe
+                    "downloadUrl"       = Get-ProfileDownloadUrl $uuid $actualExe
                 }
                 $sidecarObj | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
                 $count++; $failCount = 0
@@ -176,7 +176,7 @@ if ($Download) {
 
 if ($Extract) { 
     Debug-Log "[Update-FromUEVRDeluxe.ps1] Calling Extract-ArchivesFolder"
-    $extracted = Extract-ArchivesFolder $DownloadDir -Silent:$Silent
+    $extracted = Extract-ArchivesFolder $DownloadDir -Limit $ProfileLimit -Silent:$Silent
     Assert-ProfileCount -count $extracted.Count -expected $ExpectedCount -Silent:$Silent -stage "Extraction ID"
 }
 Finalize-GlobalTracking

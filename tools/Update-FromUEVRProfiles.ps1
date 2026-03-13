@@ -95,7 +95,7 @@ function Fetch-UEVRProfilesMetadata {
                     "authorName"   = $vf.author.stringValue
                     "modifiedDate" = $vf.creationDate.timestampValue
                     "createdDate"  = $vf.creationDate.timestampValue
-                    "exeName"      = $profileExe ? $profileExe : ($topExe ? $topExe : $archiveFile.Replace(".zip", ""))
+                    "exeName"      = $profileExe ? $profileExe : ($topExe ? $topExe : ($archiveFile -replace '\.zip$', ''))
                     "downloadUrl"  = $dlUrl
                     "archive"      = $archiveFile
                     "description"  = $vf.description.stringValue
@@ -216,7 +216,7 @@ if ($Download) {
 
 if ($Extract) { 
     Debug-Log "[Update-FromUEVRProfiles.ps1] Calling Extract-ArchivesFolder"
-    $extracted = Extract-ArchivesFolder $DownloadDir -Silent:$Silent
+    $extracted = Extract-ArchivesFolder $DownloadDir -Limit $ProfileLimit -Silent:$Silent
     Assert-ProfileCount -count $extracted.Count -expected $ExpectedCount -Silent:$Silent -stage "Extraction ID"
 }
 Finalize-GlobalTracking

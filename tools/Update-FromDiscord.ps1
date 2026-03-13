@@ -119,7 +119,7 @@ function Download-DiscordProfiles {
                 if ($p.exeName) {
                     $finalExe = $p.exeName
                 } else {
-                    $finalExe = $p.archive.Replace(".zip", "")
+                    $finalExe = $p.archive -replace '\.zip$', ''
                 }
                 Debug-Log "[Update-FromDiscord.ps1] FinalExe: $finalExe"
 
@@ -208,7 +208,7 @@ if ($Download) {
 
 if ($Extract) { 
     Debug-Log "[Update-FromDiscord.ps1] Calling Extract-ArchivesFolder"
-    $extracted = Extract-ArchivesFolder $DownloadDir -Silent:$Silent
+    $extracted = Extract-ArchivesFolder $DownloadDir -Limit $ProfileLimit -Silent:$Silent
     Assert-ProfileCount -count $extracted.Count -expected $ExpectedCount -Silent:$Silent -stage "Extraction ID"
 }
 Finalize-GlobalTracking
