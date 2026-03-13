@@ -154,9 +154,8 @@ function Download-UEVRProfiles {
 }
 
 function Extract-UEVRProfiles {
-    $archives = Get-ChildItem -Path $DownloadDir -File -Include "*.zip", "*.7z", "*.rar"
-    Write-Host "Processing $($archives.Count) archives from $SourceName..." -ForegroundColor Cyan
-    Extract-Archives $archives.FullName -Silent:$Silent
+    Write-Host "Extracting archives from $SourceName..." -ForegroundColor Cyan
+    Extract-ArchivesFolder $DownloadDir -Silent:$Silent
 }
 
 # ──────── Main Logic Entry ────────────────────────────────────────────────────

@@ -540,48 +540,122 @@ function Flatten-Folder($targetDir) {
     }
 }
 
-function Get-Archive-Entries($path) {
-    # Try generic 7z listing first as it handles almost everything
-    $out = & 7z l $path -y 2>$null
-    if ($LASTEXITCODE -eq 0) {
-        # 7zip 'l' output typical line: "2024-03-12 16:35:46 ....        11116         7407  folder/file.txt"
-        # We skip lines until we see the "----" separator or match the date pattern
-        $names = @()
+function Get-SupportedArchiveExtensions {
+    $defaultExts = @("zip", "7z", "rar", "tar", "gz", "bz2", "xz")
+    if (-not (Get-Command 7z -ErrorAction SilentlyContinue)) {
+        return $defaultExts | ForEach-Object { ".$_" }
+    }
+
+    try {
+        $info = & 7z i -y 2>$null
+        $exts = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
         $capture = $false
-        foreach ($line in $out) {
-            if ($line -match "^-+\s+-+") { $capture = $true; continue }
-            if ($capture -and $line -match "^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\s+[D.][R.][H.][S.][A.]\s+\d+\s+\d+\s+(.*)$") {
-                $names += $matches[1].Trim()
+        foreach ($line in $info) {
+            if ($line -match "^Formats:") { $capture = $true; continue }
+            if ($line -match "^Codecs:") { $capture = $false; break }
+            # Match Line: [Index] [Flags...] [Name] [Extensions...] [Signature...]
+            if ($capture -and $line -match "^\s*\d+\s+([\w.+-]+)\s+(\S+)\s+(.*)$") {
+                $extSection = $matches[3].Trim()
+                $parts = $extSection -split "\s+"
+                foreach ($p in $parts) {
+                    # Filter for strings that look like extensions (alphanumeric, short)
+                    # Also avoid strings that look like hex bytes or signatures (too many capitals/digits mixed)
+                    if ($p -match "^[a-zA-Z0-9]{2,10}$" -and $p -notmatch "^\d+$") {
+                         # Avoid common signature markers
+                        if ($p -match "[A-F0-9]{2}") { continue }
+                        $exts.Add($p) | Out-Null
+                    }
+                }
             }
         }
-        if ($names.Count -gt 0) { return $names }
-    }
-    
-    # Fallback to .NET for ZIPs if 7z fails or missing
-    if ($path.EndsWith(".zip")) {
-        try {
-            Add-Type -AssemblyName System.IO.Compression.FileSystem -ErrorAction SilentlyContinue
-            $zip = [System.IO.Compression.ZipFile]::OpenRead($path)
-            $names = $zip.Entries.FullName
-            $zip.Dispose()
-            return $names
-        } catch { return @() }
-    }
-    return @()
+        if ($exts.Count -gt 0) {
+            return $exts | ForEach-Object { ".$_" } | Sort-Object
+        }
+    } catch {}
+    return $defaultExts | ForEach-Object { ".$_" }
 }
 
-function Expand-Archive-Smart($path, $destination) {
-    if (-not (Test-Path $destination)) { New-Item -ItemType Directory -Path $destination -Force | Out-Null }
-    # Try 7z first - suppress all output to handle errors internally
-    & 7z x $path "-o$destination" -y >$null 2>$null
-    if ($LASTEXITCODE -ne 0 -and $path.EndsWith(".zip")) {
-        try {
-            Expand-Archive -Path $path -DestinationPath $destination -Force -ErrorAction SilentlyContinue
-        } catch {
-            Write-Warning "    [!] Failed to extract $path with both 7z and Expand-Archive."
+class ProfileArchive {
+    [string]$Path
+    [string[]]$Extensions
+
+    ProfileArchive([string]$path) {
+        $this.Path = $path
+    }
+
+    static [string[]] GetSupportedExtensions() {
+        return Get-SupportedArchiveExtensions
+    }
+
+    static [string[]] List([string]$path) {
+        $archive = [ProfileArchive]::new($path)
+        return $archive.GetContent()
+    }
+
+    static [void] Extract([string]$path, [string]$destination) {
+        $archive = [ProfileArchive]::new($path)
+        $archive.ExtractTo($destination)
+    }
+
+    [string[]] GetContent() {
+        if (-not (Test-Path $this.Path)) { return @() }
+        
+        # Try 7z listing
+        if (Get-Command 7z -ErrorAction SilentlyContinue) {
+            $out = & 7z l $this.Path -y 2>$null
+            if ($LASTEXITCODE -eq 0) {
+                $names = @()
+                $capture = $false
+                foreach ($line in $out) {
+                    if ($line -match "^-+\s+-+") { $capture = $true; continue }
+                    if ($capture -and $line -match "^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\s+[D.][R.][H.][S.][A.]\s+\d+\s+\d+\s+(.*)$") {
+                        $names += $matches[1].Trim()
+                    }
+                }
+                if ($names.Count -gt 0) { return $names }
+            }
+        }
+        
+        # Fallback to .NET for ZIPs
+        if ($this.Path.EndsWith(".zip")) {
+            try {
+                Add-Type -AssemblyName System.IO.Compression.FileSystem -ErrorAction SilentlyContinue
+                $zip = [System.IO.Compression.ZipFile]::OpenRead($this.Path)
+                $names = $zip.Entries.FullName
+                $zip.Dispose()
+                return $names
+            } catch { return @() }
+        }
+        return @()
+    }
+
+    [void] ExtractTo([string]$destination) {
+        if (-not (Test-Path $destination)) { New-Item -ItemType Directory -Path $destination -Force | Out-Null }
+        
+        $extracted = $false
+        if (Get-Command 7z -ErrorAction SilentlyContinue) {
+            & 7z x $this.Path "-o$destination" -y >$null 2>$null
+            if ($LASTEXITCODE -eq 0) { $extracted = $true }
+        }
+
+        if (-not $extracted -and $this.Path.EndsWith(".zip")) {
+            try {
+                Expand-Archive -Path $this.Path -DestinationPath $destination -Force -ErrorAction SilentlyContinue
+                $extracted = $true
+            } catch {
+                Write-Warning "    [!] Failed to extract $($this.Path) with native Expand-Archive."
+            }
+        }
+
+        if (-not $extracted) {
+            throw "Failed to extract archive: $($this.Path) (7z not found or extraction failed, and no fallback for this format)"
         }
     }
 }
+
+# Legacy aliases/wrappers for compatibility if needed, though we should migrate away
+function Get-Archive-Entries($path) { return [ProfileArchive]::List($path) }
+function Expand-Archive-Smart($path, $destination) { [ProfileArchive]::Extract($path, $destination) }
 
 function Extract-And-Discover-Profiles($sourceArchiveroot, $whitelist, $blacklist, $maxDepth = 5) {
     if ($maxDepth -le 0) { return @() }
@@ -601,7 +675,8 @@ function Extract-And-Discover-Profiles($sourceArchiveroot, $whitelist, $blacklis
     $extracted_archives = @() # Renamed from $profilesFound
     
     # 1. Look for nested archives
-    $archiveroots = Get-ChildItem -Path $tempBase -Recurse -Include "*.zip", "*.7z", "*.rar", "*.tar", "*.gz", "*.bz2", "*.xz"
+    $supportedExts = Get-SupportedArchiveExtensions
+    $archiveroots = Get-ChildItem -Path $tempBase -Recurse -Include $supportedExts
     foreach ($a in $archiveroots) {
         $subContext = $a.FullName.Substring($tempBase.Length).TrimStart('\').Replace('\', ' / ').Replace('.zip', '')
         $subProfiles = Extract-And-Discover-Profiles $a.FullName $whitelist $blacklist ($maxDepth - 1)
@@ -755,7 +830,8 @@ function Extract-Archives($archivePaths, [switch]$Silent) {
 
 function Extract-ArchivesFolder($folderPath, [switch]$Silent) {
     if (-not (Test-Path $folderPath)) { return }
-    $archives = Get-ChildItem -Path $folderPath -File -Include "*.zip", "*.7z", "*.rar", "*.tar", "*.gz"
+    $supportedExts = Get-SupportedArchiveExtensions
+    $archives = Get-ChildItem -Path $folderPath -File -Include $supportedExts
     return Extract-Archives $archives.FullName -Silent:$Silent
 }
 
