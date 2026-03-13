@@ -533,63 +533,90 @@ function Move-Item-Smart($Source, $Destination) {
 #endregion
 
 #region Network Utilities
-function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 5, $Silent = $false, $Proxies = $null) {
+$Global:ActiveProxyPool = @()
+$Global:DeadProxies     = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+
+function Get-PreparedProxyPool($requestedProxies) {
+    if ($requestedProxies) {
+        $list = @()
+        if ($requestedProxies -is [array]) { $list = $requestedProxies }
+        else { $list = $requestedProxies -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ } }
+        
+        # Merge new proxies into our global pool if they aren't marked dead
+        foreach ($p in $list) {
+            if (-not $Global:DeadProxies.Contains($p) -and $Global:ActiveProxyPool -notcontains $p) {
+                $Global:ActiveProxyPool += $p
+            }
+        }
+    }
+    return $Global:ActiveProxyPool | Where-Object { -not $Global:DeadProxies.Contains($_) }
+}
+
+function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 3, $Silent = $false, $Proxies = $null) {
     if (-not $headers["User-Agent"]) { $headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" }
     
-    $proxyList = @()
-    if ($Proxies) {
-        if ($Proxies -is [array]) { $proxyList = $Proxies }
-        else { $proxyList = $Proxies -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ } }
-    }
+    $proxyPool = Get-PreparedProxyPool $Proxies
+    # If no proxies provided or all dead, try direct connection as a last resort (once)
+    $workingPool = @($proxyPool)
+    if ($workingPool.Count -eq 0) { $workingPool = @($null) }
 
-    $lastErr = $null
-    for ($i = 1; $i -le $retries; $i++) {
-        $requestParams = @{
-            Uri = $url
-            Headers = $headers
-            ErrorAction = "Stop"
-        }
-        if ($targetFile) { $requestParams["OutFile"] = $targetFile }
-        
-        $currentProxy = $null
-        if ($proxyList.Count -gt 0) {
-            $currentProxy = $proxyList[($i - 1) % $proxyList.Count]
-            $requestParams["Proxy"] = $currentProxy
-        }
+    $lastErr = "No connection attempted"
+    
+    foreach ($p in $workingPool) {
+        $proxyLabel = $p ? $p : "Direct"
+        Debug-Log "[common.ps1] Trying $url via $proxyLabel"
 
-        try {
-            if ($i -gt 1) { 
-                $msg = "  Retry $i/$retries..."
-                if ($currentProxy) { $msg += " (via Proxy $currentProxy)" }
-                Write-Host $msg -ForegroundColor Yellow 
-            } elseif ($currentProxy) {
-                Write-Host "  Using proxy: $currentProxy" -ForegroundColor DarkGray
+        for ($i = 1; $i -le $retries; $i++) {
+            $requestParams = @{
+                Uri = $url
+                Headers = $headers
+                ErrorAction = "Stop"
+                TimeoutSec = 30
             }
-            Start-Sleep -Milliseconds (Get-Random -Minimum 100 -Maximum 500)
-            Invoke-WebRequest @requestParams; return
-        } catch {
-            $lastErr = $_.Exception.Message
-            $statusCode = $null
-            if ($_.Exception.Response) { 
-                $statusCode = [int]$_.Exception.Response.StatusCode 
-            } elseif ($_.ErrorRecord.ErrorDetails.Message -match "\((\d{3})\)") {
-                $statusCode = [int]$matches[1]
-            } elseif ($_.Exception.Message -match "(500|403|404|401|429)") {
-                $statusCode = [int]$matches[1]
-            }
-            
-            if ($statusCode -eq 500) {
-                # Don't immediately exit on 500 if we have multiple proxies, maybe another proxy works
-                if ($proxyList.Count -le 1) {
-                    $errorMsg = "Fatal: Received 500 Internal Server Error from $url. You might be IP blocked."
-                    Write-Host "  [!] $errorMsg" -ForegroundColor Red
-                    throw $errorMsg
+            if ($targetFile) { $requestParams["OutFile"] = $targetFile }
+            if ($p) { $requestParams["Proxy"] = $p }
+
+            try {
+                if ($i -gt 1) { 
+                    Write-Host "    [Retry $i/$retries] via $proxyLabel..." -ForegroundColor Yellow 
                 }
+                
+                # Add random jitter between 500ms and 2s to avoid bot detection
+                if ($i -gt 1) { Start-Sleep -Milliseconds (Get-Random -Minimum 500 -Maximum 2000) }
+                
+                Invoke-WebRequest @requestParams | Out-Null
+                return # SUCCESS!
+            } catch {
+                $lastErr = $_.Exception.Message
+                $statusCode = 0
+                if ($_.Exception.Response) { 
+                    $statusCode = [int]$_.Exception.Response.StatusCode 
+                } elseif ($_.Exception.Message -match "\((\d{3})\)") {
+                    $statusCode = [int]$matches[1]
+                }
+
+                # Clear blockades: 403 Forbidden, 429 Too Many Requests, 500 Internal Server Error (often Azure block)
+                if ($statusCode -in @(403, 429, 500)) {
+                    Write-Host "  [!] Proxy $proxyLabel blocked/failed ($statusCode). Moving to next proxy." -ForegroundColor Red
+                    if ($p) { $Global:DeadProxies.Add($p) | Out-Null }
+                    break # Break inner retry loop, move to next proxy in the pool
+                }
+
+                Write-Host "  [!] Attempt $i via $proxyLabel failed: $lastErr" -ForegroundColor Gray
+                # If it's a timeout or connection issue, we keep trying this proxy up to $retries
             }
-            Write-Host "  [!] Attempt $i failed: $lastErr" -ForegroundColor Gray
+        }
+
+        # If we finished all retries for this proxy without success, mark it dead
+        if ($p -and -not $Global:DeadProxies.Contains($p)) {
+            Write-Host "  [!] Proxy $proxyLabel failed all $retries attempts. Removing from active pool." -ForegroundColor Yellow
+            $Global:DeadProxies.Add($p) | Out-Null
         }
     }
-    if (-not $Silent) { throw "All download attempts failed: $lastErr" } else { Write-Warning "  [!] All download attempts failed: $lastErr. Skipping due to -Silent." }
+
+    $finalMsg = "All proxies and connection attempts failed for $url. Last error: $lastErr"
+    if ($Silent) { Write-Warning "  [!] $finalMsg" }
+    else { throw "Fatal: $finalMsg" }
 }
 #endregion
 

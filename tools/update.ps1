@@ -15,9 +15,9 @@ Write-Host "Logging to $LogFile" -ForegroundColor DarkGray
 Start-Transcript -Path $LogFile -Append -Force | Out-Null
 
 try {
-    .\tools\Update-FromDiscord.ps1 -Extract -Whitelist -Debug
+    .\tools\Update-FromDiscord.ps1 -Extract -Whitelist -Debug -Proxies $Proxies
     .\tools\Update-FromUEVRDeluxe.ps1 -Fetch -Download -Extract -Whitelist -CleanCache -CleanDownloads -Debug -Proxies $Proxies
-    .\tools\Update-FromUEVRProfiles.ps1 -Fetch -Download -Extract -Whitelist -CleanCache -CleanDownloads -Debug
+    .\tools\Update-FromUEVRProfiles.ps1 -Fetch -Download -Extract -Whitelist -CleanCache -CleanDownloads -Debug -Proxies $Proxies
     .\tools\Find-Issues.ps1 -Fix -Debug
     .\tools\Deduplicate-Profiles.ps1 -Delete -Debug
     .\tools\Build-UEVRRepo.ps1 -Debug
