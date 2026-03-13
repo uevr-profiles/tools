@@ -1,8 +1,23 @@
 param(
     [string]$ProfilesDir = ".\profiles",
     [string]$SchemaFile  = ".\schemas\ProfileMeta.schema.json",
-    [string]$OutputFile  = ".\repo.json"
+    [string]$OutputFile  = ".\repo.json",
+    [switch]$Update
 )
+
+if ($Update) {
+    Write-Host "Running profile updates before build..." -ForegroundColor Cyan
+    $UpdateScripts = Get-ChildItem -Path ".\tools" -Filter "Update-From*.ps1"
+    foreach ($script in $UpdateScripts) {
+        Write-Host ">>> Running $($script.Name) <<<" -ForegroundColor Cyan
+        # For Discord we need -Fetch as well
+        if ($script.Name -like "*Discord*") {
+            pwsh -NoProfile -File $script.FullName -Fetch -Download -Extract
+        } else {
+            pwsh -NoProfile -File $script.FullName -Download -Extract
+        }
+    }
+}
 
 $allMeta = @()
 $errors  = 0

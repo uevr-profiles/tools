@@ -21,7 +21,11 @@ if (-not (Test-Path $RepoDir)) {
 
 Set-Location $RepoDir
 
-$Scripts = @("tools/Update-FromUEVRProfiles.ps1", "tools/Update-FromUEVRDeluxe.ps1")
+$Scripts = @(
+    "tools/Update-FromUEVRProfiles.ps1", 
+    "tools/Update-FromUEVRDeluxe.ps1",
+    "tools/Update-FromDiscord.ps1"
+)
 
 foreach ($s in $Scripts) {
     if (Test-Path $s) {
@@ -30,7 +34,7 @@ foreach ($s in $Scripts) {
         $job = Start-Job -ScriptBlock {
             param($script, $pDir)
             Set-Location $pDir
-            pwsh -NoProfile -File $script -Download -Extract -ProfileLimit 1 -DownloadLimit 1 -DownloadAttemptLimit 5
+            pwsh -NoProfile -File $script -Fetch -Download -Extract -ProfileLimit 1
         } -ArgumentList $s, $RepoDir
 
         # Wait for a reasonable amount of time for a single profile test

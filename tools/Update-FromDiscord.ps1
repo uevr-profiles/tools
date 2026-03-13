@@ -28,9 +28,9 @@ if ($Fetch) {
         popd
     }
 
-    Write-Host "Running Discord bot scraper to fetch profile metadata..." -ForegroundColor Cyan
+    Write-Host "Running Discord bot scraper to fetch profile metadata (Limit: $ProfileLimit)..." -ForegroundColor Cyan
     pushd $BotDir
-    node index.js
+    node index.js "--limit=$ProfileLimit"
     $botExit = $LASTEXITCODE
     popd
 

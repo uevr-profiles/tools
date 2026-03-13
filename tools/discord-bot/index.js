@@ -22,6 +22,10 @@ const JSON_FILE = path.join(__dirname, 'discord_profiles.json');
 const CSV_FILE = path.join(__dirname, 'discord_profiles.csv');
 const STATE_FILE = path.join(__dirname, 'bot_state.json');
 
+const args = process.argv.slice(2);
+const limitArg = args.find(a => a.startsWith('--limit='));
+const PROFILE_LIMIT = limitArg ? parseInt(limitArg.split('=')[1]) : Infinity;
+
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const getDiscordUrl = (guildId = "@me", channelId = "", messageId = "") => {
     let url = `https://discord.com/channels/${guildId}`;
@@ -113,6 +117,7 @@ client.once('ready', async () => {
     
     let results = loadResults();
     let state = loadState();
+    let newFoundTotal = 0;
     console.log(`Loaded ${results.length} existing profiles from ${path.basename(JSON_FILE)}`);
     const existingIds = new Set(results.map(r => r.id));
 
@@ -134,6 +139,7 @@ client.once('ready', async () => {
             const allThreads = [...activeThreads.threads.values(), ...archivedThreads.threads.values()];
 
             for (const thread of allThreads) {
+                if (newFoundTotal >= PROFILE_LIMIT) break;
                 const lastScrapedId = state.threads[thread.id];
                 
                 if (lastScrapedId && thread.lastMessageId === lastScrapedId) {
@@ -191,7 +197,13 @@ client.once('ready', async () => {
                         });
                         existingIds.add(uniqueId);
                         newFound++;
+                        newFoundTotal++;
+                        if (newFoundTotal >= PROFILE_LIMIT) {
+                            console.log(`\n[!] Reached profile limit of ${PROFILE_LIMIT}. Stopping.`);
+                            break;
+                        }
                     }
+                    if (newFoundTotal >= PROFILE_LIMIT) break;
                 }
 
                 state.threads[thread.id] = thread.lastMessageId;
