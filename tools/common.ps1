@@ -26,6 +26,8 @@ $Global:TempFolders   = @()
 
 # Global tracking paths for diagnostics
 $BaseTempDir     = Join-Path $env:TEMP "uevr_profiles"
+if (-not (Test-Path $BaseTempDir)) { New-Item -ItemType Directory -Path $BaseTempDir -Force | Out-Null }
+$BaseTempDir     = (Get-Item $BaseTempDir).FullName
 $GlobalFilesList = Join-Path $BaseTempDir "files.txt"
 $GlobalPropsJson = Join-Path $BaseTempDir "props.json"
 $MetaCacheDir    = Join-Path $BaseTempDir "metadata"
@@ -233,7 +235,7 @@ class ProfileArchive {
                 $names = @(); $capture = $false
                 foreach ($line in $out) {
                     if ($line -match "^-+\s+-+") { $capture = $true; continue }
-                    if ($capture -and $line -match "^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\s+[D.][R.][H.][S.][A.]\s+\d+\s+\d+\s+(.*)$") {
+                    if ($capture -and $line -match "^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\s+[\.DRHSA]{5}\s+\d+\s+\d+\s+(.*)$") {
                         $names += $matches[1].Trim()
                     }
                 }
@@ -283,14 +285,19 @@ function Get-ProfileDownloadUrl($uuid, $exeName) {
     return $res
 }
 
-function Get-ISO8601Now { return [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ") }
+function Get-ISO8601Now {
+    return (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+}
 
 function Format-DateISO8601($date) {
-    if (-not $date) { return $null }
+    if ($null -eq $date -or "$date" -eq "") { return Get-ISO8601Now }
     try {
-        return ([DateTime]$date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+        # Handle already formatted strings to avoid re-formatting errors
+        if ($date -match "^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$") { return $date }
+        $dt = [DateTime]$date
+        return $dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
     } catch {
-        return $date
+        return Get-ISO8601Now
     }
 }
 
@@ -377,29 +384,6 @@ function Finalize-GlobalTracking {
 #endregion
 
 #region File & IO Utilities
-function Move-Item-Smart($source, $destination) {
-    if (-not (Test-Path $source)) { return }
-    if (-not (Test-Path $destination)) { New-Item -ItemType Directory -Path $destination -Force | Out-Null }
-    Get-ChildItem -Path $source | ForEach-Object {
-        $destPath = Join-Path $destination $_.Name
-        if ($_.PSIsContainer -and (Test-Path $destPath -PathType Container)) { Move-Item-Smart $_.FullName $destPath }
-        else { Move-Item -Path $_.FullName -Destination $destPath -Force -ErrorAction SilentlyContinue }
-    }
-    if (Test-Path $source) {
-        $rem = Get-ChildItem -Path $source -Recurse -ErrorAction SilentlyContinue
-        if ($null -eq $rem -or $rem.Count -eq 0) { Remove-Item $source -Force -ErrorAction SilentlyContinue 2>$null }
-    }
-}
-
-function Flatten-Folder($targetDir) {
-    $items = Get-ChildItem -Path $targetDir
-    if ($items.Count -eq 1 -and $items[0].PSIsContainer) {
-        $subDir = $items[0].FullName
-        Write-Host "    Found single root directory, flattening: $($items[0].Name)" -ForegroundColor Gray
-        Get-ChildItem -Path $subDir | Move-Item -Destination $targetDir -Force
-        Remove-Item $subDir -Force
-    }
-}
 
 function Get-FileHashMD5($path) {
     if (-not (Test-Path $path)) { return $null }
@@ -445,22 +429,6 @@ function Get-SupportedArchiveExtensions {
     return @(".zip", ".7z", ".rar")
 }
 
-function Get-ISO8601Now {
-    return (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-}
-
-function Format-DateISO8601($date) {
-    if ($null -eq $date -or "$date" -eq "") { return Get-ISO8601Now }
-    try {
-        # Handle already formatted strings to avoid re-formatting errors
-        if ($date -match "^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$") { return $date }
-        $dt = [DateTime]$date
-        return $dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-    } catch {
-        return Get-ISO8601Now
-    }
-}
-#endregion
 
 #region Filtering Helpers
 function Get-WhitelistPatterns {
@@ -586,7 +554,8 @@ function Extract-And-Discover-Profiles($archivePath) {
     Debug-Log "[common.ps1] Entering Extract-And-Discover-Profiles ($archivePath)"
     $discovered = @()
     $tempBase = Join-Path $BaseTempDir "discovery_$(Get-Random)"
-    New-Item -ItemType Directory -Path $tempBase -Force | Out-Null
+    # Normalize tempBase to long path
+    $tempBase = (New-Item -ItemType Directory -Path $tempBase -Force).FullName
     
     try {
         $profileArchive = [ProfileArchive]::new($archivePath)
@@ -594,18 +563,27 @@ function Extract-And-Discover-Profiles($archivePath) {
         
         # Profile discovery: any folder with ProfileMeta.json or known patterns
         $candidateDirs = Get-ChildItem -Path $tempBase -Directory -Recurse | Where-Object { 
-            (Test-Path (Join-Path $_.FullName "ProfileMeta.json")) -or 
-            (Get-ChildItem -Path $_.FullName -File | Where-Object { $_.Name -match "actions\.json|cameras\.txt|uobjecthook" })
+            Is-ProfileFolder $_.FullName
         }
         
-        if (-not $candidateDirs -and (Get-ChildItem $tempBase -File)) {
-            $candidateDirs = @(Get-Item $tempBase)
+        # If no internal folders match, check the root
+        if ($candidateDirs.Count -eq 0) {
+            if (Is-ProfileFolder $tempBase) {
+                $candidateDirs = @(Get-Item $tempBase)
+            }
         }
 
+        # Filter out sub-profiles of already discovered profiles (keep deepest or specific ones)
+        # Actually, if we have Profile/SubProfile, and both contain essentials? 
+        # Usually we want all of them.
+        
         foreach ($dir in $candidateDirs) {
-            $rel = $dir.FullName.Substring($tempBase.Length).TrimStart('\')
+            # Normalize dir path to long path
+            $dirPath = (Get-Item $dir.FullName).FullName
+            $rel = [IO.Path]::GetRelativePath($tempBase, $dirPath)
+            if ($rel -eq ".") { $rel = "" }
             $relName = $rel ? $rel : "[Root]"
-            $discovered += [PSCustomObject]@{ Path = $dir.FullName; Profile = $relName; ProfileName = $dir.Name }
+            $discovered += [PSCustomObject]@{ Path = $dirPath; Profile = $relName; ProfileName = $dir.Name }
         }
     } catch {
         Write-Warning "Discovery failed for ${archivePath}: $($_.Exception.Message)"

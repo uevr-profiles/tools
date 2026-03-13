@@ -196,9 +196,8 @@ if ($Download) {
 }
 
 if ($Extract) { 
-    Extract-ArchivesFolder $DownloadDir -Silent:$Silent
-    $processed = Get-ChildItem -Path $ProfilesDir -Directory | Where-Object { (Test-Path (Join-Path $_.FullName "ProfileMeta.json")) }
-    $profileIds = $processed | ForEach-Object { (Get-Content (Join-Path $_.FullName "ProfileMeta.json") -Raw | ConvertFrom-Json).ID } | Select-Object -Unique
-    Assert-ProfileCount -count $profileIds.Count -expected $ExpectedCount -Silent:$Silent -stage "Extraction ID"
+    Debug-Log "[Update-FromDiscord.ps1] Calling Extract-ArchivesFolder"
+    $extracted = Extract-ArchivesFolder $DownloadDir -Silent:$Silent
+    Assert-ProfileCount -count $extracted.Count -expected $ExpectedCount -Silent:$Silent -stage "Extraction ID"
 }
 #endregion
