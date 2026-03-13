@@ -3,7 +3,6 @@ param(
     [switch]$Fetch,
     [switch]$Download,
     [switch]$Extract,
-    [switch]$Delete,
     [int]$ProfileLimit = [int]::MaxValue,
     [switch]$Whitelist,
     [switch]$Blacklist,
@@ -27,7 +26,7 @@ $MetadataJson  = Join-Path $SourceTempDir "cache.json"
 $ProfilesCsv   = Join-Path $SourceTempDir "discord_profiles.csv"
 $BotStateJson  = Join-Path $SourceTempDir "bot_state.json"
 
-$ExpectedCount = if ($ProfileLimit -ne [int]::MaxValue) { $ProfileLimit } else { [int]::MaxValue }
+$ExpectedCount = ($ProfileLimit -ne [int]::MaxValue) ? $ProfileLimit : [int]::MaxValue
 #endregion
 
 #region Functions
@@ -40,7 +39,7 @@ function Fetch-DiscordMetadata {
     $env:PROFILES_JSON   = $MetadataJson
     $env:PROFILES_CSV    = $ProfilesCsv
     $env:BOT_STATE_JSON  = $BotStateJson
-    $limitArg = if ($ProfileLimit -ne [int]::MaxValue) { "--limit=$ProfileLimit" } else { "" }
+    $limitArg = ($ProfileLimit -ne [int]::MaxValue) ? "--limit=$ProfileLimit" : ""
     Push-Location $BotDir; Invoke-Expression "node index.js $limitArg"; Pop-Location
 }
 
@@ -63,14 +62,14 @@ function Download-DiscordProfiles {
             try {
                 Invoke-WebRequestWithRetry -url $p.sourceDownloadUrl -targetFile $targetFile -Silent $Silent
                 $tagSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
-                $category = if ($p.category) { $p.category.Replace("ue-", "").Replace("nsfw", "NSFW").Trim() } else { "" }
+                $category = $p.category ? ($p.category.Replace("ue-", "").Replace("nsfw", "NSFW").Trim()) : ""
                 if ($category -and $category -ne "games") {
                    if ($category -eq "experiences") { $category = "Experiences" }
                    $tagSet.Add($category) | Out-Null
                 }
                 $sidecarObj = [ordered]@{
                     "ID"                = $uuid
-                    "exeName"           = if ($p.exeName) { $p.exeName } else { $p.archive.Replace(".zip", "") }
+                    "exeName"           = $p.exeName ? $p.exeName : $p.archive.Replace(".zip", "")
                     "gameName"          = $p.gameName
                     "authorName"        = $p.authorName
                     "createdDate"       = Format-DateISO8601 $p.createdDate
@@ -97,13 +96,13 @@ function Download-DiscordProfiles {
 
 #region Main Logic
 # Handle cleanup logic
-if ($Delete -or $CleanCache) {
+if ($CleanCache) {
     Write-Host "Deleting cache for $SourceName..." -ForegroundColor Yellow
     foreach ($f in @($MetadataJson, $ProfilesCsv, $BotStateJson)) {
         if (Test-Path $f) { Remove-Item $f -Force -ErrorAction SilentlyContinue }
     }
 }
-if ($Delete -or $CleanDownloads) {
+if ($CleanDownloads) {
     if (Test-Path $DownloadDir) {
         Write-Host "Deleting downloads for $SourceName..." -ForegroundColor Yellow
         Remove-Item $DownloadDir -Recurse -Force -ErrorAction SilentlyContinue

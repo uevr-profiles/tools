@@ -10,11 +10,13 @@ param(
 #endregion
 
 #region Variables
-$Scripts = @(
+$UpdateScripts = @(
     "Update-FromUEVRProfiles.ps1", 
     "Update-FromUEVRDeluxe.ps1",
     "Update-FromDiscord.ps1"
 )
+$DedupeScript = "Deduplicate-Profiles.ps1"
+$BuildScript  = "Build-UEVRRepo.ps1"
 #endregion
 
 #region Main Logic
@@ -28,18 +30,51 @@ if ($Clean) {
     }
 }
 
-foreach ($s in $Scripts) {
+# 1. Test Fetch & Download
+foreach ($s in $UpdateScripts) {
     $scriptPath = Join-Path $PSScriptRoot $s
     if (Test-Path $scriptPath) {
-        Write-Host "`n>>> Testing $s <<<" -ForegroundColor Cyan
+        Write-Host "`n>>> Testing $s (Download) <<<" -ForegroundColor Cyan
         try {
-            # Run with limits for fast testing
-            & $scriptPath -Fetch -Download -Extract -Delete -ProfileLimit 1 -Silent:$Silent
+            & $scriptPath -Fetch -Download -ProfileLimit 1 -Silent:$Silent
         } catch {
-            Write-Host "    [!] Test failed for ${s}: $($_.Exception.Message)" -ForegroundColor Red
+            Write-Host "    [!] Download test failed for ${s}: $($_.Exception.Message)" -ForegroundColor Red
         }
-    } else {
-        Write-Warning "Skipping $s (file not found: $scriptPath)"
+    }
+}
+
+# 2. Test Deduplication
+$dedupePath = Join-Path $PSScriptRoot $DedupeScript
+if (Test-Path $dedupePath) {
+    Write-Host "`n>>> Testing $DedupeScript <<<" -ForegroundColor Cyan
+    try {
+        & $dedupePath -Delete -Silent:$Silent
+    } catch {
+        Write-Host "    [!] Deduplication test failed: $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
+
+# 3. Test Extraction
+foreach ($s in $UpdateScripts) {
+    $scriptPath = Join-Path $PSScriptRoot $s
+    if (Test-Path $scriptPath) {
+        Write-Host "`n>>> Testing $s (Extract) <<<" -ForegroundColor Cyan
+        try {
+            & $scriptPath -Extract -Silent:$Silent
+        } catch {
+            Write-Host "    [!] Extraction test failed for ${s}: $($_.Exception.Message)" -ForegroundColor Red
+        }
+    }
+}
+
+# 4. Test Build
+$buildPath = Join-Path $PSScriptRoot $BuildScript
+if (Test-Path $buildPath) {
+    Write-Host "`n>>> Testing $BuildScript <<<" -ForegroundColor Cyan
+    try {
+        & $buildPath
+    } catch {
+        Write-Host "    [!] Build test failed: $($_.Exception.Message)" -ForegroundColor Red
     }
 }
 

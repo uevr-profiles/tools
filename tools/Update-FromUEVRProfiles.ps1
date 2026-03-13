@@ -3,7 +3,6 @@ param(
     [switch]$Fetch,
     [switch]$Download,
     [switch]$Extract,
-    [switch]$Delete,
     [int]$ProfileLimit = [int]::MaxValue,
     [switch]$Whitelist,
     [switch]$Blacklist,
@@ -26,7 +25,7 @@ $MetadataJson  = Join-Path $SourceTempDir "cache.json"
 $FirestoreUrl = "https://firestore.googleapis.com/v1/projects/uevrprofiles/databases/(default)/documents/games?pageSize=500"
 $DownloadFuncUrl = "https://us-central1-uevrprofiles.cloudfunctions.net/downloadFile"
 
-$ExpectedCount = if ($ProfileLimit -ne [int]::MaxValue) { $ProfileLimit } else { [int]::MaxValue }
+$ExpectedCount = ($ProfileLimit -ne [int]::MaxValue) ? $ProfileLimit : [int]::MaxValue
 #endregion
 
 #region Functions
@@ -60,7 +59,7 @@ function Fetch-UEVRProfilesMetadata {
                     }
                 } catch {}
 
-                $profileExe = if ($vf.exeName.stringValue) { $vf.exeName.stringValue } else { "" }
+                $profileExe = $vf.exeName.stringValue ? $vf.exeName.stringValue : ""
                 $encodedArchive = [uri]::EscapeDataString("profiles/$archiveFile")
                 $dlUrl = "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/$($encodedArchive)?alt=media"
 
@@ -70,7 +69,7 @@ function Fetch-UEVRProfilesMetadata {
                     "authorName"   = $vf.author.stringValue
                     "modifiedDate" = $vf.creationDate.timestampValue
                     "createdDate"  = $vf.creationDate.timestampValue
-                    "exeName"      = if ($profileExe) { $profileExe } elseif ($topExe) { $topExe } else { $archiveFile.Replace(".zip", "") }
+                    "exeName"      = $profileExe ? $profileExe : ($topExe ? $topExe : $archiveFile.Replace(".zip", ""))
                     "downloadUrl"  = $dlUrl
                     "archive"      = $archiveFile
                     "description"  = $vf.description.stringValue
@@ -133,13 +132,13 @@ function Download-UEVRProfiles {
 
 #region Main Logic
 # Handle cleanup logic
-if ($Delete -or $CleanCache) {
+if ($CleanCache) {
     if (Test-Path $MetadataJson) {
         Write-Host "Deleting cache for $SourceName..." -ForegroundColor Yellow
         Remove-Item $MetadataJson -Force -ErrorAction SilentlyContinue
     }
 }
-if ($Delete -or $CleanDownloads) {
+if ($CleanDownloads) {
     if (Test-Path $DownloadDir) {
         Write-Host "Deleting downloads for $SourceName..." -ForegroundColor Yellow
         Remove-Item $DownloadDir -Recurse -Force -ErrorAction SilentlyContinue

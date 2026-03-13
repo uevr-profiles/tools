@@ -3,7 +3,6 @@ param(
     [switch]$Fetch,
     [switch]$Download,
     [switch]$Extract,
-    [switch]$Delete,
     [int]$ProfileLimit = [int]::MaxValue,
     [switch]$Whitelist,
     [switch]$Blacklist,
@@ -26,7 +25,7 @@ $MetadataJson  = Join-Path $SourceTempDir "cache.json"
 $ProfilesUrlBase = "https://uevrdeluxefunc.azurewebsites.net/api/profiles"
 $AllProfilesUrl  = "https://uevrdeluxefunc.azurewebsites.net/api/allprofiles"
 
-$ExpectedCount = if ($ProfileLimit -ne [int]::MaxValue) { $ProfileLimit } else { [int]::MaxValue }
+$ExpectedCount = ($ProfileLimit -ne [int]::MaxValue) ? $ProfileLimit : [int]::MaxValue
 #endregion
 
 #region Functions
@@ -57,7 +56,7 @@ function Download-UEVRDeluxeProfiles {
         if ($failCount -ge 5) { Write-Error "Too many consecutive failures in $SourceName. Stopping."; break }
         
         $uuid = Get-OrCreateUUID $p
-        $actualExe = if ($p.exeName) { $p.exeName } else { $p.exename }
+        $actualExe = $p.exeName ? $p.exeName : $p.exename
         if (-not $uuid -or -not $actualExe) { continue }
         
         $targetFile = Join-Path $DownloadDir "$uuid.zip"
@@ -71,8 +70,8 @@ function Download-UEVRDeluxeProfiles {
                 Invoke-WebRequestWithRetry -url $url -targetFile $targetFile -headers @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" } -Silent $Silent
                 
                 # Inline date extraction
-                $modDate = if ($p.modifiedDate) { $p.modifiedDate } elseif ($p.updatedAt) { $p.updatedAt } else { $null }
-                $creDate = if ($p.createdDate) { $p.createdDate } elseif ($p.createdAt) { $p.createdAt } else { $modDate }
+                $modDate = $p.modifiedDate ? $p.modifiedDate : ($p.updatedAt ? $p.updatedAt : $null)
+                $creDate = $p.createdDate ? $p.createdDate : ($p.createdAt ? $p.createdAt : $modDate)
 
                 $sidecarObj = [ordered]@{
                     "ID"                = $uuid
@@ -102,13 +101,13 @@ function Download-UEVRDeluxeProfiles {
 
 #region Main Logic
 # Handle cleanup logic
-if ($Delete -or $CleanCache) {
+if ($CleanCache) {
     if (Test-Path $MetadataJson) {
         Write-Host "Deleting cache for $SourceName..." -ForegroundColor Yellow
         Remove-Item $MetadataJson -Force -ErrorAction SilentlyContinue
     }
 }
-if ($Delete -or $CleanDownloads) {
+if ($CleanDownloads) {
     if (Test-Path $DownloadDir) {
         Write-Host "Deleting downloads for $SourceName..." -ForegroundColor Yellow
         Remove-Item $DownloadDir -Recurse -Force -ErrorAction SilentlyContinue

@@ -3,7 +3,7 @@ $RepoRoot       = Split-Path $PSScriptRoot -Parent
 $RepoRawUrl     = "https://github.com/Bluscream/UnrealVRMod/raw/master"
 $ProfilesDir    = Join-Path $RepoRoot "profiles"
 $SchemaFile     = Join-Path $RepoRoot "schemas" "ProfileMeta.schema.json"
-$Global:SchemaContent = if (Test-Path $SchemaFile) { Get-Content $SchemaFile -Raw } else { $null }
+$Global:SchemaContent = (Test-Path $SchemaFile) ? (Get-Content $SchemaFile -Raw) : $null
 
 # Progress preference to avoid terminal spam during bulk file operations
 $ProgressPreference = 'SilentlyContinue'
@@ -118,9 +118,9 @@ class ProfileMetadata {
     static [ProfileMetadata] FromObject($obj) {
         $meta = [ProfileMetadata]::new()
         if ($null -eq $obj) { return $meta }
-        $props = if ($obj -is [System.Collections.IDictionary]) { $obj.Keys } else { $obj.PSObject.Properties.Name }
+        $props = ($obj -is [System.Collections.IDictionary]) ? $obj.Keys : $obj.PSObject.Properties.Name
         foreach ($p in $props) {
-            $val = if ($obj -is [System.Collections.IDictionary]) { $obj[$p] } else { $obj.$p }
+            $val = ($obj -is [System.Collections.IDictionary]) ? $obj[$p] : $obj.$p
             if ($null -ne $val -and "$val" -ne "") {
                 try { 
                     if ($p -ieq "ID") { $meta.ID = [string]$val }
@@ -154,8 +154,8 @@ class ProfileMetadata {
     [void] Finalize([string]$targetDir, [string]$profile) {
         $readmeFile = Join-Path $targetDir "README.md"
         if ($profile -and $profile -ne "[Root]") { $this.profileName = $profile }
-        $readmeText = if (Test-Path $readmeFile) { Get-Content $readmeFile -Raw } else { "" }
-        $masterDesc = if ($readmeText) { [ProfileReadme]::ExtractDescription($readmeText) } elseif ($this.description) { $this.description }
+        $readmeText = (Test-Path $readmeFile) ? (Get-Content $readmeFile -Raw) : ""
+        $masterDesc = $readmeText ? [ProfileReadme]::ExtractDescription($readmeText) : ($this.description ? $this.description : "")
         if ($masterDesc) {
             $readme = [ProfileReadme]::new($this, $masterDesc)
             $readme.Save($readmeFile)
@@ -237,12 +237,6 @@ class ProfileArchive {
 }
 #endregion
 
-#region Profile Helpers
-function Get-ProfileDownloadUrl($profileId, $exeName) {
-    if ($null -eq $exeName) { $exeName = $profileId }
-    $cleanName = $exeName -replace '[^a-zA-Z0-9]', '_'
-    $repoUrl = "https://github.com/uevr-profiles/repo/tree/main/profiles/$($profileId)"
-#endregion
 
 #region Profile Helpers
 function Get-ProfileDownloadUrl($profileId, $exeName) {
@@ -304,7 +298,7 @@ function Update-GlobalFilesList($relPaths) {
 
 function Update-GlobalPropsJson($archivePath, $profile, $metaObj) {
     if ($null -eq $metaObj) { return }
-    $occId = if ($profile -and $profile -ne "[Root]") { "$archivePath | $profile" } else { "$archivePath" }
+    $occId = ($profile -and $profile -ne "[Root]") ? "$archivePath | $profile" : "$archivePath"
     $occKey = "$occId | $([DateTimeOffset]::Now.ToUnixTimeMilliseconds())_$(Get-Random)"
     foreach ($name in $metaObj.PSObject.Properties.Name) {
         if (-not $Global:TrackingProps.PSObject.Properties[$name]) {
@@ -384,7 +378,7 @@ function Get-DeterministicGuid($seed) {
 }
 
 function Get-OrCreateUUID($p) {
-    $id = if ($p.ID) { $p.ID } else { $p.id }
+    $id = $p.ID ? $p.ID : $p.id
     if ($id -and $id -match "^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$") { try { return ([guid]$id).ToString() } catch {} }
     $seedParts = @()
     if ($p.sourceUrl) { $seedParts += $p.sourceUrl }
@@ -522,17 +516,17 @@ function Extract-And-Discover-Profiles($sourceArchiveroot, $whitelist, $blacklis
         if (-not $foundSub) { $uniqueProfiles += $f }
     }
     foreach ($folderItem in $uniqueProfiles) {
-        $folderPath = $folderItem.FullName; $rel = $folderPath.Substring($tempBase.Length).TrimStart('\'); $pName = if ($rel) { $folderItem.Name } else { "" }
+        $folderPath = $folderItem.FullName; $rel = $folderPath.Substring($tempBase.Length).TrimStart('\'); $pName = $rel ? $folderItem.Name : ""
         $targetDir = Join-Path $env:TEMP "uevr_profile_tmp_$(New-Guid)"; New-Item -ItemType Directory -Path $targetDir -Force | Out-Null; $Global:TempFolders += $targetDir
         foreach ($f in (Get-ChildItem -Path $folderPath -Recurse -File)) {
             $fRel = $f.FullName.Substring($folderPath.Length).TrimStart('\')
-            if ((if ($whitelist) { Test-Whitelisted $fRel } else { $true }) -and -not (if ($blacklist) { Test-Blacklisted $fRel } else { $false })) {
+            if (($whitelist ? (Test-Whitelisted $fRel) : $true) -and -not ($blacklist ? (Test-Blacklisted $fRel) : $false)) {
                 $fTarget = Join-Path $targetDir $fRel; $fParent = Split-Path $fTarget -Parent
                 if (-not (Test-Path $fParent)) { New-Item -ItemType Directory -Path $fParent -Force | Out-Null }
                 Copy-Item $f.FullName -Destination $fTarget -Force -ErrorAction SilentlyContinue
             }
         }
-        if ((Get-ChildItem $targetDir).Count -gt 0) { $discovered += [PSCustomObject]@{ Path = $targetDir; Profile = if ($rel) { $rel.Replace('\', ' / ') } else { "[Root]" }; ProfileName = $pName } }
+        if ((Get-ChildItem $targetDir).Count -gt 0) { $discovered += [PSCustomObject]@{ Path = $targetDir; Profile = ($rel ? $rel.Replace('\', ' / ') : "[Root]"); ProfileName = $pName } }
         else { Remove-Item $targetDir -Recurse -Force -ErrorAction SilentlyContinue 2>$null }
     }
     return $discovered
@@ -548,16 +542,32 @@ function Extract-Archives($archivePaths, [switch]$Silent) {
         $discovered = Extract-And-Discover-Profiles $archive.FullName; Write-Host "  Found $($discovered.Count) profiles within archive." -ForegroundColor Gray
         foreach ($p in $discovered) {
             try {
-                $internalPath = Join-Path $p.Path "ProfileMeta.json"; $internal = if (Test-Path $internalPath) { Get-Content $internalPath -Raw | ConvertFrom-Json } else { $null }
-                $merged = [ordered]@{}; if ($internal) { foreach ($prop in $internal.PSObject.Properties) { $merged[$prop.Name] = $prop.Value } }; if ($sidecar) { foreach ($prop in $sidecar.PSObject.Properties) { $merged[$prop.Name] = $prop.Value } }
-                if (-not $merged.ID) { $merged.ID = Get-OrCreateUUID $merged }; if (-not $merged.zipHash) { $merged.zipHash = Get-FileHashMD5 $archive.FullName }; if (-not $merged.downloadDate) { $merged.downloadDate = Get-ISO8601Now }
-                $finalMeta = [ProfileMetadata]::FromObject($merged); $targetDir = Join-Path $ProfilesDir $finalMeta.ID; if ($p.Profile -and $p.Profile -ne "[Root]") { $targetDir = Join-Path $targetDir ($p.Profile -replace ' / ', '\') }
-                Move-Item-Smart $p.Path $targetDir -Force
-                $tagSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase); if ($finalMeta.tags) { foreach ($t in $finalMeta.tags) { $tagSet.Add($t) | Out-Null } }
-                $hTags = Get-HeuristicTags $targetDir $finalMeta $p.Profile; if ($hTags) { foreach ($t in $hTags) { $tagSet.Add($t) | Out-Null } }
+                $internalPath = Join-Path $p.Path "ProfileMeta.json"
+                $internal = (Test-Path $internalPath) ? (Get-Content $internalPath -Raw | ConvertFrom-Json) : $null
+                $merged = [ordered]@{}
+                if ($internal) { foreach ($prop in $internal.PSObject.Properties) { $merged[$prop.Name] = $prop.Value } }
+                if ($sidecar) { foreach ($prop in $sidecar.PSObject.Properties) { $merged[$prop.Name] = $prop.Value } }
+                
+                if (-not $merged.ID) { $merged.ID = Get-OrCreateUUID $merged }
+                if (-not $merged.zipHash) { $merged.zipHash = Get-FileHashMD5 $archive.FullName }
+                if (-not $merged.downloadDate) { $merged.downloadDate = Get-ISO8601Now }
+
+                $finalMeta = [ProfileMetadata]::FromObject($merged)
+                $targetDir = Join-Path $ProfilesDir $finalMeta.ID
+                if ($p.Profile -and $p.Profile -ne "[Root]") { 
+                    $targetDir = Join-Path $targetDir ($p.Profile -replace ' / ', '\') 
+                }
+                Move-Item-Smart $p.Path $targetDir
+                $tagSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+                if ($finalMeta.tags) { foreach ($t in $finalMeta.tags) { $tagSet.Add($t) | Out-Null } }
+                $hTags = Get-HeuristicTags $targetDir $finalMeta $p.Profile
+                if ($hTags) { foreach ($t in $hTags) { $tagSet.Add($t) | Out-Null } }
                 if ($tagSet.Count -gt 0) { $finalMeta.tags = @($tagSet | Sort-Object) }
                 $finalMeta.Save($targetDir, $archive.FullName, $p.Profile)
-                if (-not $Silent) { Print-ProfileInfo $finalMeta $archive.FullName $p.Profile }; $results += $finalMeta
+                if (-not $Silent) { 
+                    Print-ProfileInfo $finalMeta $archive.FullName $p.Profile 
+                }
+                $results += $finalMeta
             } catch { Write-Host "  [!] Failed to process profile in $($archive.Name): $($_.Exception.Message)" -ForegroundColor Red }
         }
     }
@@ -570,8 +580,3 @@ function Extract-ArchivesFolder($folderPath, [switch]$Silent) {
     return Extract-Archives $archives.FullName -Silent:$Silent
 }
 #endregion
-axLen) {
-        return $txt.Substring(0, $maxLen - 3) + "..."
-    }
-    return $txt
-}
