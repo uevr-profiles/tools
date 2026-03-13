@@ -30,8 +30,6 @@ if (-not (Test-Path $BaseTempDir)) { New-Item -ItemType Directory -Path $BaseTem
 $BaseTempDir     = (Get-Item $BaseTempDir).FullName
 $GlobalFilesList = Join-Path $BaseTempDir "files.txt"
 $GlobalPropsJson = Join-Path $BaseTempDir "props.json"
-$MetaCacheDir    = Join-Path $BaseTempDir "metadata"
-
 # Ensure essential directories exist
 if (-not (Test-Path $ProfilesDir)) { New-Item -ItemType Directory -Path $ProfilesDir -Force | Out-Null }
 #endregion

@@ -131,7 +131,7 @@ if ($CleanDownloads) {
 }
 
 Debug-Log "[Update-FromUEVRDeluxe.ps1] Ensuring directories exist"
-foreach ($d in @($SourceTempDir, $DownloadDir, $MetaCacheDir)) {
+foreach ($d in @($SourceTempDir, $DownloadDir)) {
     if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
 }
 
