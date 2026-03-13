@@ -198,7 +198,7 @@ function Get-HeuristicTags($profileDir, $meta, $variant) {
         }
     }
 
-    return [string[]]($finalTags | Sort-Object | Select-Object -Unique)
+    return ,[string[]]($finalTags | Sort-Object | Select-Object -Unique)
 }
 
 # Ensure essential directories exist
@@ -470,7 +470,7 @@ function Print-ProfileInfo($meta, $zipPath) {
 
 function Get-FileHashMD5($path) {
     if (-not (Test-Path $path)) { return $null }
-    return (Get-FileHash -Path $path -Algorithm MD5).Hash.ToLower()
+    return (Get-FileHash -Path $path -Algorithm MD5).Hash.ToUpper()
 }
 
 function Test-Metadata($json, $path) {

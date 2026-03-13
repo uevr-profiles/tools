@@ -64,13 +64,14 @@ if ($Download) {
                     }
                 } catch {}
 
+                $variantExe = if ($vf.exeName.stringValue) { $vf.exeName.stringValue } else { "" }
                 $obj = @{
                     "id"           = $profileId
                     "gameName"     = $gameName
                     "authorName"   = $vf.author.stringValue
                     "modifiedDate" = $vf.creationDate.timestampValue
                     "createdDate"  = $vf.creationDate.timestampValue
-                    "exeName"      = if ($topExe) { $topExe } else { "" }
+                    "exeName"      = if ($variantExe) { $variantExe } elseif ($topExe) { $topExe } else { "" }
                     "downloadUrl"  = $dlUrl
                     "archive"      = if ($archiveFile) { $archiveFile } else { "$($profileId).zip" }
                     "remarks"      = $vf.description.stringValue
@@ -198,7 +199,13 @@ if ($Extract) {
                 
                 Move-Item-Smart $tempDir $targetDir
 
+                # Final fallback for exeName: try to find any exe in the profile doc or variants
                 $finalExe = if ($extraMeta.exeName) { $extraMeta.exeName } elseif ($p.exeName) { $p.exeName } else { $p.exename }
+                if (-not $finalExe) {
+                    Write-Warning "  [!] Missing exeName for $($p.gameName). Falling back to gameName slug."
+                    $finalExe = $p.gameName -replace '[^a-zA-Z0-9]', ''
+                }
+
                 $finalAuthor = if ($extraMeta.authorName) { $extraMeta.authorName } elseif ($p.authorName) { $p.authorName } else { $p.author }
                 $displayVariant = Get-CleanVariantName $variant $finalExe
                 
@@ -209,17 +216,20 @@ if ($Extract) {
                     "authorName"        = $finalAuthor
                     "modifiedDate"      = Format-ISO8601Date $p.modifiedDate
                     "createdDate"       = Format-ISO8601Date $p.createdDate
-                    "sourceName"        = $SourceName
+                    "sourceName"        = "uevr-profiles.com"
                     "sourceUrl"         = $sourceUrl
                     "sourceDownloadUrl" = $p.downloadUrl
                     "remarks"           = $p.remarks
                     "downloadDate"      = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-                    "zipHash"           = $zipHash
-                    "downloadUrl"       = Get-ProfileDownloadUrl $uuid $p.exeName
+                    "zipHash"           = $zipHash.ToUpper()
+                    "downloadUrl"       = Get-ProfileDownloadUrl $uuid $finalExe
                 }
                 
                 # Handle Tags (Heuristics)
-                $metaProps["tags"] = Get-HeuristicTags $targetDir $metaProps $displayVariant
+                $tagArray = @(Get-HeuristicTags $targetDir $metaProps $displayVariant)
+                if ($tagArray -and $tagArray.Count -gt 0) {
+                    $metaProps["tags"] = $tagArray
+                }
 
                 $meta = Finalize-ProfileMetadata $targetDir $metaProps $displayVariant
                 $meta = Remove-NullProperties $meta
@@ -228,7 +238,7 @@ if ($Extract) {
                 $jsonFile = Join-Path $targetDir "ProfileMeta.json"
                 $meta | ConvertTo-Json -Depth 5 | Set-Content $jsonFile -Encoding utf8
                 
-                if (-not (Test-Json -Path $jsonFile -SchemaPath $SchemaFile)) {
+                if (-not (Test-Json -Path $jsonFile -Schema (Get-Content $SchemaFile -Raw))) {
                     throw "JSON Schema validation failed for $($p.gameName) ($uuid)."
                 }
 

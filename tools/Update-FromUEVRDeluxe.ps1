@@ -9,7 +9,7 @@ param(
 
 . "$PSScriptRoot\common.ps1"
 
-$SourceName = "UEVR Deluxe"
+$SourceName = "uevrdeluxe.org"
 $DownloadDir = Join-Path $env:TEMP "uevr_profiles\$SourceName"
 $MetaCacheDir = Join-Path $env:TEMP "uevr_profiles\metadata"
 $MetadataJson = Join-Path $MetaCacheDir "uevrdeluxe_allprofiles.json"
@@ -177,18 +177,18 @@ if ($Extract) {
                     "authorName"        = $finalAuthor
                     "modifiedDate"      = Format-ISO8601Date $(if ($extraMeta.modifiedDate) { $extraMeta.modifiedDate } else { $latestDate })
                     "createdDate"       = Format-ISO8601Date $(if ($extraMeta.createdDate) { $extraMeta.createdDate } else { $oldestDate })
-                    "sourceName"        = $SourceName
+                    "sourceName"        = "uevrdeluxe.org"
                     "sourceUrl"         = if ($extraMeta.sourceUrl) { $extraMeta.sourceUrl } else { $sourceUrl }
                     "sourceDownloadUrl" = if ($extraMeta.sourceDownloadUrl) { $extraMeta.sourceDownloadUrl } else { $sourceUrl }
                     "downloadDate"      = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-                    "zipHash"           = $zipHash
+                    "zipHash"           = $zipHash.ToUpper()
                     "downloadUrl"       = Get-ProfileDownloadUrl $uuid $finalExe
                 }
 
                 # Handle Tags (Heuristics only for Deluxe)
-                $tagSet = Get-HeuristicTags $targetDir $extraMeta $displayVariant
-                if ($tagSet.Count -gt 0) {
-                    $metaProps["tags"] = $tagSet
+                $tagArray = @(Get-HeuristicTags $targetDir $extraMeta $displayVariant)
+                if ($tagArray -and $tagArray.Count -gt 0) {
+                    $metaProps["tags"] = $tagArray
                 }
 
                 $meta = Finalize-ProfileMetadata $targetDir $metaProps $displayVariant
@@ -198,7 +198,7 @@ if ($Extract) {
                 $jsonFile = Join-Path $targetDir "ProfileMeta.json"
                 $meta | ConvertTo-Json -Depth 5 | Set-Content $jsonFile -Encoding utf8
                 
-                if (-not (Test-Json -Path $jsonFile -SchemaPath $SchemaFile)) {
+                if (-not (Test-Json -Path $jsonFile -Schema (Get-Content $SchemaFile -Raw))) {
                     throw "JSON Schema validation failed for $($p.gameName) ($uuid)."
                 }
 
