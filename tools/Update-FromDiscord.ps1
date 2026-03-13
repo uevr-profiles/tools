@@ -47,16 +47,23 @@ function Download-DiscordProfiles {
     if (-not (Test-Path $MetadataJson)) { Write-Error "Metadata not found at $MetadataJson. Run with -Fetch first."; return }
     $profiles = Get-Content $MetadataJson -Raw | ConvertFrom-Json
     Write-Host "Downloading profiles from Discord metadata..." -ForegroundColor Cyan
-    $count = 0; $failCount = 0; $total = $profiles.Count; $index = 0
+    $count = 0
+    $failCount = 0
+    $total = $profiles.Count
+    $index = 0
     foreach ($p in $profiles) {
         $index++
         if ($count -ge $ProfileLimit) { break }
-        if ($failCount -ge 5) { Write-Error "Too many consecutive failures. Skipping remaining."; break }
+        if ($failCount -ge 5) { 
+            Write-Error "Too many consecutive failures in $SourceName. Stopping."
+            break 
+        }
 
         $uuid = Get-OrCreateUUID $p
         $targetFile = Join-Path $DownloadDir "$uuid.zip"
         $sidecar    = $targetFile + ".json"
 
+        Write-Host "DEBUG: Checking $targetFile" -ForegroundColor DarkGray
         if (-not (Test-Path $targetFile)) {
             Write-Host "[$index/$total] Downloading: $($p.gameName) ($($p.zipName))..." -ForegroundColor Gray
             try {
@@ -64,8 +71,8 @@ function Download-DiscordProfiles {
                 $tagSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
                 $category = $p.category ? ($p.category.Replace("ue-", "").Replace("nsfw", "NSFW").Trim()) : ""
                 if ($category -and $category -ne "games") {
-                   if ($category -eq "experiences") { $category = "Experiences" }
-                   $tagSet.Add($category) | Out-Null
+                    if ($category -eq "experiences") { $category = "Experiences" }
+                    $tagSet.Add($category) | Out-Null
                 }
                 $sidecarObj = [ordered]@{
                     "ID"                = $uuid
@@ -81,13 +88,17 @@ function Download-DiscordProfiles {
                     "tags"              = @($tagSet)
                     "downloadUrl"       = Get-ProfileDownloadUrl $uuid $p.exeName
                 }
-                $sidecarObj | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
-                $count++; $failCount = 0
+                $json = $sidecarObj | ConvertTo-Json
+                Set-Content -Path $sidecar -Value $json -Encoding utf8
+                $count++
+                $failCount = 0
                 Write-Host "  [OK] Download successful." -ForegroundColor Green
             } catch {
                 Write-Host "  [!] Download failed: $($_.Exception.Message)" -ForegroundColor Red
                 $failCount++
-                if (-not $Silent) { throw "Fatal: Download failed for $($p.gameName). Stopping because -Silent is not set." }
+                if (-not $Silent) { 
+                    throw "Fatal: Download failed for $($p.gameName). Stopping because -Silent is not set." 
+                }
             }
         }
     }

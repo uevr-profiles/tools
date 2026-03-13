@@ -537,10 +537,16 @@ function Extract-Archives($archivePaths, [switch]$Silent) {
     if (-not $archivePaths) { return }
     $results = @()
     foreach ($archivePath in $archivePaths) {
-        $archive = Get-Item $archivePath; Write-Host "Processing archive: $($archive.Name)..." -ForegroundColor Cyan
-        $sidecarPath = $archive.FullName + ".json"; if (-not (Test-Path $sidecarPath)) { $sidecarPath = [IO.Path]::ChangeExtension($archive.FullName, ".json") }
+        $archive = Get-Item $archivePath
+        Write-Host "DEBUG: Processing archive $($archive.FullName)" -ForegroundColor DarkGray
+        Write-Host "Processing archive: $($archive.Name)..." -ForegroundColor Cyan
+        $sidecarPath = $archive.FullName + ".json"
+        if (-not (Test-Path $sidecarPath)) { 
+            $sidecarPath = [IO.Path]::ChangeExtension($archive.FullName, ".json") 
+        }
         $sidecar = (Test-Path $sidecarPath) ? (Get-Content $sidecarPath -Raw | ConvertFrom-Json) : $null
-        $discovered = Extract-And-Discover-Profiles $archive.FullName; Write-Host "  Found $($discovered.Count) profiles within archive." -ForegroundColor Gray
+        $discovered = Extract-And-Discover-Profiles $archive.FullName
+        Write-Host "  Found $($discovered.Count) profiles within archive." -ForegroundColor Gray
         foreach ($p in $discovered) {
             try {
                 $internalPath = Join-Path $p.Path "ProfileMeta.json"

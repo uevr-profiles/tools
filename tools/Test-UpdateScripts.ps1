@@ -1,7 +1,8 @@
 #region Parameters
 param(
     [switch]$Clean,
-    [switch]$Silent
+    [switch]$Silent,
+    [int]$ProfileLimit = 2
 )
 #endregion
 
@@ -36,7 +37,7 @@ foreach ($s in $UpdateScripts) {
     if (Test-Path $scriptPath) {
         Write-Host "`n>>> Testing $s (Download) <<<" -ForegroundColor Cyan
         try {
-            & $scriptPath -Fetch -Download -ProfileLimit 1 -Silent:$Silent
+            & $scriptPath -Fetch -Download -ProfileLimit $ProfileLimit -Silent:$Silent
         } catch {
             Write-Host "    [!] Download test failed for ${s}: $($_.Exception.Message)" -ForegroundColor Red
         }
