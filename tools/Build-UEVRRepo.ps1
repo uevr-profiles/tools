@@ -5,9 +5,11 @@ param(
     [switch]$Update
 )
 
-$RepoRoot = Split-Path $PSScriptRoot -Parent
-if (-not $ProfilesDir) { $ProfilesDir = Join-Path $RepoRoot "profiles" }
-if (-not $SchemaFile)  { $SchemaFile  = Join-Path $RepoRoot "schemas\ProfileMeta.schema.json" }
+. "$PSScriptRoot\common.ps1"
+
+# Defaults if not provided via param
+if (-not $ProfilesDir) { $ProfilesDir = $Global:ProfilesDir }
+if (-not $SchemaFile)  { $SchemaFile  = $Global:SchemaFile }
 if (-not $OutputFile)  { $OutputFile  = Join-Path $RepoRoot "repo.json" }
 
 # Resolve to absolute paths
@@ -17,60 +19,45 @@ $OutputFile  = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFrom
 
 if ($Update) {
     Write-Host "Running profile updates before build..." -ForegroundColor Cyan
-    $UpdateScripts = Get-ChildItem -Path ".\tools" -Filter "Update-From*.ps1"
-    foreach ($script in $UpdateScripts) {
-        Write-Host ">>> Running $($script.Name) <<<" -ForegroundColor Cyan
-        pwsh -NoProfile -File $script.FullName -Fetch -Download -Extract
+    Get-ChildItem -Path "$PSScriptRoot" -Filter "Update-From*.ps1" | ForEach-Object {
+        Write-Host ">>> Running $($_.Name) <<<" -ForegroundColor Cyan
+        pwsh -NoProfile -File $_.FullName -Fetch -Download -Extract
     }
 }
-
-$allMeta = @()
-$errors  = 0
 
 if (-not (Test-Path $ProfilesDir)) {
     Write-Error "Profiles directory not found: $ProfilesDir"
     exit 1
 }
 
-Get-ChildItem -Path $ProfilesDir -Directory | ForEach-Object {
+$allMeta = @()
+$errors  = 0
+
+Get-ChildItem -Path $ProfilesDir -Directory -Recurse | Where-Object { Test-Path (Join-Path $_.FullName "ProfileMeta.json") } | ForEach-Object {
     $metaFile = Join-Path $_.FullName "ProfileMeta.json"
-    if (Test-Path $metaFile) {
-        $jsonText = Get-Content $metaFile -Raw
+    
+    # Use centralized validation logic
+    if (-not [ProfileMetadata]::Validate($metaFile)) {
+        $errors++
+    }
+
+    try {
+        $meta = Get-Content $metaFile -Raw | ConvertFrom-Json
         
-        if (Test-Path $SchemaFile) {
-            $isValid = Test-Json -Json $jsonText -SchemaFile $SchemaFile -ErrorAction SilentlyContinue
-            if (-not $isValid) {
-                Write-Host "[!] Schema validation failed for $($metaFile):" -ForegroundColor Red
-                try {
-                    $detailed = Test-Json -Json $jsonText -SchemaFile $SchemaFile -Detailed
-                    foreach ($msg in $detailed.Errors) {
-                        Write-Host "    - $msg" -ForegroundColor Yellow
-                    }
-                } catch {
-                    Write-Host "    - Invalid JSON format or schema." -ForegroundColor Yellow
-                }
-                $errors++
-            }
+        # Normalize exeName for repo.json (join arrays into comma-separated strings)
+        if ($meta.exeName -is [System.Collections.IEnumerable] -and $meta.exeName -isnot [string]) {
+            $meta.exeName = ($meta.exeName | Sort-Object -Unique) -join ", "
         }
-
-        try {
-            $meta = $jsonText | ConvertFrom-Json
-            
-            # If exeName is an array, join it with commas for repo.json or handle it as a collection
-            if ($meta.exeName -is [System.Collections.IEnumerable] -and $meta.exeName -isnot [string]) {
-                $meta.exeName = ($meta.exeName | Sort-Object -Unique) -join ", "
-            }
-
-            $allMeta += $meta
-        } catch {
-            Write-Warning "Could not parse JSON in $metaFile"
-            $errors++
-        }
+        $allMeta += $meta
+    } catch {
+        Write-Warning "Could not parse JSON in $metaFile"
+        $errors++
     }
 }
 
 $allMeta = $allMeta | Sort-Object gameName
 $allMeta | ConvertTo-Json -Depth 10 | Set-Content $OutputFile -Encoding utf8
+
 Write-Host "Done. repo.json contains $($allMeta.Count) profiles." -ForegroundColor Green
 if ($errors -gt 0) {
     Write-Host "Encountered $errors validation/parse errors. Failing build." -ForegroundColor Red
