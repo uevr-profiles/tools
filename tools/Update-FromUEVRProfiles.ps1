@@ -85,9 +85,11 @@ if ($Download) {
     }
 
     $profiles = Get-Content $MetadataJson -Raw | ConvertFrom-Json
-    $count = 0
+    $failCount = 0
     foreach ($p in $profiles) {
         if ($count -ge $ProfileLimit) { break }
+        if ($failCount -ge 5) { Write-Error "Too many consecutive failures in $SourceName. Stopping."; break }
+
         $targetFile = Join-Path $DownloadDir "$($p.id).zip"
         $sidecar    = Join-Path $DownloadDir "$($p.id).zip.json"
         
@@ -96,33 +98,38 @@ if ($Download) {
             try {
                 $delay = Get-Random -Minimum 500 -Maximum 1500
                 Start-Sleep -Milliseconds $delay # Stealth delay
-                
-                # Try direct download first as it's more reliable than the cloud function
+
                 $UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-                Invoke-WebRequest -Uri $p.downloadUrl -OutFile $targetFile -UserAgent $UA -ErrorAction Stop
                 
-                # Save metadata sidecar for extraction phase
-                $p | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
-                $count++
-            } catch {
-                Write-Host "  [!] Direct download failed, trying cloud function..." -ForegroundColor Yellow
+                # Try Cloud Function first as it generates fresh signed URLs
+                Write-Host "  Trying cloud function..." -ForegroundColor Gray
                 try {
-                    # Firebase Callable Functions expect the payload wrapped in a "data" object
                     $payload = @{ "data" = @{ "file" = $p.archive } } | ConvertTo-Json
-                    
-                    $UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
                     $response = Invoke-RestMethod -Method Post -Uri $DownloadFuncUrl -Body $payload -ContentType "application/json" -UserAgent $UA -ErrorAction Stop
                     
                     if ($response.result.url) {
                         Invoke-WebRequest -Uri $response.result.url -OutFile $targetFile -UserAgent $UA -ErrorAction Stop
+                        Write-Host "  [OK] Downloaded via cloud function." -ForegroundColor Green
                         $p | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
                         $count++
+                        $failCount = 0
                     } else {
                         throw "Cloud function did not return a valid download URL."
                     }
                 } catch {
-                    Write-Host "  [!] Failed: $($_.Exception.Message)" -ForegroundColor Red
+                    # Fallback to direct download
+                    Write-Host "  [!] Cloud function failed, trying direct download..." -ForegroundColor Yellow
+                    Invoke-WebRequest -Uri $p.downloadUrl -OutFile $targetFile -UserAgent $UA -ErrorAction Stop
+                    Write-Host "  [OK] Direct download successful." -ForegroundColor Green
+                    
+                    # Save metadata sidecar for extraction phase
+                    $p | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
+                    $count++
+                    $failCount = 0
                 }
+            } catch {
+                Write-Host "  [!] All download attempts failed: $($_.Exception.Message)" -ForegroundColor Red
+                $failCount++
             }
         }
     }
@@ -166,8 +173,7 @@ if ($Extract) {
             }
             Update-GlobalFilesList $relFiles
             
-            Get-ChildItem -Path $tempDir | Move-Item -Destination $targetDir -Force
-            Remove-Item $tempDir -Recurse -Force
+            Move-Item-Smart $tempDir $targetDir
 
             $finalExe = if ($extraMeta.exeName) { $extraMeta.exeName } elseif ($p.exeName) { $p.exeName } else { $p.exename }
             $finalAuthor = if ($extraMeta.authorName) { $extraMeta.authorName } elseif ($p.authorName) { $p.authorName } else { $p.author }

@@ -42,9 +42,10 @@ if ($Download) {
     }
 
     $profiles = Get-Content $MetadataJson -Raw | ConvertFrom-Json
-    $count = 0
+    $failCount = 0
     foreach ($p in $profiles) {
         if ($count -ge $ProfileLimit) { break }
+        if ($failCount -ge 5) { Write-Error "Too many consecutive failures in $SourceName. Stopping."; break }
         
         $uuid = if ($p.ID) { $p.ID } else { $p.id }
         $actualExe = if ($p.exeName) { $p.exeName } else { $p.exename }
@@ -55,9 +56,8 @@ if ($Download) {
         $sidecar    = $targetFile + ".json"
         
         if (-not (Test-Path $targetFile)) {
-            $cleanId = $uuid.Replace("-", "").ToLower()
-            $encodedExe = [uri]::EscapeDataString($actualExe)
-            $url = "$ProfilesUrlBase/$encodedExe/$cleanId"
+            $encodedExe = $actualExe -replace ' ', '%20'
+            $url = "$ProfilesUrlBase/$encodedExe/$uuid"
             
             Write-Host "Downloading $($p.gameName) ($actualExe) from $url..." -ForegroundColor Gray
             try {
@@ -79,17 +79,17 @@ if ($Download) {
                     "remarks"      = $p.remarks
                 }
 
-                $headers = @{ 
-                    "User-Agent" = "UEVRDeluxe"
-                    "Accept"     = "application/json"
-                }
+                $headers = @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" }
                 Invoke-WebRequest -Uri $url -Headers $headers -OutFile $targetFile -ErrorAction Stop
+                Write-Host "  [OK] Download successful." -ForegroundColor Green
                 
                 # Save metadata sidecar
                 $sidecarObj | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
                 $count++
+                $failCount = 0
             } catch {
                 Write-Host "  [!] Failed: $($_.Exception.Message)" -ForegroundColor Red
+                $failCount++
             }
         }
     }
@@ -143,8 +143,7 @@ if ($Extract) {
             }
             Update-GlobalFilesList $relFiles
             
-            Get-ChildItem -Path $tempDir | Move-Item -Destination $targetDir -Force
-            Remove-Item $tempDir -Recurse -Force
+            Move-Item-Smart $tempDir $targetDir
 
             $cleanId = $uuid.Replace("-", "").ToLower()
             $encodedExe = [uri]::EscapeDataString($actualExe)

@@ -61,6 +61,34 @@ function Update-GlobalPropsJson($zipPath, $variant, $metaObj) {
     }
 }
 
+function Move-Item-Smart($source, $destination) {
+    if (-not (Test-Path $source)) { return }
+    if (-not (Test-Path $destination)) { 
+        New-Item -ItemType Directory -Path $destination -Force | Out-Null 
+    }
+    
+    Get-ChildItem -Path $source | ForEach-Object {
+        $destPath = Join-Path $destination $_.Name
+        if ($_.PSIsContainer) {
+            # Recurse if destination already has a directory by this name
+            if (Test-Path $destPath -PathType Container) {
+                Move-Item-Smart $_.FullName $destPath
+            } else {
+                Move-Item -Path $_.FullName -Destination $destPath -Force
+            }
+        } else {
+            Move-Item -Path $_.FullName -Destination $destPath -Force
+        }
+    }
+    # Cleanup empty source
+    if (Test-Path $source) {
+        $rem = Get-ChildItem -Path $source -Recurse -ErrorAction SilentlyContinue
+        if ($null -eq $rem -or $rem.Count -eq 0) {
+            Remove-Item $source -Force -ErrorAction SilentlyContinue
+        }
+    }
+}
+
 function Finalize-GlobalTracking {
     if (-not (Test-Path $BaseTempDir)) { New-Item -ItemType Directory -Path $BaseTempDir -Force | Out-Null }
 
