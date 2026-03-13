@@ -14,6 +14,14 @@ $ProfilesDir    = Join-Path $RepoRoot "profiles"
 $SchemaFile     = Join-Path $RepoRoot "schemas" "ProfileMeta.schema.json"
 $Global:SchemaContent = if (Test-Path $SchemaFile) { Get-Content $SchemaFile -Raw } else { $null }
 
+# Progress preference to avoid terminal spam during bulk file operations
+$ProgressPreference = 'SilentlyContinue'
+
+# Initialize global memory storage
+$Global:TrackingFiles = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+$Global:TrackingProps = [ordered]@{}
+$Global:TempFolders   = @()
+
 function Get-ISO8601Now {
     return [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
 }
@@ -76,10 +84,6 @@ $GlobalFilesList = Join-Path $BaseTempDir "files.txt"
 $GlobalPropsJson = Join-Path $BaseTempDir "props.json"
 $MetaCacheDir    = Join-Path $BaseTempDir "metadata"
 
-# Initialize global memory storage
-$Global:TrackingFiles = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
-$Global:TrackingProps = [ordered]@{}
-
 function Update-GlobalFilesList($relPaths) {
     if ($null -eq $relPaths) { return }
     foreach ($p in $relPaths) {
@@ -117,17 +121,17 @@ function Move-Item-Smart($source, $destination) {
             if (Test-Path $destPath -PathType Container) {
                 Move-Item-Smart $_.FullName $destPath
             } else {
-                Move-Item -Path $_.FullName -Destination $destPath -Force
+                Move-Item -Path $_.FullName -Destination $destPath -Force -ErrorAction SilentlyContinue
             }
         } else {
-            Move-Item -Path $_.FullName -Destination $destPath -Force
+            Move-Item -Path $_.FullName -Destination $destPath -Force -ErrorAction SilentlyContinue
         }
     }
     # Cleanup empty source
     if (Test-Path $source) {
         $rem = Get-ChildItem -Path $source -Recurse -ErrorAction SilentlyContinue
         if ($null -eq $rem -or $rem.Count -eq 0) {
-            Remove-Item $source -Force -ErrorAction SilentlyContinue
+            Remove-Item $source -Force -ErrorAction SilentlyContinue 2>$null
         }
     }
 }
@@ -166,6 +170,16 @@ function Finalize-GlobalTracking {
             }
         }
         $Global:TrackingProps | ConvertTo-Json -Depth 10 | Set-Content $GlobalPropsJson -Encoding utf8
+    }
+
+    if ($Global:TempFolders.Count -gt 0) {
+        Write-Host "Cleaning up $($Global:TempFolders.Count) temporary folders..." -ForegroundColor Cyan
+        foreach ($f in $Global:TempFolders) {
+            if (Test-Path $f) {
+                Remove-Item $f -Recurse -Force -ErrorAction SilentlyContinue 2>$null
+            }
+        }
+        $Global:TempFolders = @()
     }
 }
 
@@ -368,15 +382,15 @@ function Expand-Archive-Smart($path, $destination) {
 function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $maxDepth = 5) {
     if ($maxDepth -le 0) { return @() }
     
-    # Create temp base and ensure we have the full, long path to avoid string mapping issues
+    # Create temp base and ensure we have the full, long path
     $tempBaseDir = New-Item -ItemType Directory -Path (Join-Path $env:TEMP "uevr_extract_$(New-Guid)") -Force
     $tempBase = $tempBaseDir.FullName
+    $Global:TempFolders += $tempBase
     
     try {
         Expand-Archive-Smart $sourceArchive $tempBase
     } catch {
         Write-Error "    [!] Fatal error during extraction of $sourceArchive"
-        Remove-Item $tempBase -Recurse -Force -ErrorAction SilentlyContinue
         return @()
     }
     
@@ -400,7 +414,7 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
             }
             $profilesFound += $sp
         }
-        Remove-Item $a.FullName -Force
+        Remove-Item $a.FullName -Force -ErrorAction SilentlyContinue
     }
 
     # 2. Look for profile folders
@@ -426,6 +440,7 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
         
         $targetDir = Join-Path $env:TEMP "uevr_profile_tmp_$(New-Guid)"
         New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
+        $Global:TempFolders += $targetDir
         
         # Determine ProfileName (folder name)
         $pName = if ($rel) { $folderItem.Name } else { "" }
@@ -442,7 +457,7 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
                 $fTarget = Join-Path $targetDir $fRel
                 $fParent = Split-Path $fTarget -Parent
                 if (-not (Test-Path $fParent)) { New-Item -ItemType Directory -Path $fParent -Force | Out-Null }
-                Copy-Item $f.FullName -Destination $fTarget -Force
+                Copy-Item $f.FullName -Destination $fTarget -Force -ErrorAction SilentlyContinue
             } else {
                 Write-Host "    Filtered: $fRel (WH:$isWhitelisted, BL:$isBlacklisted)" -ForegroundColor DarkRed
             }
@@ -451,11 +466,11 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
         if ((Get-ChildItem $targetDir).Count -gt 0) {
             $profilesFound += [PSCustomObject]@{ Path = $targetDir; Variant = $variant; ProfileName = $pName }
         } else {
-            Remove-Item $targetDir -Recurse -Force
+            # Partial cleanup if empty
+            Remove-Item $targetDir -Recurse -Force -ErrorAction SilentlyContinue 2>$null
         }
     }
-    
-    Remove-Item $tempBase -Recurse -Force -ErrorAction SilentlyContinue
+    # Cleanup postponed until script end via $Global:TempFolders
     return $profilesFound
 }
 
@@ -483,7 +498,7 @@ function Finalize-ProfileMetadata($targetDir, $meta, $profileName) {
     if ($rawDesc) {
         $meta["description"] = Convert-MarkdownToText $rawDesc 100
     }
-    if (Test-Path $legacyDesc) { Remove-Item $legacyDesc -Force }
+    if (Test-Path $legacyDesc) { Remove-Item $legacyDesc -Force -ErrorAction SilentlyContinue }
     return $meta
 }
 

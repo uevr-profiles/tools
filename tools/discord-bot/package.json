@@ -1,0 +1,10 @@
+{
+  "name": "uevr-discord-scraper",
+  "version": "1.0.0",
+  "description": "Scrapes UEVR profiles from Discord forum threads",
+  "main": "index.js",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.5"
+  }
+}

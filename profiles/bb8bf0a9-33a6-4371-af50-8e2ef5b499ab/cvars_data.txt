@@ -1,3 +1,0 @@
-Engine_r.DepthOfFieldQuality=0
-Renderer_r.Color.Min=0.000000
-Renderer_r.TonemapperGamma=1.733000

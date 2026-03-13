@@ -43,3 +43,9 @@ luac.out
 repo.json
 update.log
 update_log.txt
+error.log
+.env
+node_modules/
+tools/discord-bot/bot_state.json
+tools/discord-bot/discord_profiles.json
+tools/discord-bot/discord_profiles.csv
