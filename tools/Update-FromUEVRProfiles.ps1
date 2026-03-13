@@ -95,41 +95,56 @@ if ($Download) {
         
         if (-not (Test-Path $targetFile)) {
             Write-Host "Downloading: $($p.gameName) ($($p.exeName))..." -ForegroundColor Gray
-            try {
-                $delay = Get-Random -Minimum 500 -Maximum 1500
-                Start-Sleep -Milliseconds $delay # Stealth delay
-
-                $UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-                
-                # Try Cloud Function first as it generates fresh signed URLs
-                Write-Host "  Trying cloud function..." -ForegroundColor Gray
+            $success = $false
+            $lastErr = $null
+            for ($i = 1; $i -le 3; $i++) {
                 try {
-                    $payload = @{ "data" = @{ "file" = $p.archive } } | ConvertTo-Json
-                    $response = Invoke-RestMethod -Method Post -Uri $DownloadFuncUrl -Body $payload -ContentType "application/json" -UserAgent $UA -ErrorAction Stop
+                    if ($i -gt 1) { Write-Host "  Retry $i/3..." -ForegroundColor Yellow }
+                    $delay = Get-Random -Minimum 500 -Maximum 1500
+                    Start-Sleep -Milliseconds $delay # Stealth delay
+
+                    $UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
                     
-                    if ($response.result.url) {
-                        Invoke-WebRequest -Uri $response.result.url -OutFile $targetFile -UserAgent $UA -ErrorAction Stop
-                        Write-Host "  [OK] Downloaded via cloud function." -ForegroundColor Green
+                    # Try Cloud Function first
+                    Write-Host "  Trying cloud function..." -ForegroundColor Gray
+                    try {
+                        $payload = @{ "data" = @{ "file" = $p.archive } } | ConvertTo-Json
+                        $response = Invoke-RestMethod -Method Post -Uri $DownloadFuncUrl -Body $payload -ContentType "application/json" -UserAgent $UA -ErrorAction Stop
+                        
+                        if ($response.result.url) {
+                            Invoke-WebRequest -Uri $response.result.url -OutFile $targetFile -UserAgent $UA -ErrorAction Stop
+                            Write-Host "  [OK] Downloaded via cloud function." -ForegroundColor Green
+                            $p | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
+                            $count++
+                            $failCount = 0
+                            $success = $true
+                            break
+                        } else {
+                            throw "Cloud function did not return a valid download URL."
+                        }
+                    } catch {
+                        # Fallback to direct download
+                        Write-Host "  [!] Cloud function failed, trying direct download..." -ForegroundColor Yellow
+                        Invoke-WebRequest -Uri $p.downloadUrl -OutFile $targetFile -UserAgent $UA -ErrorAction Stop
+                        Write-Host "  [OK] Direct download successful." -ForegroundColor Green
+                        
+                        # Save metadata sidecar for extraction phase
                         $p | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
                         $count++
                         $failCount = 0
-                    } else {
-                        throw "Cloud function did not return a valid download URL."
+                        $success = $true
+                        break
                     }
                 } catch {
-                    # Fallback to direct download
-                    Write-Host "  [!] Cloud function failed, trying direct download..." -ForegroundColor Yellow
-                    Invoke-WebRequest -Uri $p.downloadUrl -OutFile $targetFile -UserAgent $UA -ErrorAction Stop
-                    Write-Host "  [OK] Direct download successful." -ForegroundColor Green
-                    
-                    # Save metadata sidecar for extraction phase
-                    $p | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
-                    $count++
-                    $failCount = 0
+                    $lastErr = $_.Exception.Message
+                    Write-Host "  [!] Attempt $i failed: $lastErr" -ForegroundColor Gray
                 }
-            } catch {
-                Write-Host "  [!] All download attempts failed: $($_.Exception.Message)" -ForegroundColor Red
+            }
+
+            if (-not $success) {
+                Write-Host "  [!] All download attempts failed: $lastErr" -ForegroundColor Red
                 $failCount++
+                if (-not $Silent) { throw "Fatal: Download failed for $($p.gameName). Stopping because -Silent is not set." }
             }
         }
     }
@@ -144,70 +159,86 @@ if ($Extract) {
     Write-Host "Processing $($zips.Count) profiles from $SourceName..." -ForegroundColor Cyan
 
     foreach ($z in $zips) {
-        $sidecar = $z.FullName + ".json"
-        if (-not (Test-Path $sidecar)) { continue }
-        $p = Get-Content $sidecar -Raw | ConvertFrom-Json
+        try {
+            $sidecar = $z.FullName + ".json"
+            if (-not (Test-Path $sidecar)) { continue }
+            $p = Get-Content $sidecar -Raw | ConvertFrom-Json
 
-        $zipHash = Get-FileHashMD5 $z.FullName
-        $sourceUrl = "https://uevr-profiles.com/game/$($p.id)"
-        
-        # Discover profiles within archive (handles nested structures)
-        $discovered = Extract-And-Discover-Profiles $z.FullName $Whitelist $Blacklist
-        
-        foreach ($d in $discovered) {
-            $variant = $d.Variant
-            $tempDir = $d.Path
-            $uuid = Get-OrCreateUUID $p.id # Use firestore ID as base UUID
+            $zipHash = Get-FileHashMD5 $z.FullName
+            $sourceUrl = "https://uevr-profiles.com/game/$($p.id)"
             
-            # Directory pattern: <Repo>/profiles/<UUID>[/<Variant>]
-            $targetDir = Join-Path $ProfilesDir $uuid
-            if ($variant -and $variant -ne "[Root]") {
-                $vPath = $variant -replace ' / ', '\'
-                $targetDir = Join-Path $targetDir $vPath
+            # Discover profiles within archive (handles nested structures)
+            $discovered = Extract-And-Discover-Profiles $z.FullName $Whitelist $Blacklist
+            
+            if ($null -eq $discovered -or $discovered.Count -eq 0) {
+                # This could be a legitimate filter or an error. 
+                # If it's a structural failure, Extract-And-Discover-Profiles usually yields 0 results.
+                # However, for now, let's just warn unless we want to be very strict.
+                # If the user wants to fail on error, structural errors in zips should throw.
             }
-            if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }
-            
-            # Move contents
-            $relFiles = Get-ChildItem -Path $tempDir -Recurse | Where-Object { -not $_.PSIsContainer } | ForEach-Object { 
-                $_.FullName.Substring($tempDir.Length).TrimStart('\')
-            }
-            Update-GlobalFilesList $relFiles
-            
-            Move-Item-Smart $tempDir $targetDir
 
-            $finalExe = if ($extraMeta.exeName) { $extraMeta.exeName } elseif ($p.exeName) { $p.exeName } else { $p.exename }
-            $finalAuthor = if ($extraMeta.authorName) { $extraMeta.authorName } elseif ($p.authorName) { $p.authorName } else { $p.author }
-            $displayVariant = Get-CleanVariantName $variant $finalExe
-            
-            $metaProps = [ordered]@{
-                "ID"                = $uuid
-                "exeName"           = $finalExe
-                "gameName"          = $p.gameName
-                "authorName"        = $finalAuthor
-                "modifiedDate"      = Format-ISO8601Date $p.modifiedDate
-                "createdDate"       = Format-ISO8601Date $p.createdDate
-                "sourceName"        = $SourceName
-                "sourceUrl"         = $sourceUrl
-                "sourceDownloadUrl" = $p.downloadUrl
-                "remarks"           = $p.remarks
-                "downloadDate"      = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-                "zipHash"           = $zipHash
-                "downloadUrl"       = Get-ProfileDownloadUrl $uuid $p.exeName
-            }
-            
-            # Handle Tags (Heuristics)
-            $metaProps["tags"] = Get-HeuristicTags $targetDir $metaProps $displayVariant
+            foreach ($d in $discovered) {
+                $variant = $d.Variant
+                $tempDir = $d.Path
+                $uuid = Get-OrCreateUUID $p.id # Use firestore ID as base UUID
+                
+                # Directory pattern: <Repo>/profiles/<UUID>[/<Variant>]
+                $targetDir = Join-Path $ProfilesDir $uuid
+                if ($variant -and $variant -ne "[Root]") {
+                    $vPath = $variant -replace ' / ', '\'
+                    $targetDir = Join-Path $targetDir $vPath
+                }
+                if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }
+                
+                # Move contents
+                $relFiles = Get-ChildItem -Path $tempDir -Recurse | Where-Object { -not $_.PSIsContainer } | ForEach-Object { 
+                    $_.FullName.Substring($tempDir.Length).TrimStart('\')
+                }
+                Update-GlobalFilesList $relFiles
+                
+                Move-Item-Smart $tempDir $targetDir
 
-            $meta = Finalize-ProfileMetadata $targetDir $metaProps $displayVariant
-            $meta = Remove-NullProperties $meta
-            Update-GlobalPropsJson $z.FullName $variant $meta
-            
-            $json = $meta | ConvertTo-Json -Depth 5
-            $json | Set-Content (Join-Path $targetDir "ProfileMeta.json") -Encoding utf8
-            
-            if (-not $Silent) {
-                Print-ProfileInfo $meta $z.FullName
+                $finalExe = if ($extraMeta.exeName) { $extraMeta.exeName } elseif ($p.exeName) { $p.exeName } else { $p.exename }
+                $finalAuthor = if ($extraMeta.authorName) { $extraMeta.authorName } elseif ($p.authorName) { $p.authorName } else { $p.author }
+                $displayVariant = Get-CleanVariantName $variant $finalExe
+                
+                $metaProps = [ordered]@{
+                    "ID"                = $uuid
+                    "exeName"           = $finalExe
+                    "gameName"          = $p.gameName
+                    "authorName"        = $finalAuthor
+                    "modifiedDate"      = Format-ISO8601Date $p.modifiedDate
+                    "createdDate"       = Format-ISO8601Date $p.createdDate
+                    "sourceName"        = $SourceName
+                    "sourceUrl"         = $sourceUrl
+                    "sourceDownloadUrl" = $p.downloadUrl
+                    "remarks"           = $p.remarks
+                    "downloadDate"      = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+                    "zipHash"           = $zipHash
+                    "downloadUrl"       = Get-ProfileDownloadUrl $uuid $p.exeName
+                }
+                
+                # Handle Tags (Heuristics)
+                $metaProps["tags"] = Get-HeuristicTags $targetDir $metaProps $displayVariant
+
+                $meta = Finalize-ProfileMetadata $targetDir $metaProps $displayVariant
+                $meta = Remove-NullProperties $meta
+                Update-GlobalPropsJson $z.FullName $variant $meta
+                
+                $jsonFile = Join-Path $targetDir "ProfileMeta.json"
+                $meta | ConvertTo-Json -Depth 5 | Set-Content $jsonFile -Encoding utf8
+                
+                if (-not (Test-Json -Path $jsonFile -SchemaPath $SchemaFile)) {
+                    throw "JSON Schema validation failed for $($p.gameName) ($uuid)."
+                }
+
+                if (-not $Silent) {
+                    Print-ProfileInfo $meta $z.FullName
+                }
             }
+        } catch {
+            Write-Host "  [!] Extraction failed for $($z.Name): $($_.Exception.Message)" -ForegroundColor Red
+            if (-not $Silent) { throw "Fatal: Profile processing error. Stopping because -Silent is not set." }
         }
     }
 }
