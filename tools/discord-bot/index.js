@@ -70,14 +70,14 @@ function loadResults() {
 }
 
 function saveFullResults(results) {
-    // 1. Save exhaustive JSON
+    // Save exhaustive JSON
     fs.writeFileSync(JSON_FILE, JSON.stringify(results, null, 2));
-    
-    // 2. Save minimal CSV (just links)
-    if (results.length > 0) {
-        const csvContent = ["sourceUrl", ...results.map(r => r.sourceUrl)].join("\n");
-        fs.writeFileSync(CSV_FILE, csvContent, 'utf8');
-    }
+}
+
+function appendToCsv(msgUrl) {
+    const isNew = !fs.existsSync(CSV_FILE);
+    const content = (isNew ? "sourceUrl\n" : "") + msgUrl + "\n";
+    fs.appendFileSync(CSV_FILE, content, 'utf8');
 }
 
 async function fetchNewMessages(thread, afterId) {
@@ -204,7 +204,7 @@ client.once(Events.ClientReady, async () => {
                         if (existingIds.has(uniqueId)) continue;
 
                         const msgUrl = getDiscordUrl(thread.guildId, thread.id, msg.id);
-                        console.log(`    [${newFoundTotal + 1}] Found: ${zip.name} (${msg.author.username}) -> ${msgUrl}`);
+                        console.log(`    [${newFoundTotal + 1}] Found ${zip.name} by ${msg.author.username} -> ${uniqueId}`);
 
                         results.push({
                             id: uniqueId,
@@ -218,6 +218,7 @@ client.once(Events.ClientReady, async () => {
                             sourceUrl: msgUrl,
                             sourceDownloadUrl: zip.url
                         });
+                        appendToCsv(msgUrl);
                         existingIds.add(uniqueId);
                         newFound++;
                         newFoundTotal++;
