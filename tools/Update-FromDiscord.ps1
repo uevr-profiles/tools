@@ -23,8 +23,7 @@ foreach ($d in @($DownloadDir, $MetaCacheDir)) {
     if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
 }
 
-# ──────── Phase 0: Fetching Metadata (via Bot) ────────────────────────────────
-if ($Fetch) {
+function Fetch-DiscordMetadata {
     Write-Host "Running Discord bot scraper to fetch profile metadata (Limit: $ProfileLimit)..." -ForegroundColor Cyan
     
     # Check for node_modules
@@ -43,8 +42,7 @@ if ($Fetch) {
     Pop-Location
 }
 
-# ──────── Phase 1: Downloads ──────────────────────────────────────────────────
-if ($Download) {
+function Download-DiscordProfiles {
     if (-not (Test-Path $MetadataJson)) {
         Write-Error "Discord metadata not found at $MetadataJson. Run with -Fetch first."
         return
@@ -83,8 +81,7 @@ if ($Download) {
     }
 }
 
-# ──────── Phase 2: Extraction & Integration ────────────────────────────────────
-if ($Extract) {
+function Extract-DiscordProfiles {
     $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
     Write-Host "Processing $($zips.Count) profiles from $SourceName... (Limit: $ProfileLimit)" -ForegroundColor Cyan
 
@@ -168,3 +165,8 @@ if ($Extract) {
         }
     }
 }
+
+# ──────── Main Logic Entry ────────────────────────────────────────────────────
+if ($Fetch)    { Fetch-DiscordMetadata }
+if ($Download) { Download-DiscordProfiles }
+if ($Extract)  { Extract-DiscordProfiles }

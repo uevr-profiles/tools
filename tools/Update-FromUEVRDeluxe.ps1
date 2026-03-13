@@ -30,8 +30,7 @@ function Invoke-DeluxeRequest($url) {
     return Invoke-RestMethod -Uri $url -Headers $headers -ErrorAction Stop
 }
 
-# ──────── Phase 0: Metadata Fetch ───────────────────────────────────────────
-if ($Fetch) {
+function Fetch-UEVRDeluxeMetadata {
     Write-Host "Fetching all metadata from UEVR Deluxe API..." -ForegroundColor Cyan
     try {
         $allProfiles = Invoke-DeluxeRequest $AllProfilesUrl
@@ -43,8 +42,7 @@ if ($Fetch) {
     }
 }
 
-# ──────── Phase 1: Downloads ──────────────────────────────────────────────────
-if ($Download) {
+function Download-UEVRDeluxeProfiles {
     if (-not (Test-Path $MetadataJson)) {
         Write-Error "Metadata not found at $MetadataJson. Run with -Fetch first."
         return
@@ -106,8 +104,7 @@ if ($Download) {
     }
 }
 
-# ──────── Phase 2: Extraction & Integration ────────────────────────────────────
-if ($Extract) {
+function Extract-UEVRDeluxeProfiles {
     $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
     Write-Host "Processing $($zips.Count) profiles from $SourceName..." -ForegroundColor Cyan
 
@@ -180,3 +177,8 @@ if ($Extract) {
         }
     }
 }
+
+# ──────── Main Logic Entry ────────────────────────────────────────────────────
+if ($Fetch)    { Fetch-UEVRDeluxeMetadata }
+if ($Download) { Download-UEVRDeluxeProfiles }
+if ($Extract)  { Extract-UEVRDeluxeProfiles }

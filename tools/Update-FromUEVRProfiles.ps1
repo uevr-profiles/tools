@@ -27,8 +27,7 @@ function Invoke-ProfileRequest($url) {
     return Invoke-RestMethod -Uri $url -Headers $headers -ErrorAction Stop
 }
 
-# ──────── Phase 0: Metadata Fetch ───────────────────────────────────────────
-if ($Fetch) {
+function Fetch-UEVRProfilesMetadata {
     Write-Host "Fetching all metadata from Firestore..." -ForegroundColor Cyan
     try {
         $meta = Invoke-ProfileRequest $FirestoreUrl
@@ -83,8 +82,7 @@ if ($Fetch) {
     }
 }
 
-# ──────── Phase 1: Downloads ──────────────────────────────────────────────────
-if ($Download) {
+function Download-UEVRProfiles {
     if (-not (Test-Path $MetadataJson)) {
         Write-Error "Metadata not found at $MetadataJson. Run with -Fetch first."
         return
@@ -128,8 +126,7 @@ if ($Download) {
     }
 }
 
-# ──────── Phase 2: Extraction & Integration ────────────────────────────────────
-if ($Extract) {
+function Extract-UEVRProfiles {
     $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
     Write-Host "Processing $($zips.Count) profiles from $SourceName..." -ForegroundColor Cyan
 
@@ -197,3 +194,8 @@ if ($Extract) {
         }
     }
 }
+
+# ──────── Main Logic Entry ────────────────────────────────────────────────────
+if ($Fetch)    { Fetch-UEVRProfilesMetadata }
+if ($Download) { Download-UEVRProfiles }
+if ($Extract)  { Extract-UEVRProfiles }
