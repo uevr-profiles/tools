@@ -147,7 +147,7 @@ if ($Extract) {
                     "sourceUrl"         = $p.sourceUrl
                     "sourceDownloadUrl" = $p.sourceDownloadUrl
                     "description"       = $p.description
-                    "gameBanner"        = $p.gameBanner
+                    "headerPictureUrl"  = $p.gameBanner
                     "downloadDate"      = $p.downloadDate
                     "zipHash"           = $zipHash.ToUpper()
                     "downloadUrl"       = Get-ProfileDownloadUrl $uuid $finalExe

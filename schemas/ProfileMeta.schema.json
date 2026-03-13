@@ -201,8 +201,7 @@
         "ID",
         "exeName",
         "gameName",
-        "authorName",
-        "modifiedDate"
+        "authorName"
     ],
     "additionalProperties": false
 }

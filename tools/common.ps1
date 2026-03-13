@@ -259,7 +259,9 @@ function Get-HeuristicTags($profileDir, $meta, $variant) {
         }
     }
 
-    return ,[string[]]($finalTags | Sort-Object | Select-Object -Unique)
+    $res = $finalTags | Sort-Object | Select-Object -Unique
+    if ($null -eq $res) { return @() }
+    return ,[string[]]$res
 }
 
 # Ensure essential directories exist
