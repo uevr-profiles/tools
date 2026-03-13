@@ -65,15 +65,25 @@ class ProfileReadme {
         }
 
         # Header
-        $title = $meta.gameName
-        if ($meta.profileName -and $meta.profileName -ne "[Root]") { $title += " ($($meta.profileName))" }
-        $sb.AppendLine("# $title")
+        $head = "# UEVR Profile for "
+        $game = $meta.gameName
+        if ($meta.profileName -and $meta.profileName -ne "[Root]") { $game += " ($($meta.profileName))" }
+        
+        if ($meta.appID) {
+            $head += "[$game](https://steamdb.info/app/$($meta.appID))"
+        } else {
+            $head += $game
+        }
+        
+        if ($meta.authorName) {
+            $head += " by $($meta.authorName)"
+        }
+        $sb.AppendLine($head)
         $sb.AppendLine()
 
         # Table
         $sb.AppendLine("| Property | Value |")
         $sb.AppendLine("| :--- | :--- |")
-        $sb.AppendLine("| **Author** | $($meta.authorName) |")
         $sb.AppendLine("| **Game EXE** | ``$($meta.exeName)`` |")
         if ($meta.gameVersion) { $sb.AppendLine("| **Game Version** | $($meta.gameVersion) |") }
         $sb.AppendLine("| **Source** | [$($meta.sourceName)]($($meta.sourceUrl)) |")

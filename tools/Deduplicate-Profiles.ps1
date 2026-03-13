@@ -51,6 +51,7 @@ function Get-RawProfileHash($profilePath) {
 
         $hashVal = Get-FileHashMD5 $tempZip
         if ($null -eq $hashVal) { return "HASH_FAILED" }
+        # Debug-Log "[Deduplicate-Profiles.ps1] RawHash for ${profilePath}: $hashVal"
         return $hashVal
     } catch {
         Write-Warning "RawHash failed for folder ${profilePath}: $($_.Exception.Message)"
