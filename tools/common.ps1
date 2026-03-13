@@ -134,10 +134,11 @@ class ProfileMetadata {
     static [bool] Validate($jsonPath, $jsonText) {
         if (-not $Global:SchemaContent) { return $true }
         $jsonErr = $null
-        $res = if ($jsonPath) {
-            Test-Json -Path $jsonPath -Schema $Global:SchemaContent -ErrorAction SilentlyContinue -ErrorVariable jsonErr
+        $res = $null
+        if ($jsonPath) {
+            $res = Test-Json -Path $jsonPath -Schema $Global:SchemaContent -ErrorAction SilentlyContinue -ErrorVariable jsonErr
         } else {
-            Test-Json -Json $jsonText -Schema $Global:SchemaContent -ErrorAction SilentlyContinue -ErrorVariable jsonErr
+            $res = Test-Json -Json $jsonText -Schema $Global:SchemaContent -ErrorAction SilentlyContinue -ErrorVariable jsonErr
         }
         if (-not $res -and $jsonErr) {
             foreach ($err in $jsonErr) {
@@ -312,13 +313,13 @@ function Finalize-GlobalTracking {
     if (-not (Test-Path $BaseTempDir)) { New-Item -ItemType Directory -Path $BaseTempDir -Force | Out-Null }
     if ($Global:TrackingFiles.Count -gt 0) {
         Write-Host "Flushing tracked files to disk ($($Global:TrackingFiles.Count))..." -ForegroundColor Cyan
-        $existing = if (Test-Path $GlobalFilesList) { Get-Content $GlobalFilesList -ErrorAction SilentlyContinue } else { @() }
+        $existing = (Test-Path $GlobalFilesList) ? (Get-Content $GlobalFilesList -ErrorAction SilentlyContinue) : @()
         foreach ($e in $existing) { $Global:TrackingFiles.Add($e) | Out-Null }
         $Global:TrackingFiles | Sort-Object | Set-Content $GlobalFilesList -Encoding utf8
     }
     if ($Global:TrackingProps.PSObject.Properties.Count -gt 0) {
         Write-Host "Flushing tracked properties to disk..." -ForegroundColor Cyan
-        $existing = if (Test-Path $GlobalPropsJson) { try { Get-Content $GlobalPropsJson -Raw | ConvertFrom-Json } catch { [ordered]@{} } } else { [ordered]@{} }
+        $existing = (Test-Path $GlobalPropsJson) ? (try { Get-Content $GlobalPropsJson -Raw | ConvertFrom-Json } catch { [ordered]@{} }) : [ordered]@{}
         foreach ($p in $existing.PSObject.Properties) {
             if (-not $Global:TrackingProps.PSObject.Properties[$p.Name]) {
                 Add-Member -InputObject $Global:TrackingProps -MemberType NoteProperty -Name $p.Name -Value $p.Value
@@ -538,7 +539,7 @@ function Extract-Archives($archivePaths, [switch]$Silent) {
     foreach ($archivePath in $archivePaths) {
         $archive = Get-Item $archivePath; Write-Host "Processing archive: $($archive.Name)..." -ForegroundColor Cyan
         $sidecarPath = $archive.FullName + ".json"; if (-not (Test-Path $sidecarPath)) { $sidecarPath = [IO.Path]::ChangeExtension($archive.FullName, ".json") }
-        $sidecar = if (Test-Path $sidecarPath) { Get-Content $sidecarPath -Raw | ConvertFrom-Json } else { $null }
+        $sidecar = (Test-Path $sidecarPath) ? (Get-Content $sidecarPath -Raw | ConvertFrom-Json) : $null
         $discovered = Extract-And-Discover-Profiles $archive.FullName; Write-Host "  Found $($discovered.Count) profiles within archive." -ForegroundColor Gray
         foreach ($p in $discovered) {
             try {

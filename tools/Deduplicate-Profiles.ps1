@@ -81,7 +81,7 @@ foreach ($folder in $profileFolders) {
             $matches = [regex]::Matches($Hash, '\{([^}]+)\}')
             foreach ($match in $matches) {
                 $propName = $match.Groups[1].Value
-                $val = if ($metaObj.PSObject.Properties[$propName]) { $metaObj.$propName } else { "NULL" }
+                $val = $metaObj.PSObject.Properties[$propName] ? $metaObj.$propName : "NULL"
                 $calculatedHash = $calculatedHash.Replace("{$propName}", $val)
             }
         }
@@ -117,8 +117,8 @@ foreach ($hashVal in $duplicateGroups) {
         if (-not $metaCache.ContainsKey($p)) { continue }
         $m = $metaCache[$p]
         $isKeep = ($p -eq $keep)
-        $prefix = if ($isKeep) { "[KEEP]" } else { "[DUPE]" }
-        $color = if ($isKeep) { "Green" } else { "Yellow" }
+        $prefix = $isKeep ? "[KEEP]" : "[DUPE]"
+        $color = $isKeep ? "Green" : "Yellow"
         
         Write-Host "  $prefix $($m.gameName) ($($m.ID))" -ForegroundColor $color
         Write-Host "         Author: $($m.authorName) | Source: $($m.sourceName)" -ForegroundColor Gray
