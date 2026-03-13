@@ -9,9 +9,59 @@ function Get-ProfileDownloadUrl($profileId, $exeName) {
     return "https://gitfolderdownloader.github.io/?url=$($encodedUrl)&name=$($cleanName)"
 }
 
-$RepoRoot    = Split-Path $PSScriptRoot -Parent
-$ProfilesDir = Join-Path $RepoRoot "profiles"
-$SchemaFile  = Join-Path $RepoRoot "schemas" "ProfileMeta.schema.json"
+$RepoRoot       = Split-Path $PSScriptRoot -Parent
+$ProfilesDir    = Join-Path $RepoRoot "profiles"
+$SchemaFile     = Join-Path $RepoRoot "schemas" "ProfileMeta.schema.json"
+$Global:SchemaContent = if (Test-Path $SchemaFile) { Get-Content $SchemaFile -Raw } else { $null }
+
+# Progress preference to avoid terminal spam during bulk file operations
+$ProgressPreference = 'SilentlyContinue'
+
+# Initialize global memory storage
+$Global:TrackingFiles = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+$Global:TrackingProps = [ordered]@{}
+$Global:TempFolders   = @()
+
+function Get-ISO8601Now {
+    return [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
+}
+
+function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 3) {
+    if (-not $headers["User-Agent"]) {
+        $headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+    $lastErr = $null
+    for ($i = 1; $i -le $retries; $i++) {
+        try {
+            if ($i -gt 1) { Write-Host "  Retry $i/$retries..." -ForegroundColor Yellow }
+            $delay = Get-Random -Minimum 500 -Maximum 1500
+            Start-Sleep -Milliseconds $delay
+            
+            Invoke-WebRequest -Uri $url -Headers $headers -OutFile $targetFile -ErrorAction Stop
+            return
+        } catch {
+            $lastErr = $_.Exception.Message
+            Write-Host "  [!] Attempt $i failed: $lastErr" -ForegroundColor Gray
+        }
+    }
+    throw "All download attempts failed: $lastErr"
+}
+
+function Get-MetadataDates($p) {
+    # Check if we have a history array (Deluxe)
+    if ($p.history -and $p.history.Count -gt 0) {
+        $sorted = $p.history | Sort-Object modifiedDate
+        return @{
+            Modified = $sorted[-1].modifiedDate
+            Created  = $sorted[0].modifiedDate
+        }
+    }
+    # Check for direct properties (Profiles uses creationDate.timestampValue)
+    $latest = if ($p.modifiedDate) { $p.modifiedDate } elseif ($p.creationDate.timestampValue) { $p.creationDate.timestampValue } else { "" }
+    $oldest = if ($p.createdDate) { $p.createdDate } elseif ($p.creationDate.timestampValue) { $p.creationDate.timestampValue } else { $latest }
+    
+    return @{ Modified = $latest; Created = $oldest }
+}
 
 function Format-ISO8601Date($date) {
     if ($null -eq $date -or "$date" -eq "") { return [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ") }
@@ -33,10 +83,6 @@ $BaseTempDir     = Join-Path $env:TEMP "uevr_profiles"
 $GlobalFilesList = Join-Path $BaseTempDir "files.txt"
 $GlobalPropsJson = Join-Path $BaseTempDir "props.json"
 $MetaCacheDir    = Join-Path $BaseTempDir "metadata"
-
-# Initialize global memory storage
-$Global:TrackingFiles = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
-$Global:TrackingProps = [ordered]@{}
 
 function Update-GlobalFilesList($relPaths) {
     if ($null -eq $relPaths) { return }
@@ -75,17 +121,17 @@ function Move-Item-Smart($source, $destination) {
             if (Test-Path $destPath -PathType Container) {
                 Move-Item-Smart $_.FullName $destPath
             } else {
-                Move-Item -Path $_.FullName -Destination $destPath -Force
+                Move-Item -Path $_.FullName -Destination $destPath -Force -ErrorAction SilentlyContinue
             }
         } else {
-            Move-Item -Path $_.FullName -Destination $destPath -Force
+            Move-Item -Path $_.FullName -Destination $destPath -Force -ErrorAction SilentlyContinue
         }
     }
     # Cleanup empty source
     if (Test-Path $source) {
         $rem = Get-ChildItem -Path $source -Recurse -ErrorAction SilentlyContinue
         if ($null -eq $rem -or $rem.Count -eq 0) {
-            Remove-Item $source -Force -ErrorAction SilentlyContinue
+            Remove-Item $source -Force -ErrorAction SilentlyContinue 2>$null
         }
     }
 }
@@ -124,6 +170,16 @@ function Finalize-GlobalTracking {
             }
         }
         $Global:TrackingProps | ConvertTo-Json -Depth 10 | Set-Content $GlobalPropsJson -Encoding utf8
+    }
+
+    if ($Global:TempFolders.Count -gt 0) {
+        Write-Host "Cleaning up $($Global:TempFolders.Count) temporary folders..." -ForegroundColor Cyan
+        foreach ($f in $Global:TempFolders) {
+            if (Test-Path $f) {
+                Remove-Item $f -Recurse -Force -ErrorAction SilentlyContinue 2>$null
+            }
+        }
+        $Global:TempFolders = @()
     }
 }
 
@@ -326,15 +382,15 @@ function Expand-Archive-Smart($path, $destination) {
 function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $maxDepth = 5) {
     if ($maxDepth -le 0) { return @() }
     
-    # Create temp base and ensure we have the full, long path to avoid string mapping issues
+    # Create temp base and ensure we have the full, long path
     $tempBaseDir = New-Item -ItemType Directory -Path (Join-Path $env:TEMP "uevr_extract_$(New-Guid)") -Force
     $tempBase = $tempBaseDir.FullName
+    $Global:TempFolders += $tempBase
     
     try {
         Expand-Archive-Smart $sourceArchive $tempBase
     } catch {
         Write-Error "    [!] Fatal error during extraction of $sourceArchive"
-        Remove-Item $tempBase -Recurse -Force -ErrorAction SilentlyContinue
         return @()
     }
     
@@ -358,7 +414,7 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
             }
             $profilesFound += $sp
         }
-        Remove-Item $a.FullName -Force
+        Remove-Item $a.FullName -Force -ErrorAction SilentlyContinue
     }
 
     # 2. Look for profile folders
@@ -384,6 +440,7 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
         
         $targetDir = Join-Path $env:TEMP "uevr_profile_tmp_$(New-Guid)"
         New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
+        $Global:TempFolders += $targetDir
         
         # Determine ProfileName (folder name)
         $pName = if ($rel) { $folderItem.Name } else { "" }
@@ -400,7 +457,7 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
                 $fTarget = Join-Path $targetDir $fRel
                 $fParent = Split-Path $fTarget -Parent
                 if (-not (Test-Path $fParent)) { New-Item -ItemType Directory -Path $fParent -Force | Out-Null }
-                Copy-Item $f.FullName -Destination $fTarget -Force
+                Copy-Item $f.FullName -Destination $fTarget -Force -ErrorAction SilentlyContinue
             } else {
                 Write-Host "    Filtered: $fRel (WH:$isWhitelisted, BL:$isBlacklisted)" -ForegroundColor DarkRed
             }
@@ -409,11 +466,11 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
         if ((Get-ChildItem $targetDir).Count -gt 0) {
             $profilesFound += [PSCustomObject]@{ Path = $targetDir; Variant = $variant; ProfileName = $pName }
         } else {
-            Remove-Item $targetDir -Recurse -Force
+            # Partial cleanup if empty
+            Remove-Item $targetDir -Recurse -Force -ErrorAction SilentlyContinue 2>$null
         }
     }
-    
-    Remove-Item $tempBase -Recurse -Force -ErrorAction SilentlyContinue
+    # Cleanup postponed until script end via $Global:TempFolders
     return $profilesFound
 }
 
@@ -441,7 +498,7 @@ function Finalize-ProfileMetadata($targetDir, $meta, $profileName) {
     if ($rawDesc) {
         $meta["description"] = Convert-MarkdownToText $rawDesc 100
     }
-    if (Test-Path $legacyDesc) { Remove-Item $legacyDesc -Force }
+    if (Test-Path $legacyDesc) { Remove-Item $legacyDesc -Force -ErrorAction SilentlyContinue }
     return $meta
 }
 
@@ -474,14 +531,34 @@ function Get-FileHashMD5($path) {
     return (Get-FileHash -Path $path -Algorithm MD5).Hash.ToUpper()
 }
 
-function Test-Metadata($json, $path) {
-    if (-not (Test-Path $SchemaFile)) { return $true }
-    # Silently validate, only report errors if we have them
-    $res = Test-Json -Json $json -SchemaFile $SchemaFile -ErrorAction SilentlyContinue
+function Test-Metadata($jsonFile, $gameName = "Unknown") {
+    if (-not $Global:SchemaContent) { return $true }
+    $res = Test-Json -Path $jsonFile -Schema $Global:SchemaContent -ErrorAction SilentlyContinue
     if (-not $res) {
-        Write-Warning "    [!] Metadata validation failed for $(Split-Path $path -Parent | Split-Path -Leaf)"
+        Write-Warning "    [!] Metadata validation failed for $gameName ($jsonFile)"
     }
     return $res
+}
+
+function Save-ProfileMetadata($targetDir, $meta, $zipPath, $variant) {
+    if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }
+    
+    # 1. Finalize (adds profileName, extracts description from README/legacy)
+    $meta = Finalize-ProfileMetadata $targetDir $meta $variant
+    $meta = Remove-NullProperties $meta
+    
+    # 2. Update Global Tracking
+    Update-GlobalPropsJson $zipPath $variant $meta
+    
+    # 3. Save to disk
+    $jsonFile = Join-Path $targetDir "ProfileMeta.json"
+    $meta | ConvertTo-Json -Depth 5 | Set-Content $jsonFile -Encoding utf8
+    
+    # 4. Validate
+    if (-not (Test-Metadata $jsonFile $meta.gameName)) {
+        throw "JSON Schema validation failed for $($meta.gameName) ($($meta.ID))."
+    }
+    return $meta
 }
 
 function Remove-NullProperties($obj) {

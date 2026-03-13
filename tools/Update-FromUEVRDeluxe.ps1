@@ -61,47 +61,27 @@ if ($Download) {
             $msg = "Downloading $($p.gameName)"
             if ($actualExe) { $msg += " ($actualExe)" }
             Write-Host "$msg from $url..." -ForegroundColor Gray
-            $success = $false
-            $lastErr = $null
-            for ($i = 1; $i -le 3; $i++) {
-                try {
-                    if ($i -gt 1) { Write-Host "  Retry $i/3..." -ForegroundColor Yellow }
-                    $delay = Get-Random -Minimum 500 -Maximum 1500
-                    Start-Sleep -Milliseconds $delay # Randomized stealth delay
-                    
-                    # Resolve dates from history or fallback to root property
-                    $latestDate  = if ($p.history) { ($p.history | Sort-Object modifiedDate -Descending | Select-Object -First 1).modifiedDate } else { $p.modifiedDate }
-                    $oldestDate  = if ($p.history) { ($p.history | Sort-Object modifiedDate | Select-Object -First 1).modifiedDate } else { $p.modifiedDate }
 
-                    $sidecarObj = [ordered]@{
-                        "authorName"   = $p.authorName
-                        "gameName"     = $p.gameName
-                        "exeName"      = $p.exeName
-                        "modifiedDate" = $latestDate
-                        "createdDate"  = $oldestDate
-                        "sourceUrl"    = $url
-                        "sourceDownloadUrl" = $url
-                        "description"  = $p.remarks
-                    }
-
-                    $headers = @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" }
-                    Invoke-WebRequest -Uri $url -Headers $headers -OutFile $targetFile -ErrorAction Stop
-                    Write-Host "  [OK] Download successful." -ForegroundColor Green
-                    
-                    # Save metadata sidecar
-                    $sidecarObj | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
-                    $count++
-                    $failCount = 0
-                    $success = $true
-                    break
-                } catch {
-                    $lastErr = $_.Exception.Message
-                    Write-Host "  [!] Attempt $i failed: $lastErr" -ForegroundColor Gray
+            try {
+                Invoke-WebRequestWithRetry -url $url -targetFile $targetFile -headers @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" }
+                Write-Host "  [OK] Download successful." -ForegroundColor Green
+                
+                $dates = Get-MetadataDates $p
+                $sidecarObj = [ordered]@{
+                    "authorName"   = $p.authorName
+                    "gameName"     = $p.gameName
+                    "exeName"      = $p.exeName
+                    "modifiedDate" = $dates.Modified
+                    "createdDate"  = $dates.Created
+                    "sourceUrl"    = $url
+                    "sourceDownloadUrl" = $url
+                    "description"  = $p.remarks
                 }
-            }
-
-            if (-not $success) {
-                Write-Host "  [!] All download attempts failed: $lastErr" -ForegroundColor Red
+                $sidecarObj | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
+                $count++
+                $failCount = 0
+            } catch {
+                Write-Host "  [!] All download attempts failed: $($_.Exception.Message)" -ForegroundColor Red
                 $failCount++
                 if (-not $Silent) { throw "Fatal: Download failed for $($p.gameName). Stopping because -Silent is not set." }
             }
@@ -164,25 +144,24 @@ if ($Extract) {
                 $cleanId = $uuid.Replace("-", "").ToLower()
                 $encodedExe = [uri]::EscapeDataString($actualExe)
                 $sourceUrl = "$ProfilesUrlBase/$encodedExe/$cleanId"
-                $latestDate = if ($p.history) { ($p.history | Sort-Object modifiedDate -Descending | Select-Object -First 1).modifiedDate } else { $p.modifiedDate }
-                $oldestDate = if ($p.history) { ($p.history | Sort-Object modifiedDate | Select-Object -First 1).modifiedDate } else { $p.modifiedDate }
 
                 $finalExe = if ($extraMeta.exeName) { $extraMeta.exeName } elseif ($p.exeName) { $p.exeName } else { $p.exename }
                 $finalAuthor = if ($extraMeta.authorName) { $extraMeta.authorName } elseif ($p.authorName) { $p.authorName } else { $p.author }
                 $displayVariant = Get-CleanVariantName $variant $finalExe
 
+                $dates = Get-MetadataDates $p
                 $metaProps = [ordered]@{
                     "ID"                = $uuid
                     "exeName"           = $finalExe
                     "gameName"          = if ($extraMeta.gameName) { $extraMeta.gameName } else { $p.gameName }
                     "authorName"        = $finalAuthor
-                    "modifiedDate"      = Format-ISO8601Date $(if ($extraMeta.modifiedDate) { $extraMeta.modifiedDate } else { $latestDate })
-                    "createdDate"       = Format-ISO8601Date $(if ($extraMeta.createdDate) { $extraMeta.createdDate } else { $oldestDate })
+                    "modifiedDate"      = Format-ISO8601Date $(if ($extraMeta.modifiedDate) { $extraMeta.modifiedDate } else { $dates.Modified })
+                    "createdDate"       = Format-ISO8601Date $(if ($extraMeta.createdDate) { $extraMeta.createdDate } else { $dates.Created })
                     "sourceName"        = "uevrdeluxe.org"
                     "sourceUrl"         = if ($extraMeta.sourceUrl) { $extraMeta.sourceUrl } else { $sourceUrl }
                     "sourceDownloadUrl" = if ($extraMeta.sourceDownloadUrl) { $extraMeta.sourceDownloadUrl } else { $sourceUrl }
                     "description"       = if ($extraMeta.description) { $extraMeta.description } else { $p.remarks }
-                    "downloadDate"      = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+                    "downloadDate"      = Get-ISO8601Now
                     "zipHash"           = $zipHash.ToUpper()
                     "downloadUrl"       = Get-ProfileDownloadUrl $uuid $finalExe
                 }
@@ -193,16 +172,7 @@ if ($Extract) {
                     $metaProps["tags"] = $tagArray
                 }
 
-                $meta = Finalize-ProfileMetadata $targetDir $metaProps $displayVariant
-                $meta = Remove-NullProperties $meta
-                Update-GlobalPropsJson $z.FullName $variant $meta
-                
-                $jsonFile = Join-Path $targetDir "ProfileMeta.json"
-                $meta | ConvertTo-Json -Depth 5 | Set-Content $jsonFile -Encoding utf8
-                
-                if (-not (Test-Json -Path $jsonFile -Schema (Get-Content $SchemaFile -Raw))) {
-                    throw "JSON Schema validation failed for $($p.gameName) ($uuid)."
-                }
+                $meta = Save-ProfileMetadata $targetDir $metaProps $z.FullName $variant
 
                 if (-not $Silent) {
                     Print-ProfileInfo $meta $z.FullName
