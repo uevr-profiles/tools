@@ -73,7 +73,7 @@ if ($Download) {
                     "exeName"      = if ($variantExe) { $variantExe } elseif ($topExe) { $topExe } else { "" }
                     "downloadUrl"  = $dlUrl
                     "archive"      = if ($archiveFile) { $archiveFile } else { "$($profileId).zip" }
-                    "remarks"      = $vf.description.stringValue
+                    "description"  = $vf.description.stringValue
                 }
                 $allProfiles += $obj
             }
@@ -218,7 +218,7 @@ if ($Extract) {
                     "sourceName"        = "uevr-profiles.com"
                     "sourceUrl"         = $sourceUrl
                     "sourceDownloadUrl" = $p.downloadUrl
-                    "remarks"           = $p.remarks
+                    "description"       = $p.description
                     "downloadDate"      = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
                     "zipHash"           = $zipHash.ToUpper()
                     "downloadUrl"       = Get-ProfileDownloadUrl $uuid $finalExe

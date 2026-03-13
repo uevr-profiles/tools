@@ -50,8 +50,8 @@ if ($Download) {
         $actualExe = if ($p.exeName) { $p.exeName } else { $p.exename }
         if (-not $uuid -or -not $actualExe) { continue }
         
-        # Deluxe zip naming: <exeName>_<id>.zip
-        $targetFile = Join-Path $DownloadDir "$($actualExe)_$($uuid).zip"
+        # Deluxe zip naming: <id>.zip
+        $targetFile = Join-Path $DownloadDir "$($uuid).zip"
         $sidecar    = $targetFile + ".json"
         
         if (-not (Test-Path $targetFile)) {
@@ -79,7 +79,7 @@ if ($Download) {
                         "createdDate"  = $oldestDate
                         "sourceUrl"    = $url
                         "sourceDownloadUrl" = $url
-                        "remarks"      = $p.remarks
+                        "description"  = $p.remarks
                     }
 
                     $headers = @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" }
@@ -119,8 +119,8 @@ if ($Extract) {
             # Use sidecar if available, else try to find in allprofiles.json
             $extraMeta = if (Test-Path $sidecar) { Get-Content $sidecar -Raw | ConvertFrom-Json } else { $null }
             $p = if (Test-Path $MetadataJson) {
-                # Deluxe zip naming is <exeName>_<id>.zip. Grab the last part for the ID.
-                $idStr = ($z.BaseName -split '_')[-1]
+                # Deluxe zip naming is <id>.zip
+                $idStr = $z.BaseName
                 $cached = Get-Content $MetadataJson -Raw | ConvertFrom-Json
                 $cached | Where-Object { 
                     $thisId = if ($_.ID) { $_.ID } else { $_.id }
@@ -179,6 +179,7 @@ if ($Extract) {
                     "sourceName"        = "uevrdeluxe.org"
                     "sourceUrl"         = if ($extraMeta.sourceUrl) { $extraMeta.sourceUrl } else { $sourceUrl }
                     "sourceDownloadUrl" = if ($extraMeta.sourceDownloadUrl) { $extraMeta.sourceDownloadUrl } else { $sourceUrl }
+                    "description"       = if ($extraMeta.description) { $extraMeta.description } else { $p.remarks }
                     "downloadDate"      = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
                     "zipHash"           = $zipHash.ToUpper()
                     "downloadUrl"       = Get-ProfileDownloadUrl $uuid $finalExe
