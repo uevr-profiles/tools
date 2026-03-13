@@ -118,17 +118,8 @@ foreach ($hashVal in $duplicateGroups) {
 
     if ($Delete) {
         foreach ($p in $toDelete) {
-            $m = $metaCache[$p]
-            $confirm = if ($Silent) { $true } else { 
-                Read-Host "Delete duplicate $($m.ID) ($($m.gameName))? (y/N)" 
-            }
-            
-            if ($confirm -eq $true -or $confirm -match "^y$") {
-                Write-Host "  Deleting $p..." -ForegroundColor Red
-                Remove-Item $p -Recurse -Force
-            } else {
-                Write-Host "  Skipped $p." -ForegroundColor Gray
-            }
+            Write-Host "  Deleting $p..." -ForegroundColor Red
+            Remove-Item $p -Recurse -Force
         }
     }
 }

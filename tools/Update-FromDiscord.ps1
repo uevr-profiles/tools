@@ -185,22 +185,37 @@ function Extract-DiscordProfiles {
 }
 
 # ──────── Main Logic Entry ────────────────────────────────────────────────────
-if ($Fetch)    { 
+$ExpectedCount = if ($ProfileLimit -ne [int]::MaxValue) { $ProfileLimit } else { [int]::MaxValue }
+
+if ($Fetch) { 
     Fetch-DiscordMetadata
-    if (-not $Silent -and $ProfileLimit -ne [int]::MaxValue) {
-        $results = if (Test-Path $MetadataJson) { Get-Content $MetadataJson -Raw | ConvertFrom-Json } else { @() }
-        if ($results.Count -lt $ProfileLimit) {
-            throw "Fatal: Discord fetch count mismatch. Expected at least $ProfileLimit, got $($results.Count). Stopping because -Silent is not set."
-        }
+    $results = if (Test-Path $MetadataJson) { Get-Content $MetadataJson -Raw | ConvertFrom-Json } else { @() }
+    $actual = $results.Count
+    if ($ProfileLimit -ne [int]::MaxValue -and $actual -lt $ProfileLimit) {
+        $msg = "Discord fetch count mismatch. Expected at least $ProfileLimit, got $actual."
+        if ($Silent) { Write-Warning $msg } else { throw "Fatal: $msg" }
     }
+    $ExpectedCount = [Math]::Min($ExpectedCount, $actual)
 }
+
 if ($Download) { 
     Download-DiscordProfiles
-    if (-not $Silent -and $ProfileLimit -ne [int]::MaxValue) {
-        $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
-        if ($zips.Count -lt $ProfileLimit) {
-            throw "Fatal: Discord download count mismatch. Expected at least $ProfileLimit, got $($zips.Count). Stopping because -Silent is not set."
-        }
+    $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
+    $actual = $zips.Count
+    if ($ExpectedCount -ne [int]::MaxValue -and $actual -lt $ExpectedCount) {
+        $msg = "Discord download count mismatch. Expected at least $ExpectedCount, got $actual."
+        if ($Silent) { Write-Warning $msg } else { throw "Fatal: $msg" }
+    }
+    $ExpectedCount = [Math]::Min($ExpectedCount, $actual)
+}
+
+if ($Extract) { 
+    Extract-DiscordProfiles 
+    $processed = Get-ChildItem -Path $ProfilesDir -Directory | Where-Object { (Test-Path (Join-Path $_.FullName "ProfileMeta.json")) }
+    $profileIds = $processed | ForEach-Object { (Get-Content (Join-Path $_.FullName "ProfileMeta.json") -Raw | ConvertFrom-Json).ID } | Select-Object -Unique
+    $actual = $profileIds.Count
+    if ($ExpectedCount -ne [int]::MaxValue -and $actual -lt $ExpectedCount) {
+        $msg = "Discord extraction ID count mismatch. Expected at least $ExpectedCount unique profile IDs, got $actual."
+        if ($Silent) { Write-Warning $msg } else { throw "Fatal: $msg" }
     }
 }
-if ($Extract)  { Extract-DiscordProfiles }

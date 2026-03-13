@@ -191,22 +191,37 @@ function Extract-UEVRDeluxeProfiles {
 }
 
 # ──────── Main Logic Entry ────────────────────────────────────────────────────
-if ($Fetch)    { 
+$ExpectedCount = if ($ProfileLimit -ne [int]::MaxValue) { $ProfileLimit } else { [int]::MaxValue }
+
+if ($Fetch) { 
     Fetch-UEVRDeluxeMetadata
-    if (-not $Silent -and $ProfileLimit -ne [int]::MaxValue) {
-        $data = if (Test-Path $MetadataJson) { Get-Content $MetadataJson -Raw | ConvertFrom-Json } else { @() }
-        if ($data.Count -lt $ProfileLimit) {
-            throw "Fatal: UEVRDeluxe fetch count mismatch. Expected at least $ProfileLimit, got $($data.Count). Stopping because -Silent is not set."
-        }
+    $data = if (Test-Path $MetadataJson) { Get-Content $MetadataJson -Raw | ConvertFrom-Json } else { @() }
+    $actual = $data.Count
+    if ($ProfileLimit -ne [int]::MaxValue -and $actual -lt $ProfileLimit) {
+        $msg = "UEVRDeluxe fetch count mismatch. Expected at least $ProfileLimit, got $actual."
+        if ($Silent) { Write-Warning $msg } else { throw "Fatal: $msg" }
     }
+    $ExpectedCount = [Math]::Min($ExpectedCount, $actual)
 }
+
 if ($Download) { 
     Download-UEVRDeluxeProfiles
-    if (-not $Silent -and $ProfileLimit -ne [int]::MaxValue) {
-        $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
-        if ($zips.Count -lt $ProfileLimit) {
-            throw "Fatal: UEVRDeluxe download count mismatch. Expected at least $ProfileLimit, got $($zips.Count). Stopping because -Silent is not set."
-        }
+    $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
+    $actual = $zips.Count
+    if ($ExpectedCount -ne [int]::MaxValue -and $actual -lt $ExpectedCount) {
+        $msg = "UEVRDeluxe download count mismatch. Expected at least $ExpectedCount, got $actual."
+        if ($Silent) { Write-Warning $msg } else { throw "Fatal: $msg" }
+    }
+    $ExpectedCount = [Math]::Min($ExpectedCount, $actual)
+}
+
+if ($Extract) { 
+    Extract-UEVRDeluxeProfiles 
+    $processed = Get-ChildItem -Path $ProfilesDir -Directory | Where-Object { (Test-Path (Join-Path $_.FullName "ProfileMeta.json")) }
+    $profileIds = $processed | ForEach-Object { (Get-Content (Join-Path $_.FullName "ProfileMeta.json") -Raw | ConvertFrom-Json).ID } | Select-Object -Unique
+    $actual = $profileIds.Count
+    if ($ExpectedCount -ne [int]::MaxValue -and $actual -lt $ExpectedCount) {
+        $msg = "UEVRDeluxe extraction ID count mismatch. Expected at least $ExpectedCount unique profile IDs, got $actual."
+        if ($Silent) { Write-Warning $msg } else { throw "Fatal: $msg" }
     }
 }
-if ($Extract)  { Extract-UEVRDeluxeProfiles }

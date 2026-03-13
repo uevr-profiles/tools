@@ -208,22 +208,39 @@ function Extract-UEVRProfiles {
 }
 
 # ──────── Main Logic Entry ────────────────────────────────────────────────────
-if ($Fetch)    { 
+$ExpectedCount = if ($ProfileLimit -ne [int]::MaxValue) { $ProfileLimit } else { [int]::MaxValue }
+
+if ($Fetch) { 
     Fetch-UEVRProfilesMetadata
-    if (-not $Silent -and $ProfileLimit -ne [int]::MaxValue) {
-        $data = if (Test-Path $MetadataJson) { Get-Content $MetadataJson -Raw | ConvertFrom-Json } else { @() }
-        if ($data.Count -lt $ProfileLimit) {
-            throw "Fatal: UEVRProfiles fetch count mismatch. Expected at least $ProfileLimit, got $($data.Count). Stopping because -Silent is not set."
-        }
+    $data = if (Test-Path $MetadataJson) { Get-Content $MetadataJson -Raw | ConvertFrom-Json } else { @() }
+    $actual = $data.Count
+    if ($ProfileLimit -ne [int]::MaxValue -and $actual -lt $ProfileLimit) {
+        $msg = "Fetch count mismatch: Expected at least $ProfileLimit, got $actual."
+        if ($Silent) { Write-Warning $msg } else { throw "Fatal: $msg" }
     }
+    $ExpectedCount = [Math]::Min($ExpectedCount, $actual)
 }
+
 if ($Download) { 
     Download-UEVRProfiles
-    if (-not $Silent -and $ProfileLimit -ne [int]::MaxValue) {
-        $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
-        if ($zips.Count -lt $ProfileLimit) {
-            throw "Fatal: UEVRProfiles download count mismatch. Expected at least $ProfileLimit, got $($zips.Count). Stopping because -Silent is not set."
-        }
+    $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
+    $actual = $zips.Count
+    if ($ExpectedCount -ne [int]::MaxValue -and $actual -lt $ExpectedCount) {
+        $msg = "Download count mismatch: Expected at least $ExpectedCount, got $actual."
+        if ($Silent) { Write-Warning $msg } else { throw "Fatal: $msg" }
+    }
+    $ExpectedCount = [Math]::Min($ExpectedCount, $actual)
+}
+
+if ($Extract) { 
+    Extract-UEVRProfiles 
+    # Logic for extraction count is tricky due to variations, but we check if we processed all zips
+    $processed = Get-ChildItem -Path $ProfilesDir -Directory | Where-Object { (Test-Path (Join-Path $_.FullName "ProfileMeta.json")) }
+    # This is a loose check: we expect at least as many profile IDs as we had downloads
+    $profileIds = $processed | ForEach-Object { (Get-Content (Join-Path $_.FullName "ProfileMeta.json") -Raw | ConvertFrom-Json).ID } | Select-Object -Unique
+    $actual = $profileIds.Count
+    if ($ExpectedCount -ne [int]::MaxValue -and $actual -lt $ExpectedCount) {
+        $msg = "Extraction ID count mismatch: Expected at least $ExpectedCount unique profile IDs, got $actual."
+        if ($Silent) { Write-Warning $msg } else { throw "Fatal: $msg" }
     }
 }
-if ($Extract)  { Extract-UEVRProfiles }
