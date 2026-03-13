@@ -118,8 +118,17 @@ client.once(Events.ClientReady, async () => {
     let results = loadResults();
     let state = loadState();
     let newFoundTotal = 0;
+    const bannerCache = new Map();
     console.log(`Loaded ${results.length} existing profiles from ${path.basename(JSON_FILE)}`);
     const existingIds = new Set(results.map(r => r.id));
+
+    // Pre-populate banner cache from existing results
+    for (const r of results) {
+        if (r.gameBanner && r.sourceUrl) {
+            const threadIdMatch = r.sourceUrl.match(/\/(\d+)\/\d+$/);
+            if (threadIdMatch) bannerCache.set(threadIdMatch[1], r.gameBanner);
+        }
+    }
 
     for (const channelId of FORUM_CHANNELS) {
         try {
@@ -167,11 +176,24 @@ client.once(Events.ClientReady, async () => {
                     continue;
                 }
 
-                let gameBanner = null;
-                const starterMsg = messages.find(m => m.id === thread.id) || (await thread.fetchStarterMessage().catch(() => null));
-                if (starterMsg) {
-                    const img = starterMsg.attachments.find(a => a.contentType?.startsWith('image/'));
-                    if (img) gameBanner = img.url;
+                let gameBanner = bannerCache.get(thread.id) || null;
+
+                if (!gameBanner) {
+                    try {
+                        const starterMsg = messages.find(m => m.id === thread.id) || await thread.fetchStarterMessage();
+                        if (starterMsg) {
+                            const img = starterMsg.attachments.find(a => 
+                                a.contentType?.startsWith('image/') || 
+                                /\.(png|jpg|jpeg|webp|gif)$/i.test(a.name)
+                            );
+                            if (img) {
+                                gameBanner = img.url;
+                                bannerCache.set(thread.id, gameBanner);
+                            }
+                        }
+                    } catch (e) {
+                        // console.error(`    [!] Could not fetch starter message for banner: ${e.message}`);
+                    }
                 }
 
                 let newFound = 0;
