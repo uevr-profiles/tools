@@ -1,5 +1,5 @@
 param(
-    [switch]$Clear
+    [switch]$Clean
 )
 
 $ToolsDir = $PSScriptRoot
@@ -7,11 +7,11 @@ $RepoRoot = Split-Path $ToolsDir -Parent
 $ProfilesDir = Join-Path $RepoRoot "profiles"
 $CacheDir = Join-Path $env:TEMP "uevr_profiles"
 
-if ($Clear) {
-    Write-Host "Clearing cache: $CacheDir" -ForegroundColor Yellow
+if ($Clean) {
+    Write-Host "Cleaning cache: $CacheDir" -ForegroundColor Yellow
     Remove-Item $CacheDir -Recurse -Force -ErrorAction SilentlyContinue 2>$null
     
-    Write-Host "Clearing profiles: $ProfilesDir" -ForegroundColor Yellow
+    Write-Host "Cleaning profiles: $ProfilesDir" -ForegroundColor Yellow
     if (Test-Path $ProfilesDir) {
         Get-ChildItem -Path $ProfilesDir -Directory | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue 2>$null
     }
@@ -34,11 +34,7 @@ foreach ($s in $Scripts) {
     if (Test-Path $s) {
         Write-Host "`n>>> Testing $s <<<" -ForegroundColor Cyan
         try {
-            if ($s -like "*Discord*") {
-                & $s -Fetch -Download -Extract -Whitelist -ProfileLimit 1
-            } else {
-                & $s -Download -Extract -Whitelist -ProfileLimit 1
-            }
+            & $s -Fetch -Download -Extract -Whitelist -ProfileLimit 1
         } catch {
             Write-Host "    [!] Test failed for ${s}: $($_.Exception.Message)" -ForegroundColor Red
         }

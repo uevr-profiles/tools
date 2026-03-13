@@ -1,4 +1,5 @@
 param(
+    [switch]$Fetch,
     [switch]$Download,
     [switch]$Extract,
     [int]$ProfileLimit = [int]::MaxValue,
@@ -26,8 +27,8 @@ function Invoke-ProfileRequest($url) {
     return Invoke-RestMethod -Uri $url -Headers $headers -ErrorAction Stop
 }
 
-# ──────── Phase 1: Metadata & Downloads ───────────────────────────────────────
-if ($Download) {
+# ──────── Phase 0: Metadata Fetch ───────────────────────────────────────────
+if ($Fetch) {
     Write-Host "Fetching all metadata from Firestore..." -ForegroundColor Cyan
     try {
         $meta = Invoke-ProfileRequest $FirestoreUrl
@@ -75,9 +76,18 @@ if ($Download) {
             }
         }
         $allProfiles | ConvertTo-Json | Set-Content $MetadataJson -Encoding utf8
+        Write-Host "  [OK] Metadata fetched and cached: $($allProfiles.Count) profiles." -ForegroundColor Green
     } catch {
-        Write-Warning "Firestore API failed. Falling back to cached metadata."
+        Write-Warning "Firestore API failed: $($_.Exception.Message)"
         if (-not (Test-Path $MetadataJson)) { throw "No metadata cache found. Cannot continue." }
+    }
+}
+
+# ──────── Phase 1: Downloads ──────────────────────────────────────────────────
+if ($Download) {
+    if (-not (Test-Path $MetadataJson)) {
+        Write-Error "Metadata not found at $MetadataJson. Run with -Fetch first."
+        return
     }
 
     $profiles = Get-Content $MetadataJson -Raw | ConvertFrom-Json
@@ -103,13 +113,7 @@ if ($Download) {
             Write-Host "$msg..." -ForegroundColor Gray
 
             try {
-                # Two-tier download strategy
-                try {
-                    Invoke-WebRequestWithRetry -url $p.downloadUrl -targetFile $targetFile -Silent $Silent
-                } catch {
-                    # Future: Add actual proxy or alternative mirror logic here if available
-                    throw
-                }
+                Invoke-WebRequestWithRetry -url $p.downloadUrl -targetFile $targetFile -Silent $Silent
                 
                 $p | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
                 $count++
@@ -144,33 +148,27 @@ if ($Extract) {
                 $variant = $d.Variant
                 $tempDir = $d.Path
                 $uuid = $p.uuid
-                
+
                 $targetDir = Join-Path $ProfilesDir $uuid
                 if ($variant -and $variant -ne "[Root]") {
                     $vPath = $variant -replace ' / ', '\'
                     $targetDir = Join-Path $targetDir $vPath
                 }
                 
+                # Move contents
                 $relFiles = Get-ChildItem -Path $tempDir -Recurse | Where-Object { -not $_.PSIsContainer } | ForEach-Object { 
                     $_.FullName.Substring($tempDir.Length).TrimStart('\')
                 }
                 Update-GlobalFilesList $relFiles
+                
                 Move-Item-Smart $tempDir $targetDir
 
-                $finalExe = if ($p.exeName) { $p.exeName } else { $p.exename }
-                if (-not $finalExe) {
-                    Write-Warning "    [!] Missing exeName for $($p.gameName). Falling back to gameName slug."
-                    $finalExe = $p.gameName -replace '[^a-zA-Z0-9]', ''
-                }
-
-                $finalAuthor = if ($p.authorName) { $p.authorName } else { $p.author }
-                $displayVariant = Get-CleanVariantName $variant $finalExe
-                
+                # Meta creation
                 $meta = [ProfileMetadata]::new()
                 $meta.ID                = $uuid
-                $meta.exeName           = $finalExe
+                $meta.exeName           = $p.exeName
                 $meta.gameName          = $p.gameName
-                $meta.authorName        = $finalAuthor
+                $meta.authorName        = $p.authorName
                 $meta.modifiedDate      = Format-ISO8601Date $p.modifiedDate
                 $meta.createdDate       = Format-ISO8601Date $p.createdDate
                 $meta.sourceName        = "uevr-profiles.com"
@@ -179,10 +177,10 @@ if ($Extract) {
                 $meta.description       = $p.description
                 $meta.downloadDate      = Get-ISO8601Now
                 $meta.zipHash           = $zipHash.ToUpper()
-                $meta.downloadUrl       = Get-ProfileDownloadUrl $uuid $finalExe
+                $meta.downloadUrl       = Get-ProfileDownloadUrl $uuid $p.exeName
 
-                # Tags support (Heuristics)
-                $tagArray = @(Get-HeuristicTags $targetDir $meta $displayVariant)
+                # Handle Tags (Heuristics only for uevr-profiles)
+                $tagArray = @(Get-HeuristicTags $targetDir $meta $variant)
                 if ($tagArray -and $tagArray.Count -gt 0) {
                     $meta.tags = $tagArray
                 }
@@ -199,5 +197,3 @@ if ($Extract) {
         }
     }
 }
-
-Finalize-GlobalTracking

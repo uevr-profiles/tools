@@ -1,4 +1,5 @@
 param(
+    [switch]$Fetch,
     [switch]$Download,
     [switch]$Extract,
     [int]$ProfileLimit = [int]::MaxValue,
@@ -29,18 +30,28 @@ function Invoke-DeluxeRequest($url) {
     return Invoke-RestMethod -Uri $url -Headers $headers -ErrorAction Stop
 }
 
-# ──────── Phase 1: Metadata & Downloads ───────────────────────────────────────
-if ($Download) {
+# ──────── Phase 0: Metadata Fetch ───────────────────────────────────────────
+if ($Fetch) {
     Write-Host "Fetching all metadata from UEVR Deluxe API..." -ForegroundColor Cyan
     try {
         $allProfiles = Invoke-DeluxeRequest $AllProfilesUrl
         $allProfiles | ConvertTo-Json -Depth 10 | Set-Content $MetadataJson -Encoding utf8
+        Write-Host "  [OK] Metadata fetched and cached: $($allProfiles.Count) profiles." -ForegroundColor Green
     } catch {
         Write-Warning "Deluxe API failed (Internal Server Error is common). Falling back to cached metadata."
         if (-not (Test-Path $MetadataJson)) { throw "No metadata cache found. Cannot continue." }
     }
+}
+
+# ──────── Phase 1: Downloads ──────────────────────────────────────────────────
+if ($Download) {
+    if (-not (Test-Path $MetadataJson)) {
+        Write-Error "Metadata not found at $MetadataJson. Run with -Fetch first."
+        return
+    }
 
     $profiles = Get-Content $MetadataJson -Raw | ConvertFrom-Json
+    $count = 0
     $failCount = 0
     $total = $profiles.Count
     $index = 0
@@ -69,7 +80,6 @@ if ($Download) {
 
             try {
                 Invoke-WebRequestWithRetry -url $url -targetFile $targetFile -headers @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" } -Silent $Silent
-                Write-Host "  [OK] Download successful." -ForegroundColor Green
                 
                 $dates = Get-MetadataDates $p
                 $sidecarObj = [ordered]@{
@@ -81,10 +91,12 @@ if ($Download) {
                     "sourceUrl"    = $url
                     "sourceDownloadUrl" = $url
                     "description"  = $p.remarks
+                    "uuid"         = $uuid
                 }
                 $sidecarObj | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
                 $count++
                 $failCount = 0
+                Write-Host "  [OK] Download successful." -ForegroundColor Green
             } catch {
                 Write-Host "  [!] All download attempts failed: $($_.Exception.Message)" -ForegroundColor Red
                 $failCount++
@@ -104,20 +116,12 @@ if ($Extract) {
             $sidecar = $z.FullName + ".json"
             
             # Use sidecar if available, else try to find in allprofiles.json
-            $extraMeta = if (Test-Path $sidecar) { Get-Content $sidecar -Raw | ConvertFrom-Json } else { $null }
-            $p = if (Test-Path $MetadataJson) {
-                # Deluxe zip naming is <id>.zip
-                $idStr = $z.BaseName
-                $cached = Get-Content $MetadataJson -Raw | ConvertFrom-Json
-                $cached | Where-Object { 
-                    $thisId = if ($_.ID) { $_.ID } else { $_.id }
-                    if (-not $thisId) { return $false }
-                    $thisId -ieq $idStr -or $thisId.Replace("-","") -ieq $idStr.Replace("-","") 
-                } | Select-Object -First 1
-            } else { $null }
-
-            if (-not $p -and -not $extraMeta) { continue }
-            if (-not $p) { $p = $extraMeta }
+            if (Test-Path $sidecar) {
+                $extraMeta = Get-Content $sidecar -Raw | ConvertFrom-Json
+                $uuid = $extraMeta.uuid
+            } else {
+                continue
+            }
 
             $zipHash = Get-FileHashMD5 $z.FullName
             
@@ -127,14 +131,12 @@ if ($Extract) {
             foreach ($d in $discovered) {
                 $variant = $d.Variant
                 $tempDir = $d.Path
-                $uuid = if ($p.ID) { $p.ID } else { $p.id }
                 
                 $targetDir = Join-Path $ProfilesDir $uuid
                 if ($variant -and $variant -ne "[Root]") {
                     $vPath = $variant -replace ' / ', '\'
                     $targetDir = Join-Path $targetDir $vPath
                 }
-                if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }
                 
                 # Move contents
                 $relFiles = Get-ChildItem -Path $tempDir -Recurse | Where-Object { -not $_.PSIsContainer } | ForEach-Object { 
@@ -144,33 +146,24 @@ if ($Extract) {
                 
                 Move-Item-Smart $tempDir $targetDir
 
-                $actualExe = if ($p.exeName) { $p.exeName } else { $p.exename }
-                $cleanId = $uuid.Replace("-", "").ToLower()
-                $encodedExe = [uri]::EscapeDataString($actualExe)
-                $sourceUrl = "$ProfilesUrlBase/$encodedExe/$cleanId"
-
-                $finalExe = if ($extraMeta.exeName) { $extraMeta.exeName } elseif ($p.exeName) { $p.exeName } else { $p.exename }
-                $finalAuthor = if ($extraMeta.authorName) { $extraMeta.authorName } elseif ($p.authorName) { $p.authorName } else { $p.author }
-                $displayVariant = Get-CleanVariantName $variant $finalExe
-
-                $dates = Get-MetadataDates $p
+                # Meta creation
                 $meta = [ProfileMetadata]::new()
                 $meta.ID                = $uuid
-                $meta.exeName           = $finalExe
-                $meta.gameName          = if ($extraMeta.gameName) { $extraMeta.gameName } else { $p.gameName }
-                $meta.authorName        = $finalAuthor
-                $meta.modifiedDate      = Format-ISO8601Date $(if ($extraMeta.modifiedDate) { $extraMeta.modifiedDate } else { $dates.Modified })
-                $meta.createdDate       = Format-ISO8601Date $(if ($extraMeta.createdDate) { $extraMeta.createdDate } else { $dates.Created })
+                $meta.exeName           = $extraMeta.exeName
+                $meta.gameName          = $extraMeta.gameName
+                $meta.authorName        = $extraMeta.authorName
+                $meta.modifiedDate      = Format-ISO8601Date $extraMeta.modifiedDate
+                $meta.createdDate       = Format-ISO8601Date $extraMeta.createdDate
                 $meta.sourceName        = "uevrdeluxe.org"
-                $meta.sourceUrl         = if ($extraMeta.sourceUrl) { $extraMeta.sourceUrl } else { $sourceUrl }
-                $meta.sourceDownloadUrl = if ($extraMeta.sourceDownloadUrl) { $extraMeta.sourceDownloadUrl } else { $sourceUrl }
-                $meta.description       = if ($extraMeta.description) { $extraMeta.description } else { $p.remarks }
+                $meta.sourceUrl         = $extraMeta.sourceUrl
+                $meta.sourceDownloadUrl = $extraMeta.sourceDownloadUrl
+                $meta.description       = $extraMeta.description
                 $meta.downloadDate      = Get-ISO8601Now
                 $meta.zipHash           = $zipHash.ToUpper()
-                $meta.downloadUrl       = Get-ProfileDownloadUrl $uuid $finalExe
+                $meta.downloadUrl       = Get-ProfileDownloadUrl $uuid $extraMeta.exeName
 
                 # Handle Tags (Heuristics only for Deluxe)
-                $tagArray = @(Get-HeuristicTags $targetDir $extraMeta $displayVariant)
+                $tagArray = @(Get-HeuristicTags $targetDir $meta $variant)
                 if ($tagArray -and $tagArray.Count -gt 0) {
                     $meta.tags = $tagArray
                 }
@@ -183,9 +176,7 @@ if ($Extract) {
             }
         } catch {
             Write-Host "  [!] Extraction failed for $($z.Name): $($_.Exception.Message)" -ForegroundColor Red
-            if (-not $Silent) { throw "Fatal: Profile processing error. Stopping because -Silent is not set." }
+            if (-not $Silent) { throw "Fatal: Profile processing error for $($z.Name). Stopping because -Silent is not set." }
         }
     }
 }
-
-Finalize-GlobalTracking

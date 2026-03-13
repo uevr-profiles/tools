@@ -240,6 +240,7 @@ client.once(Events.ClientReady, async () => {
             console.error(`Error in channel ${channelId}:`, err);
             await askToContinue(`Continue?`);
         }
+        if (newFoundTotal >= PROFILE_LIMIT) break;
         saveState(state);
         await sleep(2000);
     }

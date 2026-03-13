@@ -139,7 +139,6 @@ class ProfileMetadata {
 
     [void] Finalize([string]$targetDir, [string]$variant) {
         $readmeFile = Join-Path $targetDir "README.md"
-        $legacyDesc = Join-Path $targetDir "ProfileDescription.md"
         
         # 0. Set simple fields
         if ($variant -and $variant -ne "[Root]") {
@@ -153,8 +152,6 @@ class ProfileMetadata {
         if ($readmeText) { 
             # Extract only the description part to avoid duplicating the table on subsequent runs
             $masterDesc = [ProfileReadme]::ExtractDescription($readmeText)
-        } elseif (Test-Path $legacyDesc) { 
-            $masterDesc = Get-Content $legacyDesc -Raw 
         } elseif ($this.description) {
             $masterDesc = $this.description
         }
@@ -167,8 +164,6 @@ class ProfileMetadata {
             # 1.2 Truncate the description in the metadata object
             $this.description = Convert-MarkdownToText $masterDesc 100
         }
-
-        if (Test-Path $legacyDesc) { Remove-Item $legacyDesc -Force -ErrorAction SilentlyContinue }
     }
 
     [PSCustomObject] GetCleanObject() {
