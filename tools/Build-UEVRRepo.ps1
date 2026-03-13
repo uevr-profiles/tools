@@ -1,12 +1,17 @@
+#region Parameters
 param(
     [string]$ProfilesDir,
     [string]$SchemaFile,
     [string]$OutputFile,
     [switch]$Update
 )
+#endregion
 
+#region Dependencies
 . "$PSScriptRoot\common.ps1"
+#endregion
 
+#region Variables
 # Defaults if not provided via param
 if (-not $ProfilesDir) { $ProfilesDir = $Global:ProfilesDir }
 if (-not $SchemaFile)  { $SchemaFile  = $Global:SchemaFile }
@@ -17,6 +22,11 @@ $ProfilesDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFrom
 $SchemaFile  = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($SchemaFile)
 $OutputFile  = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($OutputFile)
 
+$allMeta = @()
+$errors  = 0
+#endregion
+
+#region Main Logic
 if ($Update) {
     Write-Host "Running profile updates before build..." -ForegroundColor Cyan
     Get-ChildItem -Path "$PSScriptRoot" -Filter "Update-From*.ps1" | ForEach-Object {
@@ -29,9 +39,6 @@ if (-not (Test-Path $ProfilesDir)) {
     Write-Error "Profiles directory not found: $ProfilesDir"
     exit 1
 }
-
-$allMeta = @()
-$errors  = 0
 
 Get-ChildItem -Path $ProfilesDir -Directory -Recurse | Where-Object { Test-Path (Join-Path $_.FullName "ProfileMeta.json") } | ForEach-Object {
     $metaFile = Join-Path $_.FullName "ProfileMeta.json"
@@ -63,3 +70,4 @@ if ($errors -gt 0) {
     Write-Host "Encountered $errors validation/parse errors. Failing build." -ForegroundColor Red
     exit 1
 }
+#endregion

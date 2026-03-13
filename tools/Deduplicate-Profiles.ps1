@@ -1,21 +1,32 @@
+#region Parameters
 param(
     [string]$Hash = "{zipHash}",
     [switch]$RawHash,
     [switch]$Delete,
     [switch]$Silent
 )
+#endregion
 
+#region Dependencies
+. "$PSScriptRoot\common.ps1"
+#endregion
+
+#region Variables
 if (-not $Silent) {
     Write-Host "── UEVR Profile Deduplicator ──────────────────────────────────────────" -ForegroundColor Cyan
 }
-
-. "$PSScriptRoot\common.ps1"
 
 if (-not (Test-Path $ProfilesDir)) {
     Write-Error "Profiles directory not found at $ProfilesDir"
     exit
 }
 
+$profileFolders = Get-ChildItem -Path $ProfilesDir -Directory
+$groups = @{}
+$metaCache = @{}
+#endregion
+
+#region Functions
 function Get-RawProfileHash($profilePath) {
     $tempZip = Join-Path $env:TEMP "uevr_dedupe_$([Guid]::NewGuid().Guid).zip"
     try {
@@ -46,11 +57,9 @@ function Get-RawProfileHash($profilePath) {
         if (Test-Path $tempZip) { Remove-Item $tempZip -Force -ErrorAction SilentlyContinue }
     }
 }
+#endregion
 
-$profileFolders = Get-ChildItem -Path $ProfilesDir -Directory
-$groups = @{}
-$metaCache = @{}
-
+#region Main Logic
 if (-not $Silent) {
     Write-Host "Scanning $($profileFolders.Count) profiles..." -ForegroundColor Gray
 }
@@ -127,3 +136,4 @@ foreach ($hashVal in $duplicateGroups) {
 if (-not $Delete -and -not $Silent) {
     Write-Host "`nRun with -Delete to automatically cleanup duplicates." -ForegroundColor Gray
 }
+#endregion

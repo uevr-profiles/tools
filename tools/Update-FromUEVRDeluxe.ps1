@@ -1,3 +1,4 @@
+#region Parameters
 param(
     [switch]$Fetch,
     [switch]$Download,
@@ -10,9 +11,13 @@ param(
     [switch]$CleanCache,
     [switch]$CleanDownloads
 )
+#endregion
 
+#region Dependencies
 . "$PSScriptRoot\common.ps1"
+#endregion
 
+#region Variables
 $SourceName   = "uevrdeluxe.org"
 $SourceTempDir = Join-Path $BaseTempDir $SourceName
 $DownloadDir   = Join-Path $SourceTempDir "downloads"
@@ -21,24 +26,10 @@ $MetadataJson  = Join-Path $SourceTempDir "cache.json"
 $ProfilesUrlBase = "https://uevrdeluxefunc.azurewebsites.net/api/profiles"
 $AllProfilesUrl  = "https://uevrdeluxefunc.azurewebsites.net/api/allprofiles"
 
-# Handle cleanup logic
-if ($Delete -or $CleanCache) {
-    if (Test-Path $MetadataJson) {
-        Write-Host "Deleting cache for $SourceName..." -ForegroundColor Yellow
-        Remove-Item $MetadataJson -Force -ErrorAction SilentlyContinue
-    }
-}
-if ($Delete -or $CleanDownloads) {
-    if (Test-Path $DownloadDir) {
-        Write-Host "Deleting downloads for $SourceName..." -ForegroundColor Yellow
-        Remove-Item $DownloadDir -Recurse -Force -ErrorAction SilentlyContinue
-    }
-}
+$ExpectedCount = if ($ProfileLimit -ne [int]::MaxValue) { $ProfileLimit } else { [int]::MaxValue }
+#endregion
 
-foreach ($d in @($SourceTempDir, $DownloadDir, $MetaCacheDir)) {
-    if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
-}
-
+#region Functions
 function Invoke-DeluxeRequest($url) {
     $headers = @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" }
     return Invoke-RestMethod -Uri $url -Headers $headers -ErrorAction Stop
@@ -107,9 +98,26 @@ function Download-UEVRDeluxeProfiles {
         }
     }
 }
+#endregion
 
-# ──────── Main Logic Entry ────────────────────────────────────────────────────
-$ExpectedCount = if ($ProfileLimit -ne [int]::MaxValue) { $ProfileLimit } else { [int]::MaxValue }
+#region Main Logic
+# Handle cleanup logic
+if ($Delete -or $CleanCache) {
+    if (Test-Path $MetadataJson) {
+        Write-Host "Deleting cache for $SourceName..." -ForegroundColor Yellow
+        Remove-Item $MetadataJson -Force -ErrorAction SilentlyContinue
+    }
+}
+if ($Delete -or $CleanDownloads) {
+    if (Test-Path $DownloadDir) {
+        Write-Host "Deleting downloads for $SourceName..." -ForegroundColor Yellow
+        Remove-Item $DownloadDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
+foreach ($d in @($SourceTempDir, $DownloadDir, $MetaCacheDir)) {
+    if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
+}
 
 if ($Fetch) { 
     Fetch-UEVRDeluxeMetadata
@@ -131,3 +139,4 @@ if ($Extract) {
     $profileIds = $processed | ForEach-Object { (Get-Content (Join-Path $_.FullName "ProfileMeta.json") -Raw | ConvertFrom-Json).ID } | Select-Object -Unique
     Assert-ProfileCount -count $profileIds.Count -expected $ExpectedCount -Silent:$Silent -stage "Extraction ID"
 }
+#endregion

@@ -1,3 +1,4 @@
+#region Parameters
 param(
     [switch]$Fetch,
     [switch]$Download,
@@ -10,9 +11,13 @@ param(
     [switch]$CleanCache,
     [switch]$CleanDownloads
 )
+#endregion
 
+#region Dependencies
 . "$PSScriptRoot\common.ps1"
+#endregion
 
+#region Variables
 $SourceName   = "discord"
 $SourceTempDir = Join-Path $BaseTempDir $SourceName
 $DownloadDir   = Join-Path $SourceTempDir "downloads"
@@ -22,24 +27,10 @@ $MetadataJson  = Join-Path $SourceTempDir "cache.json"
 $ProfilesCsv   = Join-Path $SourceTempDir "discord_profiles.csv"
 $BotStateJson  = Join-Path $SourceTempDir "bot_state.json"
 
-# Handle cleanup logic
-if ($Delete -or $CleanCache) {
-    Write-Host "Deleting cache for $SourceName..." -ForegroundColor Yellow
-    foreach ($f in @($MetadataJson, $ProfilesCsv, $BotStateJson)) {
-        if (Test-Path $f) { Remove-Item $f -Force -ErrorAction SilentlyContinue }
-    }
-}
-if ($Delete -or $CleanDownloads) {
-    if (Test-Path $DownloadDir) {
-        Write-Host "Deleting downloads for $SourceName..." -ForegroundColor Yellow
-        Remove-Item $DownloadDir -Recurse -Force -ErrorAction SilentlyContinue
-    }
-}
+$ExpectedCount = if ($ProfileLimit -ne [int]::MaxValue) { $ProfileLimit } else { [int]::MaxValue }
+#endregion
 
-foreach ($d in @($SourceTempDir, $DownloadDir, $MetaCacheDir)) {
-    if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
-}
-
+#region Functions
 function Fetch-DiscordMetadata {
     Write-Host "Running Discord bot scraper to fetch profile metadata (Limit: $ProfileLimit)..." -ForegroundColor Cyan
     if (-not (Test-Path (Join-Path $BotDir "node_modules"))) {
@@ -102,9 +93,26 @@ function Download-DiscordProfiles {
         }
     }
 }
+#endregion
 
-# ──────── Main Logic Entry ────────────────────────────────────────────────────
-$ExpectedCount = if ($ProfileLimit -ne [int]::MaxValue) { $ProfileLimit } else { [int]::MaxValue }
+#region Main Logic
+# Handle cleanup logic
+if ($Delete -or $CleanCache) {
+    Write-Host "Deleting cache for $SourceName..." -ForegroundColor Yellow
+    foreach ($f in @($MetadataJson, $ProfilesCsv, $BotStateJson)) {
+        if (Test-Path $f) { Remove-Item $f -Force -ErrorAction SilentlyContinue }
+    }
+}
+if ($Delete -or $CleanDownloads) {
+    if (Test-Path $DownloadDir) {
+        Write-Host "Deleting downloads for $SourceName..." -ForegroundColor Yellow
+        Remove-Item $DownloadDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
+foreach ($d in @($SourceTempDir, $DownloadDir, $MetaCacheDir)) {
+    if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
+}
 
 if ($Fetch) { 
     Fetch-DiscordMetadata
@@ -126,3 +134,4 @@ if ($Extract) {
     $profileIds = $processed | ForEach-Object { (Get-Content (Join-Path $_.FullName "ProfileMeta.json") -Raw | ConvertFrom-Json).ID } | Select-Object -Unique
     Assert-ProfileCount -count $profileIds.Count -expected $ExpectedCount -Silent:$Silent -stage "Extraction ID"
 }
+#endregion

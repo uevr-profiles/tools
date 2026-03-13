@@ -1,10 +1,23 @@
+#region Parameters
 param(
     [switch]$Clean,
     [switch]$Silent
 )
+#endregion
 
+#region Dependencies
 . "$PSScriptRoot\common.ps1"
+#endregion
 
+#region Variables
+$Scripts = @(
+    "Update-FromUEVRProfiles.ps1", 
+    "Update-FromUEVRDeluxe.ps1",
+    "Update-FromDiscord.ps1"
+)
+#endregion
+
+#region Main Logic
 if ($Clean) {
     Write-Host "Cleaning cache: $BaseTempDir" -ForegroundColor Yellow
     Remove-Item $BaseTempDir -Recurse -Force -ErrorAction SilentlyContinue 2>$null
@@ -14,12 +27,6 @@ if ($Clean) {
         Get-ChildItem -Path $ProfilesDir -Directory | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue 2>$null
     }
 }
-
-$Scripts = @(
-    "Update-FromUEVRProfiles.ps1", 
-    "Update-FromUEVRDeluxe.ps1",
-    "Update-FromDiscord.ps1"
-)
 
 foreach ($s in $Scripts) {
     $scriptPath = Join-Path $PSScriptRoot $s
@@ -38,3 +45,4 @@ foreach ($s in $Scripts) {
 
 Write-Host "`nTest run complete." -ForegroundColor Green
 exit 0
+#endregion
