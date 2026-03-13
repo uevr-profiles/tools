@@ -5,21 +5,35 @@ param(
     [int]$ProfileLimit = [int]::MaxValue,
     [switch]$Whitelist,
     [switch]$Blacklist,
-    [switch]$Silent
+    [switch]$Silent,
+    [switch]$CleanCache,
+    [switch]$CleanDownloads
 )
 
 . "$PSScriptRoot\common.ps1"
 
 $SourceName   = "discord"
-$DownloadDir  = Join-Path $BaseTempDir $SourceName
-$BotDir       = Join-Path $PSScriptRoot "discord-bot"
+$SourceTempDir = Join-Path $BaseTempDir $SourceName
+$DownloadDir   = Join-Path $SourceTempDir "downloads"
+$BotDir        = Join-Path $PSScriptRoot "discord-bot"
 
 # File paths within the metadata cache
-$MetadataJson = Join-Path $MetaCacheDir "discord_profiles.json"
-$ProfilesCsv  = Join-Path $MetaCacheDir "discord_profiles.csv"
-$BotStateJson = Join-Path $MetaCacheDir "bot_state.json"
+$MetadataJson  = Join-Path $SourceTempDir "cache.json"
+$ProfilesCsv   = Join-Path $SourceTempDir "discord_profiles.csv"
+$BotStateJson  = Join-Path $SourceTempDir "bot_state.json"
 
-foreach ($d in @($DownloadDir, $MetaCacheDir)) {
+if ($CleanCache -and (Test-Path $MetadataJson)) {
+    Write-Host "Cleaning cache for $SourceName..." -ForegroundColor Yellow
+    Remove-Item $MetadataJson -Force
+    if (Test-Path $ProfilesCsv) { Remove-Item $ProfilesCsv -Force }
+    if (Test-Path $BotStateJson) { Remove-Item $BotStateJson -Force }
+}
+if ($CleanDownloads -and (Test-Path $DownloadDir)) {
+    Write-Host "Cleaning downloads for $SourceName..." -ForegroundColor Yellow
+    Remove-Item $DownloadDir -Recurse -Force
+}
+
+foreach ($d in @($SourceTempDir, $DownloadDir, $MetaCacheDir)) {
     if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
 }
 
@@ -174,7 +188,7 @@ function Extract-DiscordProfiles {
 if ($Fetch)    { 
     Fetch-DiscordMetadata
     if (-not $Silent -and $ProfileLimit -ne [int]::MaxValue) {
-        $results = Get-Content $MetadataJson -Raw | ConvertFrom-Json
+        $results = if (Test-Path $MetadataJson) { Get-Content $MetadataJson -Raw | ConvertFrom-Json } else { @() }
         if ($results.Count -lt $ProfileLimit) {
             throw "Fatal: Discord fetch count mismatch. Expected at least $ProfileLimit, got $($results.Count). Stopping because -Silent is not set."
         }

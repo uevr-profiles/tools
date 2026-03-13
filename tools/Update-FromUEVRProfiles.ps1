@@ -5,19 +5,31 @@ param(
     [int]$ProfileLimit = [int]::MaxValue,
     [switch]$Whitelist,
     [switch]$Blacklist,
-    [switch]$Silent
+    [switch]$Silent,
+    [switch]$CleanCache,
+    [switch]$CleanDownloads
 )
 
 . "$PSScriptRoot\common.ps1"
 
-$SourceName  = "uevr-profiles.com"
-$DownloadDir = Join-Path $BaseTempDir $SourceName
-$MetadataJson = Join-Path $MetaCacheDir "uevrprofiles_allmetadata.json"
+$SourceName   = "uevr-profiles.com"
+$SourceTempDir = Join-Path $BaseTempDir $SourceName
+$DownloadDir   = Join-Path $SourceTempDir "downloads"
+$MetadataJson  = Join-Path $SourceTempDir "cache.json"
 
 $FirestoreUrl = "https://firestore.googleapis.com/v1/projects/uevrprofiles/databases/(default)/documents/games?pageSize=500"
 $DownloadFuncUrl = "https://us-central1-uevrprofiles.cloudfunctions.net/downloadFile"
 
-foreach ($d in @($DownloadDir, $MetaCacheDir)) {
+if ($CleanCache -and (Test-Path $MetadataJson)) {
+    Write-Host "Cleaning cache for $SourceName..." -ForegroundColor Yellow
+    Remove-Item $MetadataJson -Force
+}
+if ($CleanDownloads -and (Test-Path $DownloadDir)) {
+    Write-Host "Cleaning downloads for $SourceName..." -ForegroundColor Yellow
+    Remove-Item $DownloadDir -Recurse -Force
+}
+
+foreach ($d in @($SourceTempDir, $DownloadDir, $MetaCacheDir)) {
     if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
 }
 
@@ -199,7 +211,7 @@ function Extract-UEVRProfiles {
 if ($Fetch)    { 
     Fetch-UEVRProfilesMetadata
     if (-not $Silent -and $ProfileLimit -ne [int]::MaxValue) {
-        $data = Get-Content $MetadataJson -Raw | ConvertFrom-Json
+        $data = if (Test-Path $MetadataJson) { Get-Content $MetadataJson -Raw | ConvertFrom-Json } else { @() }
         if ($data.Count -lt $ProfileLimit) {
             throw "Fatal: UEVRProfiles fetch count mismatch. Expected at least $ProfileLimit, got $($data.Count). Stopping because -Silent is not set."
         }
