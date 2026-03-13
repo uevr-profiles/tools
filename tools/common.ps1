@@ -26,7 +26,7 @@ function Get-ISO8601Now {
     return [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
 }
 
-function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 3, $Silent = $false) {
+function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 5, $Silent = $false) {
     if (-not $headers["User-Agent"]) {
         $headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
@@ -210,6 +210,7 @@ function Get-HeuristicTags($profileDir, $meta, $variant) {
 
     # 1. Textual Analysis (Metadata & Files)
     $textSources = @()
+    if ($meta.description) { $textSources += $meta.description }
     if ($meta.remarks) { $textSources += $meta.remarks }
     if ($meta.gameName) { $textSources += $meta.gameName }
     if ($variant) { $textSources += $variant }
@@ -514,18 +515,40 @@ function Get-OrCreateUUID($p) {
 function Finalize-ProfileMetadata($targetDir, $meta, $profileName) {
     $readmeFile = Join-Path $targetDir "README.md"
     $legacyDesc = Join-Path $targetDir "ProfileDescription.md"
-    $readmeText = if (Test-Path $readmeFile) { Get-Content $readmeFile -Raw } else { "" }
     
     # 0. Set simple fields
     $meta["profileName"] = if ($profileName -and $profileName -ne "[Root]") { $profileName } else { $null }
 
-    # 1. Look for description in README or sidecar
-    $rawDesc = $null
-    if ($readmeText) { $rawDesc = $readmeText }
-    elseif (Test-Path $legacyDesc) { $rawDesc = Get-Content $legacyDesc -Raw }
-    if ($rawDesc) {
-        $meta["description"] = Convert-MarkdownToText $rawDesc 100
+    # 1. Determine the "Master Description"
+    $readmeText = if (Test-Path $readmeFile) { Get-Content $readmeFile -Raw } else { "" }
+    $masterDesc = $null
+    
+    if ($readmeText) { 
+        $masterDesc = $readmeText 
+    } elseif (Test-Path $legacyDesc) { 
+        $masterDesc = Get-Content $legacyDesc -Raw 
+    } elseif ($meta.description) {
+        $masterDesc = $meta.description
+    } elseif ($meta.remarks) {
+        $masterDesc = $meta.remarks
     }
+
+    if ($masterDesc) {
+        # 1.1 Generate README.md if missing
+        if (-not (Test-Path $readmeFile)) {
+            $masterDesc | Set-Content $readmeFile -Encoding utf8
+        }
+        # 1.2 Truncate the description in the metadata object
+        $meta["description"] = Convert-MarkdownToText $masterDesc 100
+    }
+
+    # 2. Cleanup blacklisted keys
+    $blacklistedKeys = @("remarks")
+    foreach ($key in $blacklistedKeys) {
+        if ($meta.Contains($key)) { $meta.Remove($key) }
+        elseif ($meta.PSObject.Properties[$key]) { $meta.PSObject.Properties.Remove($key) }
+    }
+
     if (Test-Path $legacyDesc) { Remove-Item $legacyDesc -Force -ErrorAction SilentlyContinue }
     return $meta
 }
@@ -607,6 +630,7 @@ function Remove-NullProperties($obj) {
     $names = if ($obj -is [System.Collections.IDictionary]) { $obj.Keys } else { $obj.PSObject.Properties.Name }
 
     foreach ($name in $names) {
+        if ($name -ieq "remarks") { continue } # Explicitly skip remarks
         $val = if ($obj -is [System.Collections.IDictionary]) { $obj[$name] } else { $obj.$name }
         if ($null -ne $val -and "$val" -ne "") {
             $newObj[$name] = $val
