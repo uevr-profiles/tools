@@ -58,7 +58,9 @@ if ($Download) {
             $encodedExe = $actualExe -replace ' ', '%20'
             $url = "$ProfilesUrlBase/$encodedExe/$uuid"
             
-            Write-Host "Downloading $($p.gameName) ($actualExe) from $url..." -ForegroundColor Gray
+            $msg = "Downloading $($p.gameName)"
+            if ($actualExe) { $msg += " ($actualExe)" }
+            Write-Host "$msg from $url..." -ForegroundColor Gray
             $success = $false
             $lastErr = $null
             for ($i = 1; $i -le 3; $i++) {

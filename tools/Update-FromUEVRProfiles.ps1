@@ -94,7 +94,9 @@ if ($Download) {
         $sidecar    = Join-Path $DownloadDir "$($p.id).zip.json"
         
         if (-not (Test-Path $targetFile)) {
-            Write-Host "Downloading: $($p.gameName) ($($p.exeName))..." -ForegroundColor Gray
+            $msg = "Downloading: $($p.gameName)"
+            if ($p.exeName) { $msg += " ($($p.exeName))" }
+            Write-Host "$msg..." -ForegroundColor Gray
             $success = $false
             $lastErr = $null
             for ($i = 1; $i -le 3; $i++) {
