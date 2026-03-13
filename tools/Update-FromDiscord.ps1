@@ -9,7 +9,8 @@ param(
     [switch]$Silent,
     [switch]$Debug,
     [switch]$CleanCache,
-    [switch]$CleanDownloads
+    [switch]$CleanDownloads,
+    [string]$Proxies
 )
 #endregion
 
@@ -42,6 +43,16 @@ function Fetch-DiscordMetadata {
     $env:PROFILES_JSON   = $MetadataJson
     $env:PROFILES_CSV    = $ProfilesCsv
     $env:BOT_STATE_JSON  = $BotStateJson
+    if ($Proxies) {
+        $proxyList = @()
+        if ($Proxies -is [array]) { $proxyList = $Proxies }
+        else { $proxyList = $Proxies -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ } }
+        if ($proxyList.Count -gt 0) {
+            $env:HTTPS_PROXY = $proxyList[0]
+            $env:HTTP_PROXY  = $proxyList[0]
+            Debug-Log "[Update-FromDiscord.ps1] Set Node Bot Proxy to $($proxyList[0])"
+        }
+    }
     Debug-Log "[Update-FromDiscord.ps1] Running bot in $BotDir"
     Push-Location $BotDir
     Invoke-Expression "node index.js $limitArg"
@@ -88,7 +99,7 @@ function Download-DiscordProfiles {
             Write-Host "[$index/$total] Downloading: $($p.gameName) ($($p.zipName))..." -ForegroundColor Gray
             try {
                 Debug-Log "[Update-FromDiscord.ps1] Calling Invoke-WebRequestWithRetry"
-                Invoke-WebRequestWithRetry -url $p.sourceDownloadUrl -targetFile $targetFile -Silent $Silent
+                Invoke-WebRequestWithRetry -url $p.sourceDownloadUrl -targetFile $targetFile -Silent $Silent -Proxies $Proxies
                 
                 Debug-Log "[Update-FromDiscord.ps1] Download OK, creating HashSet"
                 $tagSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
@@ -200,4 +211,5 @@ if ($Extract) {
     $extracted = Extract-ArchivesFolder $DownloadDir -Silent:$Silent
     Assert-ProfileCount -count $extracted.Count -expected $ExpectedCount -Silent:$Silent -stage "Extraction ID"
 }
+Finalize-GlobalTracking
 #endregion

@@ -9,7 +9,8 @@ param(
     [switch]$Silent,
     [switch]$Debug,
     [switch]$CleanCache,
-    [switch]$CleanDownloads
+    [switch]$CleanDownloads,
+    [string]$Proxies
 )
 #endregion
 
@@ -30,15 +31,39 @@ $ExpectedCount = ($ProfileLimit -ne [int]::MaxValue) ? $ProfileLimit : [int]::Ma
 #endregion
 
 #region Functions
-function Invoke-DeluxeRequest($url) {
+function Invoke-DeluxeRequest($url, $Proxies = $null) {
     $headers = @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" }
-    return Invoke-RestMethod -Uri $url -Headers $headers -ErrorAction Stop
+    
+    $proxyList = @()
+    if ($Proxies) {
+        if ($Proxies -is [array]) { $proxyList = $Proxies }
+        else { $proxyList = $Proxies -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ } }
+    }
+
+    $retries = [Math]::Max(1, $proxyList.Count)
+    $lastErr = $null
+
+    for ($i = 0; $i -lt $retries; $i++) {
+        $params = @{ Uri = $url; Headers = $headers; ErrorAction = "Stop" }
+        if ($proxyList.Count -gt 0) {
+            $params["Proxy"] = $proxyList[$i]
+        }
+        try {
+            return Invoke-RestMethod @params
+        } catch {
+            $lastErr = $_
+            if ($_.Exception.Message -match "500" -and $proxyList.Count -le 1) {
+                throw "Fatal: Deluxe API returned 500 Internal Server Error. You might be IP blocked."
+            }
+        }
+    }
+    throw $lastErr
 }
 
 function Fetch-UEVRDeluxeMetadata {
     Write-Host "Fetching all metadata from UEVR Deluxe API..." -ForegroundColor Cyan
     try {
-        $allProfiles = Invoke-DeluxeRequest $AllProfilesUrl
+        $allProfiles = Invoke-DeluxeRequest $AllProfilesUrl -Proxies $Proxies
         $allProfiles | ConvertTo-Json -Depth 10 | Set-Content $MetadataJson -Encoding utf8
         Write-Host "  [OK] Metadata fetched and cached: $($allProfiles.Count) profiles." -ForegroundColor Green
     } catch {
@@ -56,27 +81,21 @@ function Download-UEVRDeluxeProfiles {
         if ($count -ge $ProfileLimit) { break }
         if ($failCount -ge 5) { Write-Error "Too many consecutive failures in $SourceName. Stopping."; break }
         
-        $uuid = Get-OrCreateUUID $p
-        $targetFile = Join-Path $DownloadDir "$uuid.zip"
+        $uuid = [guid](($p.ID -is [string]) ? $p.ID : $p.ID.ToString())
+        $uuidClean = $uuid.ToString("n")
+        $actualExe = $p.exeName
+        $targetFile = Join-Path $DownloadDir (Get-ProfileZipFileName $uuidClean $actualExe)
         $sidecar    = $targetFile + ".json"
         
-        $actualExe = ""
-        if ($p.main_exe -is [System.Collections.IEnumerable]) {
-            $actualExe = ($p.main_exe | Sort-Object -Unique) -join ", "
-        } elseif ($p.main_exe) {
-            $actualExe = $p.main_exe
-        } else {
-            $actualExe = $uuid # Fallback
-        }
         Debug-Log "[Update-FromUEVRDeluxe.ps1] ID: $uuid, Exe: $actualExe"
 
         if (-not (Test-Path $targetFile)) {
-            $url = "$ProfilesUrlBase/$(($actualExe -replace ' ', '%20'))/$uuid"
+            $url = "$ProfilesUrlBase/$([uri]::EscapeDataString($actualExe))/$uuidClean"
             Write-Host "[$index/$total] Downloading $($p.gameName) ($actualExe)..." -ForegroundColor Gray
 
             try {
                 Debug-Log "[Update-FromUEVRDeluxe.ps1] Calling Invoke-WebRequestWithRetry: $url"
-                Invoke-WebRequestWithRetry -url $url -targetFile $targetFile -headers @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" } -Silent $Silent
+                Invoke-WebRequestWithRetry -url $url -targetFile $targetFile -headers @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" } -Silent $Silent -Proxies $Proxies
                 
                 # Use centralized date formatting
                 $modDate = $p.modifiedDate ? $p.modifiedDate : ($p.updatedAt ? $p.updatedAt : $null)
@@ -94,7 +113,7 @@ function Download-UEVRDeluxeProfiles {
                     "sourceUrl"         = $url
                     "sourceDownloadUrl" = $url
                     "description"       = $p.remarks
-                    "downloadUrl"       = Get-ProfileDownloadUrl $uuid $actualExe
+                    "downloadUrl"       = Get-ProfileDownloadUrl $uuidClean $actualExe
                 }
                 $sidecarObj | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
                 $count++; $failCount = 0
@@ -160,5 +179,6 @@ if ($Extract) {
     $extracted = Extract-ArchivesFolder $DownloadDir -Silent:$Silent
     Assert-ProfileCount -count $extracted.Count -expected $ExpectedCount -Silent:$Silent -stage "Extraction ID"
 }
+Finalize-GlobalTracking
 Debug-Log "[Update-FromUEVRDeluxe.ps1] Main Logic End"
 #endregion

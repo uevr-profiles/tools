@@ -524,15 +524,61 @@ function Move-Item-Smart($Source, $Destination) {
 #endregion
 
 #region Network Utilities
-function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 5, $Silent = $false) {
+function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 5, $Silent = $false, $Proxies = $null) {
     if (-not $headers["User-Agent"]) { $headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" }
+    
+    $proxyList = @()
+    if ($Proxies) {
+        if ($Proxies -is [array]) { $proxyList = $Proxies }
+        else { $proxyList = $Proxies -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ } }
+    }
+
     $lastErr = $null
     for ($i = 1; $i -le $retries; $i++) {
+        $requestParams = @{
+            Uri = $url
+            Headers = $headers
+            ErrorAction = "Stop"
+        }
+        if ($targetFile) { $requestParams["OutFile"] = $targetFile }
+        
+        $currentProxy = $null
+        if ($proxyList.Count -gt 0) {
+            $currentProxy = $proxyList[($i - 1) % $proxyList.Count]
+            $requestParams["Proxy"] = $currentProxy
+        }
+
         try {
-            if ($i -gt 1) { Write-Host "  Retry $i/$retries..." -ForegroundColor Yellow }
-            Start-Sleep -Milliseconds (Get-Random -Minimum 500 -Maximum 1500)
-            Invoke-WebRequest -Uri $url -Headers $headers -OutFile $targetFile -ErrorAction Stop; return
-        } catch { $lastErr = $_.Exception.Message; Write-Host "  [!] Attempt $i failed: $lastErr" -ForegroundColor Gray }
+            if ($i -gt 1) { 
+                $msg = "  Retry $i/$retries..."
+                if ($currentProxy) { $msg += " (via Proxy $currentProxy)" }
+                Write-Host $msg -ForegroundColor Yellow 
+            } elseif ($currentProxy) {
+                Write-Host "  Using proxy: $currentProxy" -ForegroundColor DarkGray
+            }
+            Start-Sleep -Milliseconds (Get-Random -Minimum 100 -Maximum 500)
+            Invoke-WebRequest @requestParams; return
+        } catch {
+            $lastErr = $_.Exception.Message
+            $statusCode = $null
+            if ($_.Exception.Response) { 
+                $statusCode = [int]$_.Exception.Response.StatusCode 
+            } elseif ($_.ErrorRecord.ErrorDetails.Message -match "\((\d{3})\)") {
+                $statusCode = [int]$matches[1]
+            } elseif ($_.Exception.Message -match "(500|403|404|401|429)") {
+                $statusCode = [int]$matches[1]
+            }
+            
+            if ($statusCode -eq 500) {
+                # Don't immediately exit on 500 if we have multiple proxies, maybe another proxy works
+                if ($proxyList.Count -le 1) {
+                    $errorMsg = "Fatal: Received 500 Internal Server Error from $url. You might be IP blocked."
+                    Write-Host "  [!] $errorMsg" -ForegroundColor Red
+                    throw $errorMsg
+                }
+            }
+            Write-Host "  [!] Attempt $i failed: $lastErr" -ForegroundColor Gray
+        }
     }
     if (-not $Silent) { throw "All download attempts failed: $lastErr" } else { Write-Warning "  [!] All download attempts failed: $lastErr. Skipping due to -Silent." }
 }
@@ -564,6 +610,7 @@ function Extract-And-Discover-Profiles($archivePath) {
     $tempBase = Join-Path $BaseTempDir "discovery_$(Get-Random)"
     # Normalize tempBase to long path
     $tempBase = (New-Item -ItemType Directory -Path $tempBase -Force).FullName
+    $Global:TempFolders += $tempBase
     
     try {
         $profileArchive = [ProfileArchive]::new($archivePath)

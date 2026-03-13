@@ -9,7 +9,8 @@ param(
     [switch]$Silent,
     [switch]$Debug,
     [switch]$CleanCache,
-    [switch]$CleanDownloads
+    [switch]$CleanDownloads,
+    [string]$Proxies
 )
 #endregion
 
@@ -30,15 +31,39 @@ $ExpectedCount = ($ProfileLimit -ne [int]::MaxValue) ? $ProfileLimit : [int]::Ma
 #endregion
 
 #region Functions
-function Invoke-ProfileRequest($url) {
+function Invoke-ProfileRequest($url, $Proxies = $null) {
     $headers = @{ "Accept" = "application/json" }
-    return Invoke-RestMethod -Uri $url -Headers $headers -ErrorAction Stop
+
+    $proxyList = @()
+    if ($Proxies) {
+        if ($Proxies -is [array]) { $proxyList = $Proxies }
+        else { $proxyList = $Proxies -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ } }
+    }
+
+    $retries = [Math]::Max(1, $proxyList.Count)
+    $lastErr = $null
+
+    for ($i = 0; $i -lt $retries; $i++) {
+        $params = @{ Uri = $url; Headers = $headers; ErrorAction = "Stop" }
+        if ($proxyList.Count -gt 0) {
+            $params["Proxy"] = $proxyList[$i]
+        }
+        try {
+            return Invoke-RestMethod @params
+        } catch {
+            $lastErr = $_
+            if ($_.Exception.Message -match "500" -and $proxyList.Count -le 1) {
+                throw "Fatal: Profiles API returned 500 Internal Server Error. You might be IP blocked."
+            }
+        }
+    }
+    throw $lastErr
 }
 
 function Fetch-UEVRProfilesMetadata {
     Write-Host "Fetching all metadata from Firestore..." -ForegroundColor Cyan
     try {
-        $meta = Invoke-ProfileRequest $FirestoreUrl
+        $meta = Invoke-ProfileRequest $FirestoreUrl -Proxies $Proxies
         $allProfiles = @()
         foreach ($doc in $meta.documents) {
             $gameName = $doc.fields.gameName.stringValue
@@ -110,7 +135,7 @@ function Download-UEVRProfiles {
             Write-Host "$msg..." -ForegroundColor Gray
 
             try {
-                Invoke-WebRequestWithRetry -url $p.downloadUrl -targetFile $targetFile -Silent $Silent -Debug:$Debug
+                Invoke-WebRequestWithRetry -url $p.downloadUrl -targetFile $targetFile -Silent $Silent -Debug:$Debug -Proxies $Proxies
                 $cleanExe = $p.exeName
                 if ($cleanExe -match "(_\d+)$") {
                     $cleanExe = $cleanExe -replace "(_\d+)$", ""
@@ -194,5 +219,6 @@ if ($Extract) {
     $extracted = Extract-ArchivesFolder $DownloadDir -Silent:$Silent
     Assert-ProfileCount -count $extracted.Count -expected $ExpectedCount -Silent:$Silent -stage "Extraction ID"
 }
+Finalize-GlobalTracking
 Debug-Log "[Update-FromUEVRProfiles.ps1] Main Logic End"
 #endregion
