@@ -7,6 +7,7 @@ param(
     [switch]$Whitelist,
     [switch]$Blacklist,
     [switch]$Silent,
+    [switch]$Debug,
     [switch]$CleanCache,
     [switch]$CleanDownloads
 )
@@ -31,52 +32,92 @@ $ExpectedCount = ($ProfileLimit -ne [int]::MaxValue) ? $ProfileLimit : [int]::Ma
 
 #region Functions
 function Fetch-DiscordMetadata {
-    Write-Host "Running Discord bot scraper to fetch profile metadata (Limit: $ProfileLimit)..." -ForegroundColor Cyan
-    if (-not (Test-Path (Join-Path $BotDir "node_modules"))) {
-        Write-Host "Installing bot dependencies..." -ForegroundColor Gray
-        Push-Location $BotDir; npm install; Pop-Location
+    Debug-Log "[Update-FromDiscord.ps1] Entering Fetch-DiscordMetadata"
+    $limitArg = ""
+    if ($ProfileLimit -ne [int]::MaxValue) {
+        $limitArg = "--limit=$ProfileLimit"
     }
+    Debug-Log "[Update-FromDiscord.ps1] Bot limitArg: $limitArg"
+    
     $env:PROFILES_JSON   = $MetadataJson
     $env:PROFILES_CSV    = $ProfilesCsv
     $env:BOT_STATE_JSON  = $BotStateJson
-    $limitArg = ($ProfileLimit -ne [int]::MaxValue) ? "--limit=$ProfileLimit" : ""
-    Push-Location $BotDir; Invoke-Expression "node index.js $limitArg"; Pop-Location
+    Debug-Log "[Update-FromDiscord.ps1] Running bot in $BotDir"
+    Push-Location $BotDir
+    Invoke-Expression "node index.js $limitArg"
+    Pop-Location
+    Debug-Log "[Update-FromDiscord.ps1] Bot execution finished"
 }
 
 function Download-DiscordProfiles {
-    if (-not (Test-Path $MetadataJson)) { Write-Error "Metadata not found at $MetadataJson. Run with -Fetch first."; return }
+    Debug-Log "[Update-FromDiscord.ps1] Entering Download-DiscordProfiles"
+    if (-not (Test-Path $MetadataJson)) { 
+        Debug-Log "[Update-FromDiscord.ps1] Metadata check failed: $MetadataJson"
+        Write-Error "Metadata not found at $MetadataJson. Run with -Fetch first."
+        return 
+    }
+    Debug-Log "[Update-FromDiscord.ps1] Loading metadata from $MetadataJson"
     $profiles = Get-Content $MetadataJson -Raw | ConvertFrom-Json
-    Write-Host "Downloading profiles from Discord metadata..." -ForegroundColor Cyan
+    Write-Host "Downloading profiles from Discord metadata ($($profiles.Count))..." -ForegroundColor Cyan
     $count = 0
     $failCount = 0
     $total = $profiles.Count
     $index = 0
+    Debug-Log "[Update-FromDiscord.ps1] Starting profiles loop"
     foreach ($p in $profiles) {
         $index++
-        if ($count -ge $ProfileLimit) { break }
+        Debug-Log "[Update-FromDiscord.ps1] Loop iteration $index / $total (Count: $count)"
+        if ($count -ge $ProfileLimit) { 
+            Debug-Log "[Update-FromDiscord.ps1] Reached ProfileLimit ($ProfileLimit)"
+            break 
+        }
         if ($failCount -ge 5) { 
+            Debug-Log "[Update-FromDiscord.ps1] Too many failures ($failCount)"
             Write-Error "Too many consecutive failures in $SourceName. Stopping."
             break 
         }
 
+        Debug-Log "[Update-FromDiscord.ps1] Calling Get-OrCreateUUID"
         $uuid = Get-OrCreateUUID $p
+        Debug-Log "[Update-FromDiscord.ps1] UUID: $uuid"
         $targetFile = Join-Path $DownloadDir "$uuid.zip"
         $sidecar    = $targetFile + ".json"
 
-        Write-Host "DEBUG: Checking $targetFile" -ForegroundColor DarkGray
+        Debug-Log "[Update-FromDiscord.ps1] Checking targetFile: $targetFile"
         if (-not (Test-Path $targetFile)) {
             Write-Host "[$index/$total] Downloading: $($p.gameName) ($($p.zipName))..." -ForegroundColor Gray
             try {
+                Debug-Log "[Update-FromDiscord.ps1] Calling Invoke-WebRequestWithRetry"
                 Invoke-WebRequestWithRetry -url $p.sourceDownloadUrl -targetFile $targetFile -Silent $Silent
+                
+                Debug-Log "[Update-FromDiscord.ps1] Download OK, creating HashSet"
                 $tagSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
-                $category = $p.category ? ($p.category.Replace("ue-", "").Replace("nsfw", "NSFW").Trim()) : ""
+                
+                $category = ""
+                if ($p.category) {
+                    $category = $p.category.Replace("ue-", "").Replace("nsfw", "NSFW").Trim()
+                }
+                Debug-Log "[Update-FromDiscord.ps1] Category: $category"
+
                 if ($category -and $category -ne "games") {
                     if ($category -eq "experiences") { $category = "Experiences" }
                     $tagSet.Add($category) | Out-Null
                 }
+                
+                $finalExe = ""
+                if ($p.exeName) {
+                    $finalExe = $p.exeName
+                } else {
+                    $finalExe = $p.archive.Replace(".zip", "")
+                }
+                Debug-Log "[Update-FromDiscord.ps1] FinalExe: $finalExe"
+
+                Debug-Log "[Update-FromDiscord.ps1] Calling Get-ProfileDownloadUrl"
+                $dlUrl = Get-ProfileDownloadUrl $uuid $p.exeName
+                
                 $sidecarObj = [ordered]@{
                     "ID"                = $uuid
-                    "exeName"           = $p.exeName ? $p.exeName : $p.archive.Replace(".zip", "")
+                    "exeName"           = $finalExe
                     "gameName"          = $p.gameName
                     "authorName"        = $p.authorName
                     "createdDate"       = Format-DateISO8601 $p.createdDate
@@ -86,8 +127,10 @@ function Download-DiscordProfiles {
                     "description"       = $p.description
                     "headerPictureUrl"  = $p.gameBanner
                     "tags"              = @($tagSet)
-                    "downloadUrl"       = Get-ProfileDownloadUrl $uuid $p.exeName
+                    "downloadUrl"       = $dlUrl
                 }
+                
+                Debug-Log "[Update-FromDiscord.ps1] Saving sidecar"
                 $json = $sidecarObj | ConvertTo-Json
                 Set-Content -Path $sidecar -Value $json -Encoding utf8
                 $count++
@@ -100,33 +143,47 @@ function Download-DiscordProfiles {
                     throw "Fatal: Download failed for $($p.gameName). Stopping because -Silent is not set." 
                 }
             }
+        } else {
+            Debug-Log "[Update-FromDiscord.ps1] $targetFile already exists"
         }
     }
+    Debug-Log "[Update-FromDiscord.ps1] Finished Download-DiscordProfiles loop"
 }
 #endregion
 
 #region Main Logic
+Debug-Log "[Update-FromDiscord.ps1] Main Logic Start"
+$Global:Debug = $Debug
+
 # Handle cleanup logic
+Debug-Log "[Update-FromDiscord.ps1] Checking cleanup flags"
 if ($CleanCache) {
     Write-Host "Deleting cache for $SourceName..." -ForegroundColor Yellow
-    foreach ($f in @($MetadataJson, $ProfilesCsv, $BotStateJson)) {
-        if (Test-Path $f) { Remove-Item $f -Force -ErrorAction SilentlyContinue }
-    }
+    Debug-Log "[Update-FromDiscord.ps1] Cleaning cache: $MetadataJson"
+    if (Test-Path $MetadataJson) { Remove-Item $MetadataJson -Force -ErrorAction SilentlyContinue }
+    if (Test-Path $ProfilesCsv)  { Remove-Item $ProfilesCsv -Force -ErrorAction SilentlyContinue }
+    if (Test-Path $BotStateJson) { Remove-Item $BotStateJson -Force -ErrorAction SilentlyContinue }
 }
 if ($CleanDownloads) {
-    if (Test-Path $DownloadDir) {
-        Write-Host "Deleting downloads for $SourceName..." -ForegroundColor Yellow
-        Remove-Item $DownloadDir -Recurse -Force -ErrorAction SilentlyContinue
-    }
+    Write-Host "Deleting downloads for $SourceName..." -ForegroundColor Yellow
+    Debug-Log "[Update-FromDiscord.ps1] Cleaning downloads: $DownloadDir"
+    if (Test-Path $DownloadDir) { Remove-Item $DownloadDir -Recurse -Force -ErrorAction SilentlyContinue }
 }
 
-foreach ($d in @($SourceTempDir, $DownloadDir, $MetaCacheDir)) {
+# Ensure directories exist
+Debug-Log "[Update-FromDiscord.ps1] Ensuring directories exist"
+foreach ($d in @($SourceTempDir, $DownloadDir, $ProfilesDir)) {
     if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
 }
 
 if ($Fetch) { 
+    Debug-Log "[Update-FromDiscord.ps1] Calling Fetch-DiscordMetadata"
     Fetch-DiscordMetadata
-    $results = if (Test-Path $MetadataJson) { Get-Content $MetadataJson -Raw | ConvertFrom-Json } else { @() }
+    if (Test-Path $MetadataJson) {
+        $results = Get-Content $MetadataJson -Raw | ConvertFrom-Json
+    } else {
+        $results = @()
+    }
     Assert-ProfileCount -count $results.Count -expected $ProfileLimit -Silent:$Silent -stage "Fetch"
     $ExpectedCount = [Math]::Min($ExpectedCount, $results.Count)
 }

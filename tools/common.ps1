@@ -3,10 +3,21 @@ $RepoRoot       = Split-Path $PSScriptRoot -Parent
 $RepoRawUrl     = "https://github.com/Bluscream/UnrealVRMod/raw/master"
 $ProfilesDir    = Join-Path $RepoRoot "profiles"
 $SchemaFile     = Join-Path $RepoRoot "schemas" "ProfileMeta.schema.json"
-$Global:SchemaContent = (Test-Path $SchemaFile) ? (Get-Content $SchemaFile -Raw) : $null
+$Global:SchemaContent = $null
+if (Test-Path $SchemaFile) {
+    $Global:SchemaContent = Get-Content $SchemaFile -Raw
+}
 
 # Progress preference to avoid terminal spam during bulk file operations
 $ProgressPreference = 'SilentlyContinue'
+
+if ($null -eq $Global:Debug) { $Global:Debug = $false }
+
+function Debug-Log($message) {
+    if ($Global:Debug) {
+        Write-Host "  [DEBUG] $message" -ForegroundColor DarkGray
+    }
+}
 
 # Initialize global memory storage
 $Global:TrackingFiles = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
@@ -194,7 +205,7 @@ class ProfileArchive {
 
     ProfileArchive([string]$path) { $this.Path = $path }
 
-    static [string[]] GetSupportedExtensions() { return Get-SupportedArchiveExtensions }
+    static [string[]] GetSupportedArchiveExtensions() { return Get-SupportedArchiveExtensions }
     static [string[]] List([string]$path) { return ([ProfileArchive]::new($path)).GetContent() }
     static [void] Extract([string]$path, [string]$destination) { ([ProfileArchive]::new($path)).ExtractTo($destination) }
 
@@ -240,12 +251,20 @@ class ProfileArchive {
 
 
 #region Profile Helpers
-function Get-ProfileDownloadUrl($profileId, $exeName) {
-    if ($null -eq $exeName) { $exeName = $profileId }
-    $cleanName = $exeName -replace '[^a-zA-Z0-9]', '_'
-    $repoUrl = "https://github.com/uevr-profiles/repo/tree/main/profiles/$($profileId)"
-    $encodedUrl = [uri]::EscapeDataString($repoUrl)
-    return "https://gitfolderdownloader.github.io/?url=$($encodedUrl)&name=$($cleanName)"
+function Get-ProfileDownloadUrl($uuid, $exeName) {
+    Debug-Log "[common.ps1] Entering Get-ProfileDownloadUrl (ID: $uuid, Exe: $exeName)"
+    $baseUrl = "https://github.com/uevr-profiles/repo/tree/main/profiles/$uuid"
+    $encodedUrl = [System.Web.HttpUtility]::UrlEncode($baseUrl)
+    
+    $name = $uuid
+    if ($exeName) {
+        $name = $exeName.Replace(" ", "_").Replace(".", "_")
+    }
+    Debug-Log "[common.ps1] Name for downloader: $name"
+    
+    $res = "https://gitfolderdownloader.github.io/?url=$encodedUrl&name=$name"
+    Debug-Log "[common.ps1] Result: $res"
+    return $res
 }
 
 function Get-ISO8601Now { return [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ") }
@@ -379,15 +398,39 @@ function Get-DeterministicGuid($seed) {
 }
 
 function Get-OrCreateUUID($p) {
-    $id = $p.ID ? $p.ID : $p.id
-    if ($id -and $id -match "^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$") { try { return ([guid]$id).ToString() } catch {} }
+    Debug-Log "[common.ps1] Entering Get-OrCreateUUID"
+    $id = $null
+    if ($p.ID) { $id = $p.ID } else { $id = $p.id }
+    Debug-Log "[common.ps1] Found ID in p: $id"
+    
+    if ($id -and $id -match "^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$") { 
+        try { 
+            return ([guid]$id).ToString() 
+        } catch {
+            Debug-Log "[common.ps1] GUID conversion failed"
+        } 
+    }
+    
+    Debug-Log "[common.ps1] Generating UUID from details"
     $seedParts = @()
     if ($p.sourceUrl) { $seedParts += $p.sourceUrl }
-    elseif ($p.sourceDownloadUrl) { $seedParts += $p.sourceDownloadUrl }
-    elseif ($id) { $seedParts += $id }
-    if ($p.archiveroot) { $seedParts += $p.archiveroot }
+    if ($p.sourceDownloadUrl) { $seedParts += $p.sourceDownloadUrl }
+    if ($p.gameName) { $seedParts += $p.gameName }
+    if ($p.exeName) { $seedParts += $p.exeName }
+    
     $seed = $seedParts -join "|"
-    return if ($seed) { Get-DeterministicGuid $seed } else { [guid]::NewGuid().ToString() }
+    Debug-Log "[common.ps1] Seed: $seed"
+    $finalUuid = Get-DeterministicGuid $seed
+    Debug-Log "[common.ps1] Generated UUID: $finalUuid"
+    return $finalUuid
+}
+
+function Get-SupportedArchiveExtensions {
+    return @(".zip", ".7z", ".rar")
+}
+
+function Get-ISO8601Now {
+    return (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 }
 #endregion
 
@@ -458,7 +501,21 @@ function Convert-MarkdownToText($md, $maxLen = 100) {
     if ($null -eq $md) { return "" }
     $txt = $md -replace '(?m)^#+\s+', '' -replace '\*\*|__', '' -replace '\*|_', '' -replace '\[([^\]]+)\]\([^\)]+\)', '$1' -replace '`', '' -replace '(?m)^\s*>\s+', '' -replace '(?m)^\s*[-*+]\s+', '' -replace '\r?\n', ' '
     $txt = $txt.Trim()
-    return if ($txt.Length -gt $maxLen) { $txt.Substring(0, $maxLen - 3) + "..." } else { $txt }
+    
+    $res = $txt
+    if ($txt.Length -gt $maxLen) {
+        $res = $txt.Substring(0, $maxLen - 3) + "..."
+    }
+    return $res
+}
+
+function Move-Item-Smart($Source, $Destination) {
+    Debug-Log "[common.ps1] Move-Item-Smart: $Source -> $Destination"
+    if (-not (Test-Path $Source)) { return }
+    $parent = Split-Path $Destination -Parent
+    if (-not (Test-Path $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
+    if (Test-Path $Destination) { Remove-Item $Destination -Recurse -Force }
+    Move-Item $Source -Destination $Destination -Force
 }
 #endregion
 
@@ -497,64 +554,80 @@ function Get-SupportedArchiveExtensions {
     return $defaultExts | ForEach-Object { ".$_" }
 }
 
-function Extract-And-Discover-Profiles($sourceArchiveroot, $whitelist, $blacklist, $maxDepth = 5) {
-    if ($maxDepth -le 0) { return @() }
-    $tempBaseDir = New-Item -ItemType Directory -Path (Join-Path $env:TEMP "uevr_extract_$(New-Guid)") -Force; $tempBase = $tempBaseDir.FullName; $Global:TempFolders += $tempBase
-    try { [ProfileArchive]::Extract($sourceArchiveroot, $tempBase) } catch { Write-Error "    [!] Fatal error during extraction of $sourceArchiveroot"; return @() }
-    $discovered = @(); $supportedExts = Get-SupportedArchiveExtensions
-    foreach ($a in (Get-ChildItem -Path $tempBase -Recurse -Include $supportedExts)) {
-        $subContext = $a.FullName.Substring($tempBase.Length).TrimStart('\').Replace('\', ' / ').Replace('.zip', '')
-        foreach ($sp in (Extract-And-Discover-Profiles $a.FullName $whitelist $blacklist ($maxDepth - 1))) {
-            if ($sp.Profile -and $sp.Profile -ne "[Root]") { $sp.Profile = "$subContext / $($sp.Profile)" } else { $sp.Profile = $subContext }
-            if (-not $sp.ProfileName) { $sp.ProfileName = $subContext.Split('/')[-1].Trim() }
-            $discovered += $sp
+function Extract-And-Discover-Profiles($archivePath) {
+    Debug-Log "[common.ps1] Entering Extract-And-Discover-Profiles ($archivePath)"
+    $discovered = @()
+    $tempBase = Join-Path $BaseTempDir "discovery_$(Get-Random)"
+    New-Item -ItemType Directory -Path $tempBase -Force | Out-Null
+    
+    try {
+        $profileArchive = [ProfileArchive]::new($archivePath)
+        $profileArchive.Extract($tempBase)
+        
+        # Profile discovery: any folder with ProfileMeta.json or known patterns
+        $candidateDirs = Get-ChildItem -Path $tempBase -Directory -Recurse | Where-Object { 
+            (Test-Path (Join-Path $_.FullName "ProfileMeta.json")) -or 
+            (Get-ChildItem -Path $_.FullName -File | Where-Object { $_.Name -match "actions\.json|cameras\.txt|uobjecthook" })
         }
-        Remove-Item $a.FullName -Force -ErrorAction SilentlyContinue
-    }
-    $candidateDirs = Get-ChildItem -Path $tempBase -Recurse -Directory | Where-Object { Is-ProfileFolder $_.FullName }; if (Is-ProfileFolder $tempBase) { $candidateDirs += Get-Item $tempBase }
-    $uniqueProfiles = @(); foreach ($f in ($candidateDirs | Sort-Object { $_.FullName.Length })) {
-        $foundSub = $false; foreach ($up in $uniqueProfiles) { if ($f.FullName.StartsWith($up.FullName + "\")) { $foundSub = $true; break } }
-        if (-not $foundSub) { $uniqueProfiles += $f }
-    }
-    foreach ($folderItem in $uniqueProfiles) {
-        $folderPath = $folderItem.FullName; $rel = $folderPath.Substring($tempBase.Length).TrimStart('\'); $pName = $rel ? $folderItem.Name : ""
-        $targetDir = Join-Path $env:TEMP "uevr_profile_tmp_$(New-Guid)"; New-Item -ItemType Directory -Path $targetDir -Force | Out-Null; $Global:TempFolders += $targetDir
-        foreach ($f in (Get-ChildItem -Path $folderPath -Recurse -File)) {
-            $fRel = $f.FullName.Substring($folderPath.Length).TrimStart('\')
-            if (($whitelist ? (Test-Whitelisted $fRel) : $true) -and -not ($blacklist ? (Test-Blacklisted $fRel) : $false)) {
-                $fTarget = Join-Path $targetDir $fRel; $fParent = Split-Path $fTarget -Parent
-                if (-not (Test-Path $fParent)) { New-Item -ItemType Directory -Path $fParent -Force | Out-Null }
-                Copy-Item $f.FullName -Destination $fTarget -Force -ErrorAction SilentlyContinue
-            }
+        
+        if (-not $candidateDirs -and (Get-ChildItem $tempBase -File)) {
+            $candidateDirs = @(Get-Item $tempBase)
         }
-        if ((Get-ChildItem $targetDir).Count -gt 0) { $discovered += [PSCustomObject]@{ Path = $targetDir; Profile = ($rel ? $rel.Replace('\', ' / ') : "[Root]"); ProfileName = $pName } }
-        else { Remove-Item $targetDir -Recurse -Force -ErrorAction SilentlyContinue 2>$null }
+
+        foreach ($dir in $candidateDirs) {
+            $rel = $dir.FullName.Substring($tempBase.Length).TrimStart('\')
+            $relName = $rel ? $rel : "[Root]"
+            $discovered += [PSCustomObject]@{ Path = $dir.FullName; Profile = $relName; ProfileName = $dir.Name }
+        }
+    } catch {
+        Write-Warning "Discovery failed for ${archivePath}: $($_.Exception.Message)"
     }
+    
     return $discovered
 }
 
 function Extract-Archives($archivePaths, [switch]$Silent) {
-    if (-not $archivePaths) { return }
+    Debug-Log "[common.ps1] Entering Extract-Archives"
+    if (-not $archivePaths) { 
+        Debug-Log "[common.ps1] No archive paths provided"
+        return 
+    }
     $results = @()
     foreach ($archivePath in $archivePaths) {
         $archive = Get-Item $archivePath
-        Write-Host "DEBUG: Processing archive $($archive.FullName)" -ForegroundColor DarkGray
+        Debug-Log "[common.ps1] Processing archive $($archive.Name)"
         Write-Host "Processing archive: $($archive.Name)..." -ForegroundColor Cyan
+        
         $sidecarPath = $archive.FullName + ".json"
         if (-not (Test-Path $sidecarPath)) { 
             $sidecarPath = [IO.Path]::ChangeExtension($archive.FullName, ".json") 
         }
-        $sidecar = (Test-Path $sidecarPath) ? (Get-Content $sidecarPath -Raw | ConvertFrom-Json) : $null
+        
+        $sidecar = $null
+        if (Test-Path $sidecarPath) {
+            Debug-Log "[common.ps1] Found sidecar: $sidecarPath"
+            $sidecar = Get-Content $sidecarPath -Raw | ConvertFrom-Json
+        }
+        
+        Debug-Log "[common.ps1] Discovering profiles in archive"
         $discovered = Extract-And-Discover-Profiles $archive.FullName
         Write-Host "  Found $($discovered.Count) profiles within archive." -ForegroundColor Gray
+        
         foreach ($p in $discovered) {
             try {
+                Debug-Log "[common.ps1] Processing discovered profile: $($p.Profile)"
                 $internalPath = Join-Path $p.Path "ProfileMeta.json"
-                $internal = (Test-Path $internalPath) ? (Get-Content $internalPath -Raw | ConvertFrom-Json) : $null
+                
+                $internal = $null
+                if (Test-Path $internalPath) {
+                    $internal = Get-Content $internalPath -Raw | ConvertFrom-Json
+                }
+                
                 $merged = [ordered]@{}
                 if ($internal) { foreach ($prop in $internal.PSObject.Properties) { $merged[$prop.Name] = $prop.Value } }
                 if ($sidecar) { foreach ($prop in $sidecar.PSObject.Properties) { $merged[$prop.Name] = $prop.Value } }
                 
+                Debug-Log "[common.ps1] Generating metadata"
                 if (-not $merged.ID) { $merged.ID = Get-OrCreateUUID $merged }
                 if (-not $merged.zipHash) { $merged.zipHash = Get-FileHashMD5 $archive.FullName }
                 if (-not $merged.downloadDate) { $merged.downloadDate = Get-ISO8601Now }
@@ -564,13 +637,19 @@ function Extract-Archives($archivePaths, [switch]$Silent) {
                 if ($p.Profile -and $p.Profile -ne "[Root]") { 
                     $targetDir = Join-Path $targetDir ($p.Profile -replace ' / ', '\') 
                 }
+                
+                Debug-Log "[common.ps1] Moving profile to target: $targetDir"
                 Move-Item-Smart $p.Path $targetDir
+                
                 $tagSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
                 if ($finalMeta.tags) { foreach ($t in $finalMeta.tags) { $tagSet.Add($t) | Out-Null } }
                 $hTags = Get-HeuristicTags $targetDir $finalMeta $p.Profile
                 if ($hTags) { foreach ($t in $hTags) { $tagSet.Add($t) | Out-Null } }
                 if ($tagSet.Count -gt 0) { $finalMeta.tags = @($tagSet | Sort-Object) }
+                
+                Debug-Log "[common.ps1] Saving finalized metadata"
                 $finalMeta.Save($targetDir, $archive.FullName, $p.Profile)
+                
                 if (-not $Silent) { 
                     Print-ProfileInfo $finalMeta $archive.FullName $p.Profile 
                 }
@@ -582,8 +661,16 @@ function Extract-Archives($archivePaths, [switch]$Silent) {
 }
 
 function Extract-ArchivesFolder($folderPath, [switch]$Silent) {
-    if (-not (Test-Path $folderPath)) { return }
-    $archives = Get-ChildItem -Path $folderPath -File -Include (Get-SupportedArchiveExtensions)
+    Debug-Log "[common.ps1] Entering Extract-ArchivesFolder: $folderPath"
+    if (-not (Test-Path $folderPath)) { 
+        Debug-Log "[common.ps1] Folder not found: $folderPath"
+        return 
+    }
+    $exts = Get-SupportedArchiveExtensions
+    $filter = ($exts | ForEach-Object { "*$_" })
+    Debug-Log "[common.ps1] Searching for archives with filters: $($filter -join ', ')"
+    $archives = Get-ChildItem -Path $folderPath -File -Include $filter
+    Debug-Log "[common.ps1] Found $($archives.Count) archives"
     return Extract-Archives $archives.FullName -Silent:$Silent
 }
 #endregion

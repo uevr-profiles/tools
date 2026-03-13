@@ -1,7 +1,7 @@
-#region Parameters
 param(
     [switch]$Clean,
     [switch]$Silent,
+    [switch]$Debug,
     [int]$ProfileLimit = 2
 )
 #endregion
@@ -11,6 +11,7 @@ param(
 #endregion
 
 #region Variables
+$Global:Debug = $Debug
 $UpdateScripts = @(
     "Update-FromUEVRProfiles.ps1", 
     "Update-FromUEVRDeluxe.ps1",
@@ -37,7 +38,7 @@ foreach ($s in $UpdateScripts) {
     if (Test-Path $scriptPath) {
         Write-Host "`n>>> Testing $s (Download) <<<" -ForegroundColor Cyan
         try {
-            & $scriptPath -Fetch -Download -ProfileLimit $ProfileLimit -Silent:$Silent
+            & $scriptPath -Fetch -Download -ProfileLimit $ProfileLimit -Silent:$Silent -Debug:$Debug
         } catch {
             Write-Host "    [!] Download test failed for ${s}: $($_.Exception.Message)" -ForegroundColor Red
         }
@@ -49,7 +50,7 @@ $dedupePath = Join-Path $PSScriptRoot $DedupeScript
 if (Test-Path $dedupePath) {
     Write-Host "`n>>> Testing $DedupeScript <<<" -ForegroundColor Cyan
     try {
-        & $dedupePath -Delete -Silent:$Silent
+        & $dedupePath -Delete -Silent:$Silent -Debug:$Debug
     } catch {
         Write-Host "    [!] Deduplication test failed: $($_.Exception.Message)" -ForegroundColor Red
     }
@@ -61,7 +62,7 @@ foreach ($s in $UpdateScripts) {
     if (Test-Path $scriptPath) {
         Write-Host "`n>>> Testing $s (Extract) <<<" -ForegroundColor Cyan
         try {
-            & $scriptPath -Extract -Silent:$Silent
+            & $scriptPath -Extract -Silent:$Silent -Debug:$Debug
         } catch {
             Write-Host "    [!] Extraction test failed for ${s}: $($_.Exception.Message)" -ForegroundColor Red
         }
@@ -73,7 +74,7 @@ $buildPath = Join-Path $PSScriptRoot $BuildScript
 if (Test-Path $buildPath) {
     Write-Host "`n>>> Testing $BuildScript <<<" -ForegroundColor Cyan
     try {
-        & $buildPath
+        & $buildPath -Debug:$Debug
     } catch {
         Write-Host "    [!] Build test failed: $($_.Exception.Message)" -ForegroundColor Red
     }

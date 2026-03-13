@@ -7,6 +7,7 @@ param(
     [switch]$Whitelist,
     [switch]$Blacklist,
     [switch]$Silent,
+    [switch]$Debug,
     [switch]$CleanCache,
     [switch]$CleanDownloads
 )
@@ -56,15 +57,19 @@ function Download-UEVRDeluxeProfiles {
         if ($failCount -ge 5) { Write-Error "Too many consecutive failures in $SourceName. Stopping."; break }
         
         $uuid = Get-OrCreateUUID $p
-        $actualExe = $p.exeName ? $p.exeName : $p.exename
-        if (-not $uuid -or -not $actualExe) { continue }
-        
         $targetFile = Join-Path $DownloadDir "$uuid.zip"
         $sidecar    = $targetFile + ".json"
         
+        $exeName = ""
+        if ($p.exeName) {
+            $exeName = $p.exeName
+        } else {
+            $exeName = $p.zipName.Replace(".zip", "")
+        }
+        
         if (-not (Test-Path $targetFile)) {
-            $url = "$ProfilesUrlBase/$(($actualExe -replace ' ', '%20'))/$uuid"
-            Write-Host "[$index/$total] Downloading $($p.gameName) ($actualExe)..." -ForegroundColor Gray
+            $url = "$ProfilesUrlBase/$(($exeName -replace ' ', '%20'))/$uuid"
+            Write-Host "[$index/$total] Downloading $($p.gameName) ($exeName)..." -ForegroundColor Gray
 
             try {
                 Invoke-WebRequestWithRetry -url $url -targetFile $targetFile -headers @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" } -Silent $Silent
@@ -100,32 +105,45 @@ function Download-UEVRDeluxeProfiles {
 #endregion
 
 #region Main Logic
+Debug-Log "[Update-FromUEVRDeluxe.ps1] Main Logic Start"
+$Global:Debug = $Debug
+
 # Handle cleanup logic
+Debug-Log "[Update-FromUEVRDeluxe.ps1] Checking cleanup flags"
 if ($CleanCache) {
     if (Test-Path $MetadataJson) {
         Write-Host "Deleting cache for $SourceName..." -ForegroundColor Yellow
+        Debug-Log "[Update-FromUEVRDeluxe.ps1] Deleting $MetadataJson"
         Remove-Item $MetadataJson -Force -ErrorAction SilentlyContinue
     }
 }
 if ($CleanDownloads) {
     if (Test-Path $DownloadDir) {
         Write-Host "Deleting downloads for $SourceName..." -ForegroundColor Yellow
+        Debug-Log "[Update-FromUEVRDeluxe.ps1] Deleting $DownloadDir"
         Remove-Item $DownloadDir -Recurse -Force -ErrorAction SilentlyContinue
     }
 }
 
+Debug-Log "[Update-FromUEVRDeluxe.ps1] Ensuring directories exist"
 foreach ($d in @($SourceTempDir, $DownloadDir, $MetaCacheDir)) {
     if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
 }
 
 if ($Fetch) { 
+    Debug-Log "[Update-FromUEVRDeluxe.ps1] Calling Fetch-UEVRDeluxeMetadata"
     Fetch-UEVRDeluxeMetadata
-    $data = if (Test-Path $MetadataJson) { Get-Content $MetadataJson -Raw | ConvertFrom-Json } else { @() }
+    if (Test-Path $MetadataJson) {
+        $data = Get-Content $MetadataJson -Raw | ConvertFrom-Json
+    } else {
+        $data = @()
+    }
     Assert-ProfileCount -count $data.Count -expected $ProfileLimit -Silent:$Silent -stage "Fetch"
     $ExpectedCount = [Math]::Min($ExpectedCount, $data.Count)
 }
 
 if ($Download) { 
+    Debug-Log "[Update-FromUEVRDeluxe.ps1] Calling Download-UEVRDeluxeProfiles"
     Download-UEVRDeluxeProfiles
     $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
     Assert-ProfileCount -count $zips.Count -expected $ExpectedCount -Silent:$Silent -stage "Download"
@@ -133,9 +151,11 @@ if ($Download) {
 }
 
 if ($Extract) { 
+    Debug-Log "[Update-FromUEVRDeluxe.ps1] Calling Extract-ArchivesFolder"
     Extract-ArchivesFolder $DownloadDir -Silent:$Silent
     $processed = Get-ChildItem -Path $ProfilesDir -Directory | Where-Object { (Test-Path (Join-Path $_.FullName "ProfileMeta.json")) }
     $profileIds = $processed | ForEach-Object { (Get-Content (Join-Path $_.FullName "ProfileMeta.json") -Raw | ConvertFrom-Json).ID } | Select-Object -Unique
     Assert-ProfileCount -count $profileIds.Count -expected $ExpectedCount -Silent:$Silent -stage "Extraction ID"
 }
+Debug-Log "[Update-FromUEVRDeluxe.ps1] Main Logic End"
 #endregion
