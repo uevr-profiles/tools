@@ -86,7 +86,31 @@ function Download-DiscordProfiles {
             Write-Host "[$($count+1)/$($profiles.Count)] Downloading: $($p.gameName) ($($p.zipName))..." -ForegroundColor Gray
             try {
                 Invoke-WebRequestWithRetry -url $p.sourceDownloadUrl -targetFile $targetFile -Silent $Silent
-                $p | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
+                
+                # Standardize Sidecar Metadata
+                $tagSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+                $category = if ($p.category) { $p.category.Replace("ue-", "").Replace("nsfw", "NSFW").Trim() } else { "" }
+                if ($category -and $category -ne "games") {
+                   if ($category -eq "experiences") { $category = "Experiences" }
+                   $tagSet.Add($category) | Out-Null
+                }
+
+                $sidecarObj = [ordered]@{
+                    "ID"                = $uuid
+                    "exeName"           = if ($p.exeName) { $p.exeName } else { $p.archive.Replace(".zip", "") }
+                    "gameName"          = $p.gameName
+                    "authorName"        = $p.authorName
+                    "createdDate"       = Format-ISO8601Date $p.createdDate
+                    "sourceName"        = "discord.gg/flat2vr"
+                    "sourceUrl"         = $p.sourceUrl
+                    "sourceDownloadUrl" = $p.sourceDownloadUrl
+                    "description"       = $p.description
+                    "headerPictureUrl"  = $p.gameBanner
+                    "tags"              = @($tagSet)
+                    "downloadUrl"       = Get-ProfileDownloadUrl $uuid $p.exeName
+                }
+                $sidecarObj | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
+
                 $count++
                 $failCount = 0
                 Write-Host "  [OK] Download successful." -ForegroundColor Green
@@ -100,88 +124,9 @@ function Download-DiscordProfiles {
 }
 
 function Extract-DiscordProfiles {
-    $archiveroots = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
-    Write-Host "Processing $($archiveroots.Count) profiles from $SourceName... (Limit: $ProfileLimit)" -ForegroundColor Cyan
-
-    $eCount = 0
-    foreach ($archiveroot in $archiveroots) {
-        if ($eCount -ge $ProfileLimit) { break }
-        try {
-            $eCount++
-            $sidecar = $archiveroot.FullName + ".json"
-            if (-not (Test-Path $sidecar)) { continue }
-            $p = Get-Content $sidecar -Raw | ConvertFrom-Json
-
-            $zipHash = Get-FileHashMD5 $archiveroot.FullName
-            
-            $extracted_archives = Extract-And-Discover-Profiles $archiveroot.FullName $Whitelist $Blacklist
-            
-            foreach ($extracted_archive in $extracted_archives) {
-                $profile = $extracted_archive.Profile
-                $tempDir = $extracted_archive.Path
-                $uuid = $p.uuid
-
-                $targetDir = Join-Path $ProfilesDir $uuid
-                if ($profile -and $profile -ne "[Root]") {
-                    $vPath = $profile -replace ' / ', '\'
-                    $targetDir = Join-Path $targetDir $vPath
-                }
-                if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }
-                
-                # Move contents
-                $relFiles = Get-ChildItem -Path $tempDir -Recurse | Where-Object { -not $_.PSIsContainer } | ForEach-Object { 
-                    $_.FullName.Substring($tempDir.Length).TrimStart('\')
-                }
-                Update-GlobalFilesList $relFiles
-                
-                Move-Item-Smart $tempDir $targetDir
-
-                # Meta creation
-                $meta = [ProfileMetadata]::new()
-                $meta.ID                = $uuid
-                $meta.exeName           = if ($p.exeName) { $p.exeName } else { $p.archive.Replace(".zip", "") }
-                $meta.gameName          = $p.gameName
-                $meta.authorName        = $p.authorName
-                $meta.createdDate       = Format-ISO8601Date $p.createdDate
-                $meta.sourceName        = "discord.gg/flat2vr"
-                $meta.sourceUrl         = $p.sourceUrl
-                $meta.sourceDownloadUrl = $p.sourceDownloadUrl
-                $meta.description       = $p.description
-                $meta.headerPictureUrl  = $p.gameBanner
-                $meta.downloadDate      = Format-ISO8601Date $p.downloadDate
-                $meta.zipHash           = $zipHash.ToUpper()
-                $meta.downloadUrl       = Get-ProfileDownloadUrl $uuid $meta.exeName
-
-                # Handle Tags (Category + Heuristics)
-                $tagSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
-                
-                $hTags = Get-HeuristicTags $targetDir $meta $profile
-                if ($hTags) { foreach ($t in $hTags) { $tagSet.Add($t) | Out-Null } }
-
-                $tagArray = [System.Collections.Generic.List[string]]::new($tagSet)
-                $category = if ($p.category) { $p.category.Replace("ue-", "").Replace("nsfw", "NSFW").Trim() } else { "" }
-                if ($category -and $category -ne "games") {
-                   if ($category -eq "experiences") { $category = "Experiences" }
-                   if ($category -and -not ($tagArray -contains $category)) {
-                       $tagArray.Add($category)
-                   }
-                }
-
-                if ($tagArray.Count -gt 0) {
-                    $meta.tags = @($tagArray)
-                }
-
-                $meta.Save($targetDir, $archiveroot.FullName, $profile)
-
-                if (-not $Silent) {
-                    Print-ProfileInfo $meta $archiveroot.FullName $profile
-                }
-            }
-        } catch {
-            Write-Host "  [!] Extraction failed for $($archiveroot.Name): $($_.Exception.Message)" -ForegroundColor Red
-            if (-not $Silent) { throw "Fatal: Profile processing error for $($archiveroot.Name). Stopping because -Silent is not set." }
-        }
-    }
+    $archives = Get-ChildItem -Path $DownloadDir -File -Include "*.zip", "*.7z", "*.rar"
+    Write-Host "Processing $($archives.Count) archives from $SourceName..." -ForegroundColor Cyan
+    Extract-Archives $archives.FullName -Silent:$Silent
 }
 
 # ──────── Main Logic Entry ────────────────────────────────────────────────────

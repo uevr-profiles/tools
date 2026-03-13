@@ -678,6 +678,87 @@ function Extract-And-Discover-Profiles($sourceArchiveroot, $whitelist, $blacklis
     return $extracted_archives # Renamed from $profilesFound
 }
 
+function Extract-Archives($archivePaths, [switch]$Silent) {
+    if (-not $archivePaths) { return }
+    $results = @()
+
+    foreach ($archivePath in $archivePaths) {
+        $archive = Get-Item $archivePath
+        Write-Host "Processing archive: $($archive.Name)..." -ForegroundColor Cyan
+        
+        # 1. Look for Sidecar Metadata
+        $sidecarPath = $archive.FullName + ".json"
+        if (-not (Test-Path $sidecarPath)) {
+            $sidecarPath = [IO.Path]::ChangeExtension($archive.FullName, ".json")
+        }
+        $sidecar = if (Test-Path $sidecarPath) { Get-Content $sidecarPath -Raw | ConvertFrom-Json } else { $null }
+
+        # 2. Extract and Discover
+        $discovered = Extract-And-Discover-Profiles $archive.FullName
+        Write-Host "  Found $($discovered.Count) profiles within archive." -ForegroundColor Gray
+
+        foreach ($p in $discovered) {
+            try {
+                # 3. Load Internal Metadata
+                $internalMetaPath = Join-Path $p.Path "ProfileMeta.json"
+                $internal = if (Test-Path $internalMetaPath) { Get-Content $internalMetaPath -Raw | ConvertFrom-Json } else { $null }
+
+                # 4. Merge Metadata
+                # Priority: Sidecar > Internal > Defaults
+                $merged = [ordered]@{}
+                if ($internal) { foreach ($prop in $internal.PSObject.Properties) { $merged[$prop.Name] = $prop.Value } }
+                if ($sidecar) { foreach ($prop in $sidecar.PSObject.Properties) { $merged[$prop.Name] = $prop.Value } }
+                
+                # Ensure stable fields
+                if (-not $merged.ID) { $merged.ID = Get-OrCreateUUID $merged }
+                if (-not $merged.zipHash) { $merged.zipHash = Get-FileHashMD5 $archive.FullName }
+                if (-not $merged.downloadDate) { $merged.downloadDate = Get-ISO8601Now }
+
+                # Use ProfileMetadata class to normalize
+                $finalMeta = [ProfileMetadata]::FromObject($merged)
+                $targetDir = Join-Path $ProfilesDir $finalMeta.ID
+                if ($p.Profile -and $p.Profile -ne "[Root]") {
+                    $targetDir = Join-Path $targetDir ($p.Profile -replace ' / ', '\')
+                }
+
+                # 5. Move to final destination
+                Move-Item-Smart $p.Path $targetDir -Force
+                
+                # 6. Post-process Tags (Heuristics + Merge)
+                $tagSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+                
+                # Add existing tags from sidecar/internal
+                if ($finalMeta.tags) { foreach ($t in $finalMeta.tags) { $tagSet.Add($t) | Out-Null } }
+                
+                # Apply Heuristics
+                $hTags = Get-HeuristicTags $targetDir $finalMeta $p.Profile
+                if ($hTags) { foreach ($t in $hTags) { $tagSet.Add($t) | Out-Null } }
+                
+                if ($tagSet.Count -gt 0) {
+                    $finalMeta.tags = @($tagSet | Sort-Object)
+                }
+
+                # Finalize (README, diagnostic tracking, validation)
+                $finalMeta.Save($targetDir, $archive.FullName, $p.Profile)
+
+                if (-not $Silent) {
+                    Print-ProfileInfo $finalMeta $archive.FullName $p.Profile
+                }
+                $results += $finalMeta
+            } catch {
+                Write-Host "  [!] Failed to process profile in $($archive.Name): $($_.Exception.Message)" -ForegroundColor Red
+            }
+        }
+    }
+    return $results
+}
+
+function Extract-ArchivesFolder($folderPath, [switch]$Silent) {
+    if (-not (Test-Path $folderPath)) { return }
+    $archives = Get-ChildItem -Path $folderPath -File -Include "*.zip", "*.7z", "*.rar", "*.tar", "*.gz"
+    return Extract-Archives $archives.FullName -Silent:$Silent
+}
+
 function Get-DeterministicGuid($seed) {
     if ($seed -match "^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$") {
         return ([guid]$seed).ToString()

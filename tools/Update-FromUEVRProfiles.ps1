@@ -125,7 +125,22 @@ function Download-UEVRProfiles {
             try {
                 Invoke-WebRequestWithRetry -url $p.downloadUrl -targetFile $targetFile -Silent $Silent
                 
-                $p | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
+                # Standardize Sidecar Metadata
+                $sidecarObj = [ordered]@{
+                    "ID"                = $uuid
+                    "exeName"           = $p.exeName
+                    "gameName"          = $p.gameName
+                    "authorName"        = $p.authorName
+                    "modifiedDate"      = Format-ISO8601Date $p.modifiedDate
+                    "createdDate"       = Format-ISO8601Date $p.createdDate
+                    "sourceName"        = "uevr-profiles.com"
+                    "sourceUrl"         = "https://uevr-profiles.com/game/$($p.id)"
+                    "sourceDownloadUrl" = $p.downloadUrl
+                    "description"       = $p.description
+                    "downloadUrl"       = Get-ProfileDownloadUrl $uuid $p.exeName
+                }
+                $sidecarObj | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
+
                 $count++
                 $failCount = 0
                 Write-Host "  [OK] Download successful." -ForegroundColor Green
@@ -139,72 +154,9 @@ function Download-UEVRProfiles {
 }
 
 function Extract-UEVRProfiles {
-    $archiveroots = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
-    Write-Host "Processing $($archiveroots.Count) profiles from $SourceName..." -ForegroundColor Cyan
-
-    foreach ($archiveroot in $archiveroots) {
-        try {
-            $sidecar = $archiveroot.FullName + ".json"
-            if (-not (Test-Path $sidecar)) { continue }
-            $p = Get-Content $sidecar -Raw | ConvertFrom-Json
-
-            $zipHash = Get-FileHashMD5 $archiveroot.FullName
-            $sourceUrl = "https://uevr-profiles.com/game/$($p.id)"
-            
-            $extracted_archives = Extract-And-Discover-Profiles $archiveroot.FullName $Whitelist $Blacklist
-            
-            foreach ($extracted_archive in $extracted_archives) {
-                $profile = $extracted_archive.Profile
-                $tempDir = $extracted_archive.Path
-                $uuid = $p.uuid
-
-                $targetDir = Join-Path $ProfilesDir $uuid
-                if ($profile -and $profile -ne "[Root]") {
-                    $vPath = $profile -replace ' / ', '\'
-                    $targetDir = Join-Path $targetDir $vPath
-                }
-                
-                # Move contents
-                $relFiles = Get-ChildItem -Path $tempDir -Recurse | Where-Object { -not $_.PSIsContainer } | ForEach-Object { 
-                    $_.FullName.Substring($tempDir.Length).TrimStart('\')
-                }
-                Update-GlobalFilesList $relFiles
-                
-                Move-Item-Smart $tempDir $targetDir
-
-                # Meta creation
-                $meta = [ProfileMetadata]::new()
-                $meta.ID                = $uuid
-                $meta.exeName           = $p.exeName
-                $meta.gameName          = $p.gameName
-                $meta.authorName        = $p.authorName
-                $meta.modifiedDate      = Format-ISO8601Date $p.modifiedDate
-                $meta.createdDate       = Format-ISO8601Date $p.createdDate
-                $meta.sourceName        = "uevr-profiles.com"
-                $meta.sourceUrl         = $sourceUrl
-                $meta.sourceDownloadUrl = $p.downloadUrl
-                $meta.description       = $p.description
-                $meta.downloadDate      = Get-ISO8601Now
-                $meta.zipHash           = $zipHash.ToUpper()
-                $meta.downloadUrl       = Get-ProfileDownloadUrl $uuid $p.exeName
-
-                # Handle Tags (Heuristics only for uevr-profiles)
-                $tagArray = @(Get-HeuristicTags $targetDir $meta $profile)
-                if ($tagArray -and $tagArray.Count -gt 0) {
-                    $meta.tags = $tagArray
-                }
-
-                $meta.Save($targetDir, $archiveroot.FullName, $profile)
-
-                if (-not $Silent) {
-                    Print-ProfileInfo $meta $archiveroot.FullName $profile
-                }
-            }
-        } catch {
-            Write-Host "  [!] Extraction failed for $($archiveroot.Name): $($_.Exception.Message)" -ForegroundColor Red
-            if (-not $Silent) { throw "Fatal: Profile processing error for $($archiveroot.Name). Stopping because -Silent is not set." }
-        }
-    }
+    $archives = Get-ChildItem -Path $DownloadDir -File -Include "*.zip", "*.7z", "*.rar"
+    Write-Host "Processing $($archives.Count) archives from $SourceName..." -ForegroundColor Cyan
+    Extract-Archives $archives.FullName -Silent:$Silent
 }
 
 # ──────── Main Logic Entry ────────────────────────────────────────────────────

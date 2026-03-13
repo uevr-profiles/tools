@@ -91,19 +91,23 @@ function Download-UEVRDeluxeProfiles {
             try {
                 Invoke-WebRequestWithRetry -url $url -targetFile $targetFile -headers @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" } -Silent $Silent
                 
+                # Standardize Sidecar Metadata
                 $dates = Get-MetadataDates $p
                 $sidecarObj = [ordered]@{
-                    "authorName"   = $p.authorName
-                    "gameName"     = $p.gameName
-                    "exeName"      = $p.exeName
-                    "modifiedDate" = $dates.Modified
-                    "createdDate"  = $dates.Created
-                    "sourceUrl"    = $url
+                    "ID"                = $uuid
+                    "exeName"           = $actualExe
+                    "gameName"          = $p.gameName
+                    "authorName"        = $p.authorName
+                    "modifiedDate"      = Format-ISO8601Date $dates.Modified
+                    "createdDate"       = Format-ISO8601Date $dates.Created
+                    "sourceName"        = "uevrdeluxe.org"
+                    "sourceUrl"         = $url
                     "sourceDownloadUrl" = $url
-                    "description"  = $p.remarks
-                    "uuid"         = $uuid
+                    "description"       = $p.remarks
+                    "downloadUrl"       = Get-ProfileDownloadUrl $uuid $actualExe
                 }
                 $sidecarObj | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
+
                 $count++
                 $failCount = 0
                 Write-Host "  [OK] Download successful." -ForegroundColor Green
@@ -117,77 +121,9 @@ function Download-UEVRDeluxeProfiles {
 }
 
 function Extract-UEVRDeluxeProfiles {
-    $archiveroots = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
-    Write-Host "Processing $($archiveroots.Count) profiles from $SourceName..." -ForegroundColor Cyan
-
-    foreach ($archiveroot in $archiveroots) {
-        try {
-            $sidecar = $archiveroot.FullName + ".json"
-            
-            # Use sidecar if available, else try to find in allprofiles.json
-            if (Test-Path $sidecar) {
-                $extraMeta = Get-Content $sidecar -Raw | ConvertFrom-Json
-                $uuid = $extraMeta.uuid
-            } else {
-                continue
-            }
-
-            $zipHash = Get-FileHashMD5 $archiveroot.FullName
-            
-            # Discover profiles within archive
-            $extracted_archives = Extract-And-Discover-Profiles $archiveroot.FullName $Whitelist $Blacklist
-            
-            foreach ($extracted_archive in $extracted_archives) {
-                $profile = $extracted_archive.Profile
-                $tempDir = $extracted_archive.Path
-                
-                $targetDir = Join-Path $ProfilesDir $uuid
-                if ($profile -and $profile -ne "[Root]") {
-                    $vPath = $profile -replace ' / ', '\'
-                    $targetDir = Join-Path $targetDir $vPath
-                }
-                
-                # Move contents
-                $relFiles = Get-ChildItem -Path $tempDir -Recurse | Where-Object { -not $_.PSIsContainer } | ForEach-Object { 
-                    $_.FullName.Substring($tempDir.Length).TrimStart('\')
-                }
-                Update-GlobalFilesList $relFiles
-                
-                Move-Item-Smart $tempDir $targetDir
-
-                # Meta creation
-                $meta = [ProfileMetadata]::new()
-                $meta.ID                = $uuid
-                $meta.exeName           = $extraMeta.exeName
-                $meta.gameName          = $extraMeta.gameName
-                $meta.authorName        = $extraMeta.authorName
-                $meta.modifiedDate      = Format-ISO8601Date $extraMeta.modifiedDate
-                $meta.createdDate       = Format-ISO8601Date $extraMeta.createdDate
-                $meta.sourceName        = "uevrdeluxe.org"
-                $meta.sourceUrl         = $extraMeta.sourceUrl
-                $meta.sourceDownloadUrl = $extraMeta.sourceDownloadUrl
-                $meta.description       = $extraMeta.description
-                $meta.downloadDate      = Get-ISO8601Now
-                $meta.zipHash           = $zipHash.ToUpper()
-                $meta.downloadUrl       = Get-ProfileDownloadUrl $uuid $extraMeta.exeName
-
-                # Handle Tags (Heuristics only for Deluxe)
-                $tagArray = @(Get-HeuristicTags $targetDir $meta $profile)
-                if ($tagArray -and $tagArray.Count -gt 0) {
-                    $meta.tags = $tagArray
-                }
-
-                $meta.Save($targetDir, $archiveroot.FullName, $profile)
-
-                if (-not $Silent) {
-                    Print-ProfileInfo $meta $archiveroot.FullName $profile
-                }
-            }
-        } catch {
-            Write-Host "  [!] Extraction failed for $($archiveroot.Name): $($_.Exception.Message)" -ForegroundColor Red
-            if (-not $Silent) { throw "Fatal: Profile processing error for $($archiveroot.Name). Stopping because -Silent is not set." }
-        }
-    }
+    $archives = Get-ChildItem -Path $DownloadDir -File -Include "*.zip", "*.7z", "*.rar"
+    Write-Host "Processing $($archives.Count) archives from $SourceName..." -ForegroundColor Cyan
+    Extract-Archives $archives.FullName -Silent:$Silent
 }
 
 # ──────── Main Logic Entry ────────────────────────────────────────────────────
