@@ -138,7 +138,7 @@ class ProfileMetadata {
                     elseif ($p -match "Date$") { $meta.$p = Format-DateISO8601 $val }
                     else { $meta.$p = $val }
                 } catch {
-                    Debug-Log "[ProfileMetadata] Failed to map property $p: $($_.Exception.Message)"
+                    Debug-Log "[ProfileMetadata] Failed to map property ${p}: $($_.Exception.Message)"
                 }
             }
         }
