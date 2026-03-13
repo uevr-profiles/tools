@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits, ChannelType, PermissionsBitField } = require('discord.js');
+const { Client, GatewayIntentBits, ChannelType, PermissionsBitField, Events } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
@@ -112,7 +112,7 @@ async function fetchNewMessages(thread, afterId) {
     return allMessages;
 }
 
-client.once('ready', async () => {
+client.once(Events.ClientReady, async () => {
     console.log(`Logged in as ${client.user.tag}!`);
     
     let results = loadResults();
@@ -137,8 +137,10 @@ client.once('ready', async () => {
             const activeThreads = await channel.threads.fetchActive();
             const archivedThreads = await channel.threads.fetchArchived();
             const allThreads = [...activeThreads.threads.values(), ...archivedThreads.threads.values()];
+            let threadIndex = 0;
 
             for (const thread of allThreads) {
+                threadIndex++;
                 if (newFoundTotal >= PROFILE_LIMIT) break;
                 const lastScrapedId = state.threads[thread.id];
                 
@@ -146,7 +148,7 @@ client.once('ready', async () => {
                     continue;
                 }
 
-                console.log(`  Scraping: ${thread.name} (ID: ${thread.id})`);
+                console.log(`  [${threadIndex}/${allThreads.length}] Scraping: ${thread.name} (ID: ${thread.id})`);
                 
                 let messages = [];
                 if (!lastScrapedId) {
@@ -180,7 +182,7 @@ client.once('ready', async () => {
                         if (existingIds.has(uniqueId)) continue;
 
                         const msgUrl = getDiscordUrl(thread.guildId, thread.id, msg.id);
-                        console.log(`    [+] Found: ${zip.name} (${msg.author.username}) -> ${msgUrl}`);
+                        console.log(`    [${newFoundTotal + 1}] Found: ${zip.name} (${msg.author.username}) -> ${msgUrl}`);
 
                         results.push({
                             id: uniqueId,
