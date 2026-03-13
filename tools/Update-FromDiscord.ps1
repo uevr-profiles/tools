@@ -59,8 +59,12 @@ if ($Download) {
         if ($count -ge $ProfileLimit) { break }
         if ($failCount -ge 5) { Write-Error "Too many consecutive failures in $SourceName. Stopping."; break }
 
-        # Filename: <msgId>_<zipId>.zip to prevent collisions
-        $targetFile = Join-Path $DownloadDir "$($p.id).zip"
+        # Assign UUID based on message URL + archive
+        $uuid = Get-OrCreateUUID $p
+        $p | Add-Member -MemberType NoteProperty -Name "uuid" -Value $uuid -ErrorAction SilentlyContinue
+
+        # Filename: <uuid>.zip
+        $targetFile = Join-Path $DownloadDir "$uuid.zip"
         $sidecar    = $targetFile + ".json"
 
         if (-not (Test-Path $targetFile)) {
@@ -71,6 +75,10 @@ if ($Download) {
                 Invoke-WebRequestWithRetry -url $p.sourceDownloadUrl -targetFile $targetFile
                 Write-Host "  [OK] Download successful." -ForegroundColor Green
                 
+                # Metadata cleanups: Remove modifiedDate, Set downloadDate
+                $p.PSObject.Properties.Remove("modifiedDate")
+                $p | Add-Member -MemberType NoteProperty -Name "downloadDate" -Value (Get-ISO8601Now) -Force
+
                 # Sidecar metadata for extraction phase
                 $p | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
                 $count++
@@ -103,7 +111,7 @@ if ($Extract) {
             foreach ($d in $discovered) {
                 $variant = $d.Variant
                 $tempDir = $d.Path
-                $uuid = Get-OrCreateUUID $p.id # Using Discord IDs for deterministic UUID
+                $uuid = $p.uuid
                 
                 $targetDir = Join-Path $ProfilesDir $uuid
                 if ($variant -and $variant -ne "[Root]") {
@@ -131,14 +139,13 @@ if ($Extract) {
                     "exeName"           = $finalExe
                     "gameName"          = $p.gameName
                     "authorName"        = $p.authorName
-                    "modifiedDate"      = Format-ISO8601Date $p.modifiedDate
                     "createdDate"       = Format-ISO8601Date $p.createdDate
                     "sourceName"        = "discord.gg/flat2vr"
                     "sourceUrl"         = $p.sourceUrl
                     "sourceDownloadUrl" = $p.sourceDownloadUrl
                     "description"       = $p.description
                     "gameBanner"        = $p.gameBanner
-                    "downloadDate"      = Get-ISO8601Now
+                    "downloadDate"      = $p.downloadDate
                     "zipHash"           = $zipHash.ToUpper()
                     "downloadUrl"       = Get-ProfileDownloadUrl $uuid $finalExe
                 }

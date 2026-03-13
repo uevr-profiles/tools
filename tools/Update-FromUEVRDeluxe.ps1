@@ -46,12 +46,14 @@ if ($Download) {
         if ($count -ge $ProfileLimit) { break }
         if ($failCount -ge 5) { Write-Error "Too many consecutive failures in $SourceName. Stopping."; break }
         
-        $uuid = if ($p.ID) { $p.ID } else { $p.id }
+        $uuid = Get-OrCreateUUID $p
+        $p | Add-Member -MemberType NoteProperty -Name "uuid" -Value $uuid -ErrorAction SilentlyContinue
+
         $actualExe = if ($p.exeName) { $p.exeName } else { $p.exename }
         if (-not $uuid -or -not $actualExe) { continue }
         
-        # Deluxe zip naming: <id>.zip
-        $targetFile = Join-Path $DownloadDir "$($uuid).zip"
+        # Deluxe zip naming: <uuid>.zip
+        $targetFile = Join-Path $DownloadDir "$uuid.zip"
         $sidecar    = $targetFile + ".json"
         
         if (-not (Test-Path $targetFile)) {
@@ -122,8 +124,7 @@ if ($Extract) {
             foreach ($d in $discovered) {
                 $variant = $d.Variant
                 $tempDir = $d.Path
-                $uuid = if ($p.ID) { $p.ID } elseif ($p.id) { $p.id } elseif ($extraMeta.ID) { $extraMeta.ID } else { $extraMeta.id }
-                $uuid = Get-OrCreateUUID $uuid
+                $uuid = $p.uuid
                 
                 $targetDir = Join-Path $ProfilesDir $uuid
                 if ($variant -and $variant -ne "[Root]") {

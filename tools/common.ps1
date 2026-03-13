@@ -474,13 +474,35 @@ function Extract-And-Discover-Profiles($sourceArchive, $whitelist, $blacklist, $
     return $profilesFound
 }
 
-function Get-OrCreateUUID($originalId) {
-    if ($originalId -and ($originalId -match "^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$")) {
-        try {
-            return ([guid]$originalId).ToString()
-        } catch {}
+function Get-DeterministicGuid($seed) {
+    if ($seed -match "^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$") {
+        return ([guid]$seed).ToString()
     }
-    return [guid]::NewGuid().ToString()
+    $hasher = [System.Security.Cryptography.MD5]::Create()
+    $hash = $hasher.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($seed))
+    return ([guid]$hash).ToString()
+}
+
+function Get-OrCreateUUID($p) {
+    # 1. If we already have a valid UUID, use it as is
+    $id = if ($p.ID) { $p.ID } else { $p.id }
+    if ($id -and $id -match "^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$") {
+        try { return ([guid]$id).ToString() } catch {}
+    }
+    
+    # 2. Use sourceUrl as the primary stable seed for deterministic hashing
+    # For Discord, this will be the permanent message link
+    $seedParts = @()
+    if ($p.sourceUrl) { $seedParts += $p.sourceUrl }
+    elseif ($p.sourceDownloadUrl) { $seedParts += $p.sourceDownloadUrl }
+    elseif ($id) { $seedParts += $id }
+    
+    if ($p.archive) { $seedParts += $p.archive }
+    
+    $seed = $seedParts -join "|"
+    if (-not $seed) { return [guid]::NewGuid().ToString() }
+    
+    return Get-DeterministicGuid $seed
 }
 
 function Finalize-ProfileMetadata($targetDir, $meta, $profileName) {

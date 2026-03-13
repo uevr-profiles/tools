@@ -188,12 +188,11 @@ client.once('ready', async () => {
                             archive: zip.name,
                             authorName: msg.author.username,
                             createdDate: msg.createdAt.toISOString(),
-                            modifiedDate: msg.createdAt.toISOString(),
-                            sourceDownloadUrl: zip.url,
                             description: msg.content || "",
                             gameBanner: gameBanner,
                             sourceChannel: channel.name,
-                            sourceUrl: msgUrl
+                            sourceUrl: msgUrl,
+                            sourceDownloadUrl: zip.url
                         });
                         existingIds.add(uniqueId);
                         newFound++;
