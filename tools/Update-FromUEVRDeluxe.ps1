@@ -127,7 +127,7 @@ if ($Extract) {
             foreach ($d in $discovered) {
                 $variant = $d.Variant
                 $tempDir = $d.Path
-                $uuid = $p.uuid
+                $uuid = if ($p.ID) { $p.ID } else { $p.id }
                 
                 $targetDir = Join-Path $ProfilesDir $uuid
                 if ($variant -and $variant -ne "[Root]") {

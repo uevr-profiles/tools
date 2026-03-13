@@ -33,22 +33,17 @@ $Scripts = @(
 foreach ($s in $Scripts) {
     if (Test-Path $s) {
         Write-Host "`n>>> Testing $s <<<" -ForegroundColor Cyan
-        # Start the process and kill it if it takes too long or we see it's failing
-        $job = Start-Job -ScriptBlock {
-            param($script, $pDir)
-            Set-Location $pDir
-            pwsh -NoProfile -File $script -Fetch -Download -Extract -ProfileLimit 1
-        } -ArgumentList $s, $RepoDir
-
-        # Wait for a reasonable amount of time for a single profile test
-        if (-not (Wait-Job $job -Timeout 30)) {
-            Write-Warning "Test for $s timed out or is spamming. Terminating."
-            Stop-Job $job
+        try {
+            if ($s -like "*Discord*") {
+                & $s -Fetch -Download -Extract -Whitelist -ProfileLimit 1
+            } else {
+                & $s -Download -Extract -Whitelist -ProfileLimit 1
+            }
+        } catch {
+            Write-Host "    [!] Test failed for ${s}: $($_.Exception.Message)" -ForegroundColor Red
         }
-        Receive-Job $job
-        Remove-Job $job
     } else {
-        Write-Warning "Skipping $s (not found in this commit)"
+        Write-Warning "Skipping $s (file not found: $s)"
     }
 }
 

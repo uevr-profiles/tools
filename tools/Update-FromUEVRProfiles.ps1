@@ -44,9 +44,7 @@ if ($Download) {
                 $profileId = $vf.id.stringValue
                 if (-not $profileId) { continue }
                 
-                $dlUrl = "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2f$($profileId).zip?alt=media"
-                
-                $archiveFile = $null
+                $archiveFile = "$($profileId).zip"
                 try {
                     $links = $vf.links.arrayValue.values
                     foreach ($linkObj in $links) {
@@ -59,6 +57,9 @@ if ($Download) {
                 } catch {}
 
                 $variantExe = if ($vf.exeName.stringValue) { $vf.exeName.stringValue } else { "" }
+                $encodedArchive = [uri]::EscapeDataString("profiles/$archiveFile")
+                $dlUrl = "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/$($encodedArchive)?alt=media"
+
                 $obj = @{
                     "id"           = $profileId
                     "gameName"     = $gameName
@@ -67,7 +68,7 @@ if ($Download) {
                     "createdDate"  = $vf.creationDate.timestampValue
                     "exeName"      = if ($variantExe) { $variantExe } elseif ($topExe) { $topExe } else { "" }
                     "downloadUrl"  = $dlUrl
-                    "archive"      = if ($archiveFile) { $archiveFile } else { "$($profileId).zip" }
+                    "archive"      = $archiveFile
                     "description"  = $vf.description.stringValue
                 }
                 $allProfiles += $obj
@@ -104,13 +105,10 @@ if ($Download) {
             try {
                 # Two-tier download strategy
                 try {
-                    # Note: We don't have the exact Cloud Function payload spec anymore, 
-                    # so we'll just use the direct URL with retry for now as it's more reliable.
                     Invoke-WebRequestWithRetry -url $p.downloadUrl -targetFile $targetFile -Silent $Silent
                 } catch {
-                    Write-Host "  [!] Direct download failed, trying cloud function proxy..." -ForegroundColor Yellow
-                    # Fallback URL construction if needed, but the storage URL usually works
-                    Invoke-WebRequestWithRetry -url $p.downloadUrl -targetFile $targetFile -Silent $Silent
+                    # Future: Add actual proxy or alternative mirror logic here if available
+                    throw
                 }
                 
                 $p | ConvertTo-Json | Set-Content $sidecar -Encoding utf8

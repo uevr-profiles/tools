@@ -1,9 +1,19 @@
 param(
-    [string]$ProfilesDir = ".\profiles",
-    [string]$SchemaFile  = ".\schemas\ProfileMeta.schema.json",
-    [string]$OutputFile  = ".\repo.json",
+    [string]$ProfilesDir,
+    [string]$SchemaFile,
+    [string]$OutputFile,
     [switch]$Update
 )
+
+$RepoRoot = Split-Path $PSScriptRoot -Parent
+if (-not $ProfilesDir) { $ProfilesDir = Join-Path $RepoRoot "profiles" }
+if (-not $SchemaFile)  { $SchemaFile  = Join-Path $RepoRoot "schemas\ProfileMeta.schema.json" }
+if (-not $OutputFile)  { $OutputFile  = Join-Path $RepoRoot "repo.json" }
+
+# Resolve to absolute paths
+$ProfilesDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($ProfilesDir)
+$SchemaFile  = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($SchemaFile)
+$OutputFile  = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($OutputFile)
 
 if ($Update) {
     Write-Host "Running profile updates before build..." -ForegroundColor Cyan
