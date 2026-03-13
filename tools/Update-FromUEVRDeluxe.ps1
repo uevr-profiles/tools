@@ -60,24 +60,29 @@ function Download-UEVRDeluxeProfiles {
         $targetFile = Join-Path $DownloadDir "$uuid.zip"
         $sidecar    = $targetFile + ".json"
         
-        $exeName = ""
-        if ($p.exeName) {
-            $exeName = $p.exeName
+        $actualExe = ""
+        if ($p.main_exe -is [System.Collections.IEnumerable]) {
+            $actualExe = ($p.main_exe | Sort-Object -Unique) -join ", "
+        } elseif ($p.main_exe) {
+            $actualExe = $p.main_exe
         } else {
-            $exeName = $p.zipName.Replace(".zip", "")
+            $actualExe = $uuid # Fallback
         }
-        
+        Debug-Log "[Update-FromUEVRDeluxe.ps1] ID: $uuid, Exe: $actualExe"
+
         if (-not (Test-Path $targetFile)) {
-            $url = "$ProfilesUrlBase/$(($exeName -replace ' ', '%20'))/$uuid"
-            Write-Host "[$index/$total] Downloading $($p.gameName) ($exeName)..." -ForegroundColor Gray
+            $url = "$ProfilesUrlBase/$(($actualExe -replace ' ', '%20'))/$uuid"
+            Write-Host "[$index/$total] Downloading $($p.gameName) ($actualExe)..." -ForegroundColor Gray
 
             try {
+                Debug-Log "[Update-FromUEVRDeluxe.ps1] Calling Invoke-WebRequestWithRetry: $url"
                 Invoke-WebRequestWithRetry -url $url -targetFile $targetFile -headers @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" } -Silent $Silent
                 
-                # Inline date extraction
+                # Use centralized date formatting
                 $modDate = $p.modifiedDate ? $p.modifiedDate : ($p.updatedAt ? $p.updatedAt : $null)
                 $creDate = $p.createdDate ? $p.createdDate : ($p.createdAt ? $p.createdAt : $modDate)
 
+                Debug-Log "[Update-FromUEVRDeluxe.ps1] Creating sidecar with author: $($p.authorName)"
                 $sidecarObj = [ordered]@{
                     "ID"                = $uuid
                     "exeName"           = $actualExe

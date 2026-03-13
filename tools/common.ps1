@@ -135,23 +135,39 @@ class ProfileMetadata {
             if ($null -ne $val -and "$val" -ne "") {
                 try { 
                     if ($p -ieq "ID") { $meta.ID = [string]$val }
+                    elseif ($p -match "Date$") { $meta.$p = Format-DateISO8601 $val }
                     else { $meta.$p = $val }
-                } catch {}
+                } catch {
+                    Debug-Log "[ProfileMetadata] Failed to map property $p: $($_.Exception.Message)"
+                }
             }
         }
         return $meta
     }
 
+    static [bool] Validate($jsonPath) {
+        return [ProfileMetadata]::Validate($jsonPath, $null)
+    }
+
     static [bool] Validate($jsonPath, $jsonText) {
         if (-not $Global:SchemaContent) { return $true }
-        $jsonErr = $null
-        $res = $null
-        if ($jsonPath) {
-            $res = Test-Json -Path $jsonPath -Schema $Global:SchemaContent -ErrorAction SilentlyContinue -ErrorVariable jsonErr
-        } else {
-            $res = Test-Json -Json $jsonText -Schema $Global:SchemaContent -ErrorAction SilentlyContinue -ErrorVariable jsonErr
+        
+        $content = $jsonText
+        if ($jsonPath -and (Test-Path $jsonPath)) {
+            $content = Get-Content $jsonPath -Raw
         }
+
+        if ([string]::IsNullOrEmpty($content)) {
+            Debug-Log "[ProfileMetadata] Validate: No content to validate"
+            return $false
+        }
+
+        $jsonErr = $null
+        $res = Test-Json -Json $content -Schema $Global:SchemaContent -ErrorAction SilentlyContinue -ErrorVariable jsonErr
+        
         if (-not $res -and $jsonErr) {
+            Debug-Log "[ProfileMetadata] JSON Validation FAILED for content:"
+            Debug-Log "$content"
             foreach ($err in $jsonErr) {
                 Write-Host "        - $($err.Exception.Message)" -ForegroundColor Red
             }
@@ -432,6 +448,18 @@ function Get-SupportedArchiveExtensions {
 function Get-ISO8601Now {
     return (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 }
+
+function Format-DateISO8601($date) {
+    if ($null -eq $date -or "$date" -eq "") { return Get-ISO8601Now }
+    try {
+        # Handle already formatted strings to avoid re-formatting errors
+        if ($date -match "^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$") { return $date }
+        $dt = [DateTime]$date
+        return $dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+    } catch {
+        return Get-ISO8601Now
+    }
+}
 #endregion
 
 #region Filtering Helpers
@@ -562,7 +590,7 @@ function Extract-And-Discover-Profiles($archivePath) {
     
     try {
         $profileArchive = [ProfileArchive]::new($archivePath)
-        $profileArchive.Extract($tempBase)
+        $profileArchive.ExtractTo($tempBase)
         
         # Profile discovery: any folder with ProfileMeta.json or known patterns
         $candidateDirs = Get-ChildItem -Path $tempBase -Directory -Recurse | Where-Object { 
@@ -667,9 +695,8 @@ function Extract-ArchivesFolder($folderPath, [switch]$Silent) {
         return 
     }
     $exts = Get-SupportedArchiveExtensions
-    $filter = ($exts | ForEach-Object { "*$_" })
-    Debug-Log "[common.ps1] Searching for archives with filters: $($filter -join ', ')"
-    $archives = Get-ChildItem -Path $folderPath -File -Include $filter
+    Debug-Log "[common.ps1] Searching for archives with extensions: $($exts -join ', ')"
+    $archives = Get-ChildItem -Path $folderPath -File | Where-Object { $exts -contains $_.Extension }
     Debug-Log "[common.ps1] Found $($archives.Count) archives"
     return Extract-Archives $archives.FullName -Silent:$Silent
 }
