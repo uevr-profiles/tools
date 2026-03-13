@@ -26,7 +26,7 @@ function Get-ISO8601Now {
     return [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
 }
 
-function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 3) {
+function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 3, $Silent = $false) {
     if (-not $headers["User-Agent"]) {
         $headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
@@ -44,7 +44,11 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
             Write-Host "  [!] Attempt $i failed: $lastErr" -ForegroundColor Gray
         }
     }
-    throw "All download attempts failed: $lastErr"
+    if (-not $Silent) {
+        throw "All download attempts failed: $lastErr"
+    } else {
+        Write-Warning "  [!] All download attempts failed: $lastErr. Skipping due to -Silent."
+    }
 }
 
 function Get-MetadataDates($p) {

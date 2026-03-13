@@ -82,7 +82,10 @@ if ($Download) {
     $profiles = Get-Content $MetadataJson -Raw | ConvertFrom-Json
     $count = 0
     $failCount = 0
+    $total = $profiles.Count
+    $index = 0
     foreach ($p in $profiles) {
+        $index++
         if ($count -ge $ProfileLimit) { break }
         if ($failCount -ge 5) { Write-Error "Too many consecutive failures in $SourceName. Stopping."; break }
 
@@ -94,7 +97,7 @@ if ($Download) {
         $sidecar    = $targetFile + ".json"
         
         if (-not (Test-Path $targetFile)) {
-            $msg = "Downloading: $($p.gameName)"
+            $msg = "[$index/$total] Downloading: $($p.gameName)"
             if ($p.exeName) { $msg += " ($($p.exeName))" }
             Write-Host "$msg..." -ForegroundColor Gray
 
@@ -103,11 +106,11 @@ if ($Download) {
                 try {
                     # Note: We don't have the exact Cloud Function payload spec anymore, 
                     # so we'll just use the direct URL with retry for now as it's more reliable.
-                    Invoke-WebRequestWithRetry -url $p.downloadUrl -targetFile $targetFile
+                    Invoke-WebRequestWithRetry -url $p.downloadUrl -targetFile $targetFile -Silent $Silent
                 } catch {
                     Write-Host "  [!] Direct download failed, trying cloud function proxy..." -ForegroundColor Yellow
                     # Fallback URL construction if needed, but the storage URL usually works
-                    Invoke-WebRequestWithRetry -url $p.downloadUrl -targetFile $targetFile
+                    Invoke-WebRequestWithRetry -url $p.downloadUrl -targetFile $targetFile -Silent $Silent
                 }
                 
                 $p | ConvertTo-Json | Set-Content $sidecar -Encoding utf8

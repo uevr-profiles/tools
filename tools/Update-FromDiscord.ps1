@@ -55,7 +55,10 @@ if ($Download) {
     $failCount = 0
 
     Write-Host "Downloading profiles from Discord metadata..." -ForegroundColor Cyan
+    $total = $profiles.Count
+    $index = 0
     foreach ($p in $profiles) {
+        $index++
         if ($count -ge $ProfileLimit) { break }
         if ($failCount -ge 5) { Write-Error "Too many consecutive failures in $SourceName. Stopping."; break }
 
@@ -68,11 +71,11 @@ if ($Download) {
         $sidecar    = $targetFile + ".json"
 
         if (-not (Test-Path $targetFile)) {
-            $msg = "Downloading: $($p.gameName) ($($p.archive))"
+            $msg = "[$index/$total] Downloading: $($p.gameName) ($($p.archive))"
             Write-Host "$msg..." -ForegroundColor Gray
 
             try {
-                Invoke-WebRequestWithRetry -url $p.sourceDownloadUrl -targetFile $targetFile
+                Invoke-WebRequestWithRetry -url $p.sourceDownloadUrl -targetFile $targetFile -Silent $Silent
                 Write-Host "  [OK] Download successful." -ForegroundColor Green
                 
                 # Metadata cleanups: Remove modifiedDate, Set downloadDate

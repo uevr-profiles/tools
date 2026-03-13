@@ -42,7 +42,10 @@ if ($Download) {
 
     $profiles = Get-Content $MetadataJson -Raw | ConvertFrom-Json
     $failCount = 0
+    $total = $profiles.Count
+    $index = 0
     foreach ($p in $profiles) {
+        $index++
         if ($count -ge $ProfileLimit) { break }
         if ($failCount -ge 5) { Write-Error "Too many consecutive failures in $SourceName. Stopping."; break }
         
@@ -60,12 +63,12 @@ if ($Download) {
             $encodedExe = $actualExe -replace ' ', '%20'
             $url = "$ProfilesUrlBase/$encodedExe/$uuid"
             
-            $msg = "Downloading $($p.gameName)"
+            $msg = "[$index/$total] Downloading $($p.gameName)"
             if ($actualExe) { $msg += " ($actualExe)" }
             Write-Host "$msg from $url..." -ForegroundColor Gray
 
             try {
-                Invoke-WebRequestWithRetry -url $url -targetFile $targetFile -headers @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" }
+                Invoke-WebRequestWithRetry -url $url -targetFile $targetFile -headers @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" } -Silent $Silent
                 Write-Host "  [OK] Download successful." -ForegroundColor Green
                 
                 $dates = Get-MetadataDates $p
