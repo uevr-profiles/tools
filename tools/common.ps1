@@ -26,6 +26,209 @@ function Get-ISO8601Now {
     return [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
 }
 
+class ProfileReadme {
+    [object]$Metadata
+    [string]$Content
+
+    ProfileReadme([object]$meta, [string]$content) {
+        $this.Metadata = $meta
+        $this.Content = [ProfileReadme]::ExtractDescription($content)
+    }
+
+    static [string] ExtractDescription([string]$markdown) {
+        if ($null -eq $markdown) { return "" }
+        if ($markdown -match "(?si)##\s+Description\s+(.*)") {
+            return $matches[1].Trim()
+        }
+        # If it has a table but no Description header? (unlikely but possible)
+        # For now, if no ## Description, assume the whole thing is the description.
+        return $markdown.Trim()
+    }
+
+    [string] Generate() {
+        $meta = $this.Metadata
+        $sb = [System.Text.StringBuilder]::new()
+
+        # Banner
+        if ($meta.headerPictureUrl) {
+            $sb.AppendLine("![$($meta.gameName)]($($meta.headerPictureUrl))")
+            $sb.AppendLine()
+        }
+
+        # Header
+        $title = $meta.gameName
+        if ($meta.profileName -and $meta.profileName -ne "[Root]") { $title += " ($($meta.profileName))" }
+        $sb.AppendLine("# $title")
+        $sb.AppendLine()
+
+        # Table
+        $sb.AppendLine("| Property | Value |")
+        $sb.AppendLine("| :--- | :--- |")
+        $sb.AppendLine("| **Author** | $($meta.authorName) |")
+        $sb.AppendLine("| **Game EXE** | ``$($meta.exeName)`` |")
+        if ($meta.gameVersion) { $sb.AppendLine("| **Game Version** | $($meta.gameVersion) |") }
+        $sb.AppendLine("| **Source** | [$($meta.sourceName)]($($meta.sourceUrl)) |")
+        if ($meta.createdDate) { $sb.AppendLine("| **Created** | $($meta.createdDate) |") }
+        if ($meta.modifiedDate) { $sb.AppendLine("| **Modified** | $($meta.modifiedDate) |") }
+        if ($meta.tags) {
+            $tagStr = ($meta.tags | ForEach-Object { "$_" }) -join ", "
+            $sb.AppendLine("| **Tags** | $tagStr |")
+        }
+        $sb.AppendLine()
+
+        # Description
+        if ($this.Content) {
+            $sb.AppendLine("## Description")
+            $sb.AppendLine()
+            $sb.AppendLine($this.Content)
+        }
+
+        return $sb.ToString()
+    }
+
+    [void] Save([string]$path) {
+        $this.Generate() | Set-Content $path -Encoding utf8
+    }
+}
+
+class ProfileMetadata {
+    [string]$ID
+    [string]$exeName
+    [string]$gameName
+    [string]$gameVersion
+    [string]$authorName
+    [string]$modifiedDate
+    [string]$createdDate
+    [string]$downloadDate
+    [string]$sourceName
+    [string]$sourceUrl
+    [string]$zipHash
+    [string]$downloadUrl
+    [string]$sourceDownloadUrl
+    [string]$donateURL
+    [string]$appID
+    [string]$headerPictureUrl
+    [Nullable[int]]$minUEVRNightlyNumber
+    [Nullable[int]]$maxUEVRNightlyNumber
+    [Nullable[bool]]$nullifyPlugins
+    [Nullable[bool]]$lateInjection
+    [string]$description
+    [string]$profileName
+    [object[]]$fileCopies
+    [string[]]$tags
+
+    ProfileMetadata() {}
+
+    static [ProfileMetadata] FromObject($obj) {
+        $meta = [ProfileMetadata]::new()
+        if ($null -eq $obj) { return $meta }
+        $props = if ($obj -is [System.Collections.IDictionary]) { $obj.Keys } else { $obj.PSObject.Properties.Name }
+        foreach ($p in $props) {
+            $val = if ($obj -is [System.Collections.IDictionary]) { $obj[$p] } else { $obj.$p }
+            if ($null -ne $val -and "$val" -ne "") {
+                try { 
+                    if ($p -ieq "ID") { $meta.ID = [string]$val }
+                    else { $meta.$p = $val }
+                } catch {
+                    # Silently skip properties that don't match the class structure
+                }
+            }
+        }
+        return $meta
+    }
+
+    [void] Finalize([string]$targetDir, [string]$variant) {
+        $readmeFile = Join-Path $targetDir "README.md"
+        $legacyDesc = Join-Path $targetDir "ProfileDescription.md"
+        
+        # 0. Set simple fields
+        if ($variant -and $variant -ne "[Root]") {
+            $this.profileName = $variant
+        }
+
+        # 1. Determine the "Master Description"
+        $readmeText = if (Test-Path $readmeFile) { Get-Content $readmeFile -Raw } else { "" }
+        $masterDesc = $null
+        
+        if ($readmeText) { 
+            # Extract only the description part to avoid duplicating the table on subsequent runs
+            $masterDesc = [ProfileReadme]::ExtractDescription($readmeText)
+        } elseif (Test-Path $legacyDesc) { 
+            $masterDesc = Get-Content $legacyDesc -Raw 
+        } elseif ($this.description) {
+            $masterDesc = $this.description
+        }
+
+        if ($masterDesc) {
+            # 1.1 Generate/Overwrite README.md with enriched content
+            $readme = [ProfileReadme]::new($this, $masterDesc)
+            $readme.Save($readmeFile)
+            
+            # 1.2 Truncate the description in the metadata object
+            $this.description = Convert-MarkdownToText $masterDesc 100
+        }
+
+        if (Test-Path $legacyDesc) { Remove-Item $legacyDesc -Force -ErrorAction SilentlyContinue }
+    }
+
+    [PSCustomObject] GetCleanObject() {
+        $newObj = [ordered]@{}
+        $names = $this.PSObject.Properties.Name
+        foreach ($name in $names) {
+            $val = $this.$name
+            if ($null -ne $val -and "$val" -ne "") {
+                if ($name -eq "tags") { $newObj[$name] = @($val) }
+                else { $newObj[$name] = $val }
+            }
+        }
+        return [PSCustomObject]$newObj
+    }
+
+    [string] ToJson() {
+        return ConvertTo-Json -InputObject ($this.GetCleanObject()) -Depth 5
+    }
+
+    [bool] Validate([string]$jsonPath) {
+        if (-not $Global:SchemaContent) { return $true }
+        $jsonErr = $null
+        $res = if ($jsonPath) {
+            Test-Json -Path $jsonPath -Schema $Global:SchemaContent -ErrorAction SilentlyContinue -ErrorVariable jsonErr
+        } else {
+            Test-Json -Json ($this.ToJson()) -Schema $Global:SchemaContent -ErrorAction SilentlyContinue -ErrorVariable jsonErr
+        }
+        if (-not $res -and $jsonErr) {
+            foreach ($err in $jsonErr) {
+                Write-Host "        - $($err.Exception.Message)" -ForegroundColor Red
+            }
+        }
+        return $res
+    }
+
+    [void] Save([string]$targetDir, [string]$zipPath, [string]$variant) {
+        if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }
+        
+        $this.Finalize($targetDir, $variant)
+        
+        # 2. Update Global Tracking
+        Update-GlobalPropsJson $zipPath $variant ($this.GetCleanObject())
+        
+        # 3. Save to disk
+        $jsonFile = Join-Path $targetDir "ProfileMeta.json"
+        try {
+            $this.ToJson() | Set-Content $jsonFile -Encoding utf8
+        } catch {
+            Write-Error "Failed to write ${jsonFile}: $($_.Exception.Message)"
+            throw
+        }
+        
+        # 4. Validate
+        if (-not $this.Validate($jsonFile)) {
+             Write-Warning "    [!] Metadata validation failed for $($this.gameName) ($jsonFile)"
+             throw "JSON Schema validation failed for $($this.gameName) ($($this.ID))."
+        }
+    }
+}
+
 function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 5, $Silent = $false) {
     if (-not $headers["User-Agent"]) {
         $headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -211,7 +414,6 @@ function Get-HeuristicTags($profileDir, $meta, $variant) {
     # 1. Textual Analysis (Metadata & Files)
     $textSources = @()
     if ($meta.description) { $textSources += $meta.description }
-    if ($meta.remarks) { $textSources += $meta.remarks }
     if ($meta.gameName) { $textSources += $meta.gameName }
     if ($variant) { $textSources += $variant }
     
@@ -512,46 +714,6 @@ function Get-OrCreateUUID($p) {
     return Get-DeterministicGuid $seed
 }
 
-function Finalize-ProfileMetadata($targetDir, $meta, $profileName) {
-    $readmeFile = Join-Path $targetDir "README.md"
-    $legacyDesc = Join-Path $targetDir "ProfileDescription.md"
-    
-    # 0. Set simple fields
-    $meta["profileName"] = if ($profileName -and $profileName -ne "[Root]") { $profileName } else { $null }
-
-    # 1. Determine the "Master Description"
-    $readmeText = if (Test-Path $readmeFile) { Get-Content $readmeFile -Raw } else { "" }
-    $masterDesc = $null
-    
-    if ($readmeText) { 
-        $masterDesc = $readmeText 
-    } elseif (Test-Path $legacyDesc) { 
-        $masterDesc = Get-Content $legacyDesc -Raw 
-    } elseif ($meta.description) {
-        $masterDesc = $meta.description
-    } elseif ($meta.remarks) {
-        $masterDesc = $meta.remarks
-    }
-
-    if ($masterDesc) {
-        # 1.1 Generate README.md if missing
-        if (-not (Test-Path $readmeFile)) {
-            $masterDesc | Set-Content $readmeFile -Encoding utf8
-        }
-        # 1.2 Truncate the description in the metadata object
-        $meta["description"] = Convert-MarkdownToText $masterDesc 100
-    }
-
-    # 2. Cleanup blacklisted keys
-    $blacklistedKeys = @("remarks")
-    foreach ($key in $blacklistedKeys) {
-        if ($meta.Contains($key)) { $meta.Remove($key) }
-        elseif ($meta.PSObject.Properties[$key]) { $meta.PSObject.Properties.Remove($key) }
-    }
-
-    if (Test-Path $legacyDesc) { Remove-Item $legacyDesc -Force -ErrorAction SilentlyContinue }
-    return $meta
-}
 
 function Print-ProfileInfo($meta, $zipPath) {
     Write-Host "  - Profile $($meta.ID)" -ForegroundColor Cyan
@@ -582,62 +744,7 @@ function Get-FileHashMD5($path) {
     return (Get-FileHash -Path $path -Algorithm MD5).Hash.ToUpper()
 }
 
-function Test-Metadata($jsonFile, $gameName = "Unknown") {
-    if (-not $Global:SchemaContent) { return $true }
-    $jsonErr = $null
-    $res = Test-Json -Path $jsonFile -Schema $Global:SchemaContent -ErrorAction SilentlyContinue -ErrorVariable jsonErr
-    if (-not $res) {
-        Write-Warning "    [!] Metadata validation failed for $gameName ($jsonFile)"
-        if ($jsonErr) {
-            foreach ($err in $jsonErr) {
-                Write-Host "        - $($err.Exception.Message)" -ForegroundColor Red
-            }
-        }
-    }
-    return $res
-}
 
-function Save-ProfileMetadata($targetDir, $meta, $zipPath, $variant) {
-    if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }
-    
-    $meta = Finalize-ProfileMetadata $targetDir $meta $variant
-    $meta = Remove-NullProperties $meta
-
-    # Ensure 'tags' is forced to an array to prevent JSON unrolling into a string
-    if ($null -ne $meta.tags) {
-        $meta.tags = @($meta.tags)
-    }
-    
-    # 2. Update Global Tracking
-    Update-GlobalPropsJson $zipPath $variant $meta
-    
-    # 3. Save to disk
-    $jsonFile = Join-Path $targetDir "ProfileMeta.json"
-    $metaJson = ConvertTo-Json -InputObject $meta -Depth 5
-    $metaJson | Set-Content $jsonFile -Encoding utf8
-    
-    # 4. Validate
-    if (-not (Test-Metadata $jsonFile $meta.gameName)) {
-        throw "JSON Schema validation failed for $($meta.gameName) ($($meta.ID))."
-    }
-    return $meta
-}
-
-function Remove-NullProperties($obj) {
-    if ($null -eq $obj) { return $null }
-    $newObj = [ordered]@{}
-    
-    $names = if ($obj -is [System.Collections.IDictionary]) { $obj.Keys } else { $obj.PSObject.Properties.Name }
-
-    foreach ($name in $names) {
-        if ($name -ieq "remarks") { continue } # Explicitly skip remarks
-        $val = if ($obj -is [System.Collections.IDictionary]) { $obj[$name] } else { $obj.$name }
-        if ($null -ne $val -and "$val" -ne "") {
-            $newObj[$name] = $val
-        }
-    }
-    return [PSCustomObject]$newObj
-}
 
 function Get-CleanVariantName($variant, $currentExe) {
     if (-not $variant) { return $null }

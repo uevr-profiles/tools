@@ -2,24 +2,27 @@ param(
     [switch]$Clear
 )
 
+$ToolsDir = $PSScriptRoot
+$RepoRoot = Split-Path $ToolsDir -Parent
+$ProfilesDir = Join-Path $RepoRoot "profiles"
 $CacheDir = Join-Path $env:TEMP "uevr_profiles"
-$RepoDir = "c:\Users\Bluscream\AppData\Roaming\UnrealVRMod\.references\repo"
-$ProfilesDir = Join-Path $RepoDir "profiles"
 
 if ($Clear) {
     Write-Host "Clearing cache: $CacheDir" -ForegroundColor Yellow
-    Remove-Item $CacheDir -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item $CacheDir -Recurse -Force -ErrorAction SilentlyContinue 2>$null
     
     Write-Host "Clearing profiles: $ProfilesDir" -ForegroundColor Yellow
-    Get-ChildItem -Path $ProfilesDir -Directory | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+    if (Test-Path $ProfilesDir) {
+        Get-ChildItem -Path $ProfilesDir -Directory | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue 2>$null
+    }
 }
 
-if (-not (Test-Path $RepoDir)) {
-    Write-Error "Repo directory not found at $RepoDir"
+if (-not (Test-Path $RepoRoot)) {
+    Write-Error "Repo directory not found at $RepoRoot"
     exit 1
 }
 
-Set-Location $RepoDir
+Set-Location $RepoRoot
 
 $Scripts = @(
     "tools/Update-FromUEVRProfiles.ps1", 

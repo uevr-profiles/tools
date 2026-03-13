@@ -154,29 +154,28 @@ if ($Extract) {
                 $displayVariant = Get-CleanVariantName $variant $finalExe
 
                 $dates = Get-MetadataDates $p
-                $metaProps = [ordered]@{
-                    "ID"                = $uuid
-                    "exeName"           = $finalExe
-                    "gameName"          = if ($extraMeta.gameName) { $extraMeta.gameName } else { $p.gameName }
-                    "authorName"        = $finalAuthor
-                    "modifiedDate"      = Format-ISO8601Date $(if ($extraMeta.modifiedDate) { $extraMeta.modifiedDate } else { $dates.Modified })
-                    "createdDate"       = Format-ISO8601Date $(if ($extraMeta.createdDate) { $extraMeta.createdDate } else { $dates.Created })
-                    "sourceName"        = "uevrdeluxe.org"
-                    "sourceUrl"         = if ($extraMeta.sourceUrl) { $extraMeta.sourceUrl } else { $sourceUrl }
-                    "sourceDownloadUrl" = if ($extraMeta.sourceDownloadUrl) { $extraMeta.sourceDownloadUrl } else { $sourceUrl }
-                    "description"       = if ($extraMeta.description) { $extraMeta.description } else { $p.remarks }
-                    "downloadDate"      = Get-ISO8601Now
-                    "zipHash"           = $zipHash.ToUpper()
-                    "downloadUrl"       = Get-ProfileDownloadUrl $uuid $finalExe
-                }
+                $meta = [ProfileMetadata]::new()
+                $meta.ID                = $uuid
+                $meta.exeName           = $finalExe
+                $meta.gameName          = if ($extraMeta.gameName) { $extraMeta.gameName } else { $p.gameName }
+                $meta.authorName        = $finalAuthor
+                $meta.modifiedDate      = Format-ISO8601Date $(if ($extraMeta.modifiedDate) { $extraMeta.modifiedDate } else { $dates.Modified })
+                $meta.createdDate       = Format-ISO8601Date $(if ($extraMeta.createdDate) { $extraMeta.createdDate } else { $dates.Created })
+                $meta.sourceName        = "uevrdeluxe.org"
+                $meta.sourceUrl         = if ($extraMeta.sourceUrl) { $extraMeta.sourceUrl } else { $sourceUrl }
+                $meta.sourceDownloadUrl = if ($extraMeta.sourceDownloadUrl) { $extraMeta.sourceDownloadUrl } else { $sourceUrl }
+                $meta.description       = if ($extraMeta.description) { $extraMeta.description } else { $p.remarks }
+                $meta.downloadDate      = Get-ISO8601Now
+                $meta.zipHash           = $zipHash.ToUpper()
+                $meta.downloadUrl       = Get-ProfileDownloadUrl $uuid $finalExe
 
                 # Handle Tags (Heuristics only for Deluxe)
                 $tagArray = @(Get-HeuristicTags $targetDir $extraMeta $displayVariant)
                 if ($tagArray -and $tagArray.Count -gt 0) {
-                    $metaProps["tags"] = $tagArray
+                    $meta.tags = $tagArray
                 }
 
-                $meta = Save-ProfileMetadata $targetDir $metaProps $z.FullName $variant
+                $meta.Save($targetDir, $z.FullName, $variant)
 
                 if (-not $Silent) {
                     Print-ProfileInfo $meta $z.FullName

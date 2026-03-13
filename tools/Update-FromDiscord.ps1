@@ -172,24 +172,23 @@ if ($Extract) {
                     $finalExe = $matches[1]
                 }
                 
-                $metaProps = [ordered]@{
-                    "ID"                = $uuid
-                    "exeName"           = $finalExe
-                    "gameName"          = $p.gameName
-                    "authorName"        = $p.authorName
-                    "createdDate"       = Format-ISO8601Date $p.createdDate
-                    "sourceName"        = "discord.gg/flat2vr"
-                    "sourceUrl"         = $p.sourceUrl
-                    "sourceDownloadUrl" = $p.sourceDownloadUrl
-                    "description"       = $p.description
-                    "headerPictureUrl"  = $p.gameBanner
-                    "downloadDate"      = $p.downloadDate
-                    "zipHash"           = $zipHash.ToUpper()
-                    "downloadUrl"       = Get-ProfileDownloadUrl $uuid $finalExe
-                }
+                $meta = [ProfileMetadata]::new()
+                $meta.ID                = $uuid
+                $meta.exeName           = $finalExe
+                $meta.gameName          = $p.gameName
+                $meta.authorName        = $p.authorName
+                $meta.createdDate       = Format-ISO8601Date $p.createdDate
+                $meta.sourceName        = "discord.gg/flat2vr"
+                $meta.sourceUrl         = $p.sourceUrl
+                $meta.sourceDownloadUrl = $p.sourceDownloadUrl
+                $meta.description       = $p.description
+                $meta.headerPictureUrl  = $p.gameBanner
+                $meta.downloadDate      = Format-ISO8601Date $p.downloadDate
+                $meta.zipHash           = $zipHash.ToUpper()
+                $meta.downloadUrl       = Get-ProfileDownloadUrl $uuid $finalExe
 
                 # Tags support (Heuristics + Category)
-                $tagArray = @(Get-HeuristicTags $targetDir $metaProps $null)
+                $tagArray = @(Get-HeuristicTags $targetDir $meta $null)
                 
                 # Map sourceChannel to a clean category tag
                 $category = switch -regex ($p.sourceChannel) {
@@ -203,10 +202,10 @@ if ($Extract) {
                 }
 
                 if ($tagArray -and $tagArray.Count -gt 0) {
-                    $metaProps["tags"] = $tagArray
+                    $meta.tags = $tagArray
                 }
 
-                $meta = Save-ProfileMetadata $targetDir $metaProps $z.FullName $variant
+                $meta.Save($targetDir, $z.FullName, $variant)
 
                 if (-not $Silent) {
                     Print-ProfileInfo $meta $z.FullName

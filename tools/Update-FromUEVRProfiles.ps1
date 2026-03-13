@@ -168,29 +168,28 @@ if ($Extract) {
                 $finalAuthor = if ($p.authorName) { $p.authorName } else { $p.author }
                 $displayVariant = Get-CleanVariantName $variant $finalExe
                 
-                $metaProps = [ordered]@{
-                    "ID"                = $uuid
-                    "exeName"           = $finalExe
-                    "gameName"          = $p.gameName
-                    "authorName"        = $finalAuthor
-                    "modifiedDate"      = Format-ISO8601Date $p.modifiedDate
-                    "createdDate"       = Format-ISO8601Date $p.createdDate
-                    "sourceName"        = "uevr-profiles.com"
-                    "sourceUrl"         = $sourceUrl
-                    "sourceDownloadUrl" = $p.downloadUrl
-                    "description"       = $p.description
-                    "downloadDate"      = Get-ISO8601Now
-                    "zipHash"           = $zipHash.ToUpper()
-                    "downloadUrl"       = Get-ProfileDownloadUrl $uuid $finalExe
-                }
+                $meta = [ProfileMetadata]::new()
+                $meta.ID                = $uuid
+                $meta.exeName           = $finalExe
+                $meta.gameName          = $p.gameName
+                $meta.authorName        = $finalAuthor
+                $meta.modifiedDate      = Format-ISO8601Date $p.modifiedDate
+                $meta.createdDate       = Format-ISO8601Date $p.createdDate
+                $meta.sourceName        = "uevr-profiles.com"
+                $meta.sourceUrl         = $sourceUrl
+                $meta.sourceDownloadUrl = $p.downloadUrl
+                $meta.description       = $p.description
+                $meta.downloadDate      = Get-ISO8601Now
+                $meta.zipHash           = $zipHash.ToUpper()
+                $meta.downloadUrl       = Get-ProfileDownloadUrl $uuid $finalExe
 
                 # Tags support (Heuristics)
-                $tagArray = @(Get-HeuristicTags $targetDir $metaProps $displayVariant)
+                $tagArray = @(Get-HeuristicTags $targetDir $meta $displayVariant)
                 if ($tagArray -and $tagArray.Count -gt 0) {
-                    $metaProps["tags"] = $tagArray
+                    $meta.tags = $tagArray
                 }
 
-                $meta = Save-ProfileMetadata $targetDir $metaProps $z.FullName $variant
+                $meta.Save($targetDir, $z.FullName, $variant)
 
                 if (-not $Silent) {
                     Print-ProfileInfo $meta $z.FullName
