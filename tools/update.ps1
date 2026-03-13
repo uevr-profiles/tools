@@ -19,10 +19,13 @@ try {
     if (Test-Path $ProfilesDir) {
         Get-ChildItem -Path $ProfilesDir -Directory | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue 2>$null
     }
-    .\tools\Update-FromDiscord.ps1 -Extract -Whitelist -Debug -Proxies $Proxies
-    .\tools\Update-FromUEVRDeluxe.ps1 -Fetch -Download -Extract -Whitelist -CleanCache -CleanDownloads -Debug -Proxies $Proxies
-    .\tools\Update-FromUEVRProfiles.ps1 -Fetch -Download -Extract -Whitelist -CleanCache -CleanDownloads -Debug -Proxies $Proxies
+    .\tools\Update-FromDiscord.ps1 -Extract -Debug -Proxies $Proxies
+    .\tools\Update-FromUEVRDeluxe.ps1 -Fetch -Download -Extract -CleanCache -CleanDownloads -Debug -Proxies $Proxies
+    .\tools\Update-FromUEVRProfiles.ps1 -Fetch -Download -Extract -CleanCache -CleanDownloads -Debug -Proxies $Proxies
+    
     .\tools\Find-Issues.ps1 -Fix -Debug
+    .\tools\Process-Whitelist.ps1 -Delete -Debug
+    # .\tools\Process-Blacklist.ps1 -Delete -Debug
     .\tools\Deduplicate-Profiles.ps1 -Delete -Debug
     .\tools\Build-UEVRRepo.ps1 -Debug
 } finally {

@@ -447,26 +447,7 @@ function Get-SupportedArchiveExtensions {
 }
 
 
-#region Filtering Helpers
-function Get-WhitelistPatterns {
-    return @("^README\.md$","^ProfileMeta\.json$","^_interaction_profiles_oculus_touch_controller\.json$","^actions\.json$","^binding_rift\.json$","^binding_vive\.json$","^bindings_knuckles\.json$","^bindings_oculus_touch\.json$","^bindings_vive_controller\.json$","^cameras\.txt$","^config\.txt$","^cvars_data\.txt$","^cvars_standard\.txt$","^uevr_nightly_build\.txt$","^user_script\.txt$","^scripts/.*\.lua$","^plugins/.*\.(dll|so)$","^uobjecthook/.*\.json$","^(_EXTRAS|data|libs|paks)/.+")
-}
-
-function Test-Whitelisted($relPath) {
-    $rel = $relPath.Replace('\', '/').Trim('/')
-    foreach ($p in Get-WhitelistPatterns) { if ($rel -match $p) { return $true } }
-    return $false
-}
-
-function Get-BlacklistPatterns {
-    return @("^sdkdump/.*\.(cpp|hpp)$","^plugins/.*\.pdb$","\.bak$","\.org$","^cvardump\.json$")
-}
-
-function Test-Blacklisted($relPath) {
-    $rel = $relPath.Replace('\', '/').Trim('/')
-    foreach ($p in Get-BlacklistPatterns) { if ($rel -match $p) { return $true } }
-    return $false
-}
+#endregion
 
 function Is-ProfileFolder($path) {
     if (-not (Test-Path $path)) { return $false }
@@ -502,8 +483,8 @@ function Get-HeuristicTags($profileDir, $meta, $profile) {
     $allText = $textSources -join "`n"
     $is3DOF = $profile -match "3\s*dof"; $is6DOF = $profile -match "6\s*dof"
     if ($allText -match "motion\s+controls" -and (-not $is3DOF -or $profile -match "motion")) { $tagSet.Add("Motion Controls") | Out-Null }
-    if ($allText -match "6\s*dof" -and -not $is3DOF) { $tagSet.Add("6DOF") | Out-Null }
-    if ($allText -match "3\s*dof" -and -not $is6DOF) { $tagSet.Add("3DOF") | Out-Null }
+    if ($allText -match "6\s*dof" -and -not $is3DOF) { $tagSet.Add("6DoF") | Out-Null }
+    if ($allText -match "3\s*dof" -and -not $is6DOF) { $tagSet.Add("3DoF") | Out-Null }
     $finalTags = [System.Collections.Generic.List[string]]::new($tagSet)
     if ($is3DOF) { for ($i = $finalTags.Count - 1; $i -ge 0; $i--) { if ($finalTags[$i] -match "6\s*dof") { $finalTags.RemoveAt($i) } } }
     if ($is6DOF) { for ($i = $finalTags.Count - 1; $i -ge 0; $i--) { if ($finalTags[$i] -match "3\s*dof") { $finalTags.RemoveAt($i) } } }
