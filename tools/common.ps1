@@ -261,7 +261,7 @@ function Get-HeuristicTags($profileDir, $meta, $variant) {
 
     $res = $finalTags | Sort-Object | Select-Object -Unique
     if ($null -eq $res) { return @() }
-    return ,[string[]]$res
+    return [string[]]$res
 }
 
 # Ensure essential directories exist
@@ -561,9 +561,15 @@ function Get-FileHashMD5($path) {
 
 function Test-Metadata($jsonFile, $gameName = "Unknown") {
     if (-not $Global:SchemaContent) { return $true }
-    $res = Test-Json -Path $jsonFile -Schema $Global:SchemaContent -ErrorAction SilentlyContinue
+    $jsonErr = $null
+    $res = Test-Json -Path $jsonFile -Schema $Global:SchemaContent -ErrorAction SilentlyContinue -ErrorVariable jsonErr
     if (-not $res) {
         Write-Warning "    [!] Metadata validation failed for $gameName ($jsonFile)"
+        if ($jsonErr) {
+            foreach ($err in $jsonErr) {
+                Write-Host "        - $($err.Exception.Message)" -ForegroundColor Red
+            }
+        }
     }
     return $res
 }
@@ -571,16 +577,21 @@ function Test-Metadata($jsonFile, $gameName = "Unknown") {
 function Save-ProfileMetadata($targetDir, $meta, $zipPath, $variant) {
     if (-not (Test-Path $targetDir)) { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null }
     
-    # 1. Finalize (adds profileName, extracts description from README/legacy)
     $meta = Finalize-ProfileMetadata $targetDir $meta $variant
     $meta = Remove-NullProperties $meta
+
+    # Ensure 'tags' is forced to an array to prevent JSON unrolling into a string
+    if ($null -ne $meta.tags) {
+        $meta.tags = @($meta.tags)
+    }
     
     # 2. Update Global Tracking
     Update-GlobalPropsJson $zipPath $variant $meta
     
     # 3. Save to disk
     $jsonFile = Join-Path $targetDir "ProfileMeta.json"
-    $meta | ConvertTo-Json -Depth 5 | Set-Content $jsonFile -Encoding utf8
+    $metaJson = ConvertTo-Json -InputObject $meta -Depth 5
+    $metaJson | Set-Content $jsonFile -Encoding utf8
     
     # 4. Validate
     if (-not (Test-Metadata $jsonFile $meta.gameName)) {

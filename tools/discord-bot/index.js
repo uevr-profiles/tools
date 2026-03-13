@@ -18,9 +18,9 @@ const FORUM_CHANNELS = [
     process.env.FORUM_CHANNEL_ID_NSFW
 ].filter(id => id);
 
-const JSON_FILE = path.join(__dirname, 'discord_profiles.json');
-const CSV_FILE = path.join(__dirname, 'discord_profiles.csv');
-const STATE_FILE = path.join(__dirname, 'bot_state.json');
+const JSON_FILE = process.env.PROFILES_JSON || path.join(__dirname, 'discord_profiles.json');
+const CSV_FILE = process.env.PROFILES_CSV || path.join(__dirname, 'discord_profiles.csv');
+const STATE_FILE = process.env.BOT_STATE_JSON || path.join(__dirname, 'bot_state.json');
 
 const args = process.argv.slice(2);
 const limitArg = args.find(a => a.startsWith('--limit='));

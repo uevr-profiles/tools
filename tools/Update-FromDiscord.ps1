@@ -5,7 +5,9 @@ param(
     [int]$ProfileLimit = [int]::MaxValue,
     [switch]$Whitelist,
     [switch]$Blacklist,
-    [switch]$Silent
+    [switch]$Silent,
+    [switch]$Cleanse,
+    [switch]$Clean
 )
 
 . "$PSScriptRoot\common.ps1"
@@ -13,10 +15,26 @@ param(
 $SourceName   = "discord"
 $DownloadDir  = Join-Path $BaseTempDir $SourceName
 $BotDir       = Join-Path $PSScriptRoot "discord-bot"
-$MetadataJson = Join-Path $BotDir "discord_profiles.json"
+
+# File paths within the metadata cache
+$MetadataJson = Join-Path $MetaCacheDir "discord_profiles.json"
+$ProfilesCsv  = Join-Path $MetaCacheDir "discord_profiles.csv"
+$BotStateJson = Join-Path $MetaCacheDir "bot_state.json"
 
 foreach ($d in @($DownloadDir, $MetaCacheDir)) {
     if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
+}
+
+# Migrate existing files if necessary
+@(
+    @{ Src = Join-Path $BotDir "discord_profiles.json"; Dest = $MetadataJson }
+    @{ Src = Join-Path $BotDir "discord_profiles.csv";  Dest = $ProfilesCsv }
+    @{ Src = Join-Path $BotDir "bot_state.json";       Dest = $BotStateJson }
+) | ForEach-Object {
+    if ((Test-Path $_.Src) -and (-not (Test-Path $_.Dest))) {
+        Write-Host "Migrating $(Split-Path $_.Src -Leaf) to metadata cache..." -ForegroundColor Gray
+        Move-Item $_.Src $_.Dest -Force
+    }
 }
 
 # ──────── Phase 0: Fetching Metadata (via Bot) ────────────────────────────────
@@ -29,10 +47,19 @@ if ($Fetch) {
     }
 
     Write-Host "Running Discord bot scraper to fetch profile metadata (Limit: $ProfileLimit)..." -ForegroundColor Cyan
+    $env:PROFILES_JSON   = $MetadataJson
+    $env:PROFILES_CSV    = $ProfilesCsv
+    $env:BOT_STATE_JSON  = $BotStateJson
+    
     pushd $BotDir
     node index.js "--limit=$ProfileLimit"
     $botExit = $LASTEXITCODE
     popd
+
+    # Cleanup environment variables
+    $env:PROFILES_JSON   = $null
+    $env:PROFILES_CSV    = $null
+    $env:BOT_STATE_JSON  = $null
 
     if ($botExit -ne 0) {
         throw "Discord scraper failed with exit code $botExit. Check the logs above for details."
@@ -83,7 +110,8 @@ if ($Download) {
                 $p | Add-Member -MemberType NoteProperty -Name "downloadDate" -Value (Get-ISO8601Now) -Force
 
                 # Sidecar metadata for extraction phase
-                $p | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
+                $sidecarJson = ConvertTo-Json -InputObject $p
+                $sidecarJson | Set-Content $sidecar -Encoding utf8
                 $count++
                 $failCount = 0
             } catch {
@@ -97,11 +125,18 @@ if ($Download) {
 
 # ──────── Phase 2: Extraction & Integration ────────────────────────────────────
 if ($Extract) {
+    if ($Clean -and (Test-Path $ProfilesDir)) {
+        Write-Host "Cleaning profiles directory..." -ForegroundColor Gray
+        Remove-Item -Path "$ProfilesDir\*" -Recurse -Force -ErrorAction SilentlyContinue
+    }
     $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
-    Write-Host "Processing $($zips.Count) profiles from $SourceName..." -ForegroundColor Cyan
+    Write-Host "Processing $($zips.Count) profiles from $SourceName... (Limit: $ProfileLimit)" -ForegroundColor Cyan
 
+    $eCount = 0
     foreach ($z in $zips) {
+        if ($eCount -ge $ProfileLimit) { break }
         try {
+            $eCount++
             $sidecar = $z.FullName + ".json"
             if (-not (Test-Path $sidecar)) { continue }
             $p = Get-Content $sidecar -Raw | ConvertFrom-Json
@@ -182,6 +217,45 @@ if ($Extract) {
             if (-not $Silent) { throw "Fatal: Profile processing error for $($z.Name). Stopping because -Silent is not set." }
         }
     }
+}
+
+# ──────── Phase 3: Cleanse Sidecars ──────────────────────────────────────────────
+if ($Cleanse) {
+    Write-Host "Cleansing existing Discord metadata sidecars..." -ForegroundColor Cyan
+    $sidecars = Get-ChildItem -Path $DownloadDir -Filter "*.zip.json"
+    $cCount = 0
+    foreach ($s in $sidecars) {
+        $p = Get-Content $s.FullName -Raw | ConvertFrom-Json
+        $changed = $false
+
+        # Fix missing downloadDate
+        if (-not $p.downloadDate) {
+            $p | Add-Member -MemberType NoteProperty -Name "downloadDate" -Value (Get-ISO8601Now)
+            $changed = $true
+        }
+
+        # Fix stale gameBanner field
+        if ($p.PSObject.Properties.Name -contains "gameBanner") {
+            if ($null -ne $p.gameBanner) {
+                $p | Add-Member -MemberType NoteProperty -Name "headerPictureUrl" -Value $p.gameBanner -Force
+            }
+            $p.PSObject.Properties.Remove("gameBanner")
+            $changed = $true
+        }
+
+        # Fix modifiedDate existence
+        if ($p.PSObject.Properties.Name -contains "modifiedDate") {
+            $p.PSObject.Properties.Remove("modifiedDate")
+            $changed = $true
+        }
+
+        if ($changed) {
+            $cleanedJson = ConvertTo-Json -InputObject $p
+            $cleanedJson | Set-Content $s.FullName -Encoding utf8
+            $cCount++
+        }
+    }
+    Write-Host "  [OK] Cleansed $cCount sidecars." -ForegroundColor Green
 }
 
 Finalize-GlobalTracking
