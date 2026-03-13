@@ -264,10 +264,10 @@ class ProfileArchive {
         if (-not (Test-Path $destination)) { New-Item -ItemType Directory -Path $destination -Force | Out-Null }
         $extracted = $false
         if (Get-Command 7z -ErrorAction SilentlyContinue) {
-            $process = Start-Process -FilePath "7z" -ArgumentList "x", "`"$($this.Path)`"", "-o$destination", "-y" -WindowStyle Hidden -PassThru -NoNewWindow
-            if ($process.WaitForExit(30000)) { # 30 second timeout
+            $process = Start-Process -FilePath "7z" -ArgumentList "x", "`"$($this.Path)`"", "-o$destination", "-y" -PassThru -NoNewWindow
+            if ($null -ne $process -and $process.WaitForExit(60000)) { # 60 second timeout
                 if ($process.ExitCode -eq 0) { $extracted = $true }
-            } else {
+            } elseif ($null -ne $process) {
                 Debug-Log "[common.ps1] 7z extraction timed out for $($this.Path). Killing process."
                 $process | Stop-Process -Force -ErrorAction SilentlyContinue
                 throw "Extraction timed out after 30 seconds: $($this.Path)"
@@ -556,9 +556,10 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
     if (-not $headers["User-Agent"]) { $headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" }
     
     $proxyPool = Get-PreparedProxyPool $Proxies
-    # If no proxies provided or all dead, try direct connection as a last resort (once)
     $workingPool = @($proxyPool)
-    if ($workingPool.Count -eq 0) { $workingPool = @($null) }
+    # Always ensure direct connection ($null) is the final fallback
+    $workingPool += $null
+    $workingPool = $workingPool | Select-Object -Unique
 
     $lastErr = "No connection attempted"
     

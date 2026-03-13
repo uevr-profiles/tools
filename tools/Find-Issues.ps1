@@ -102,6 +102,18 @@ foreach ($p in $Profiles) {
         }
     }
 
+    # Check for empty folders
+    $emptyFolders = Get-ChildItem -Path $folder -Directory -Recurse | Sort-Object FullName -Descending | Where-Object { (Get-ChildItem -Path $_.FullName).Count -eq 0 }
+    if ($emptyFolders) {
+        foreach ($ef in $emptyFolders) {
+            Write-Host "[ISSUE] Profile $($meta.ID): Empty folder found: $($ef.FullName.Substring($folder.Length).TrimStart('\'))" -ForegroundColor Gray
+            if ($Fix) { 
+                Remove-Item $ef.FullName -Force
+                $dirty = $true 
+            }
+        }
+    }
+
     if ($dirty -and $Fix) {
         Write-Host "  [FIX] Saving changes for $($meta.ID)..." -ForegroundColor Green
         $profileMeta = [ProfileMetadata]::FromObject($meta)

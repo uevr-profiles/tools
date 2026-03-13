@@ -15,6 +15,10 @@ Write-Host "Logging to $LogFile" -ForegroundColor DarkGray
 Start-Transcript -Path $LogFile -Append -Force | Out-Null
 
 try {
+    Write-Host "Cleaning profiles: $ProfilesDir" -ForegroundColor Yellow
+    if (Test-Path $ProfilesDir) {
+        Get-ChildItem -Path $ProfilesDir -Directory | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue 2>$null
+    }
     .\tools\Update-FromDiscord.ps1 -Extract -Whitelist -Debug -Proxies $Proxies
     .\tools\Update-FromUEVRDeluxe.ps1 -Fetch -Download -Extract -Whitelist -CleanCache -CleanDownloads -Debug -Proxies $Proxies
     .\tools\Update-FromUEVRProfiles.ps1 -Fetch -Download -Extract -Whitelist -CleanCache -CleanDownloads -Debug -Proxies $Proxies
