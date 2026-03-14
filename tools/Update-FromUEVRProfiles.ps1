@@ -32,32 +32,18 @@ $ExpectedCount = ($ProfileLimit -ne [int]::MaxValue) ? $ProfileLimit : [int]::Ma
 
 #region Functions
 function Invoke-ProfileRequest($url, $Proxies = $null) {
-    $headers = @{ "Accept" = "application/json" }
-
-    $proxyList = @()
-    if ($Proxies) {
-        if ($Proxies -is [array]) { $proxyList = $Proxies }
-        else { $proxyList = $Proxies -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ } }
-    }
-
-    $retries = [Math]::Max(1, $proxyList.Count)
-    $lastErr = $null
-
-    for ($i = 0; $i -lt $retries; $i++) {
-        $params = @{ Uri = $url; Headers = $headers; ErrorAction = "Stop" }
-        if ($proxyList.Count -gt 0) {
-            $params["Proxy"] = $proxyList[$i]
+    $tempFile = Join-Path $BaseTempDir "$([guid]::NewGuid()).json"
+    try {
+        Invoke-WebRequestWithRetry -url $url -targetFile $tempFile -Proxies $Proxies -Silent:$Silent
+        if (Test-Path $tempFile) {
+            $json = Get-Content $tempFile -Raw | ConvertFrom-Json
+            Remove-Item $tempFile -Force -ErrorAction SilentlyContinue
+            return $json
         }
-        try {
-            return Invoke-RestMethod @params
-        } catch {
-            $lastErr = $_
-            if ($_.Exception.Message -match "500" -and $proxyList.Count -le 1) {
-                throw "Fatal: Profiles API returned 500 Internal Server Error. You might be IP blocked."
-            }
-        }
+    } catch {
+        if (Test-Path $tempFile) { Remove-Item $tempFile -Force -ErrorAction SilentlyContinue }
+        throw $_
     }
-    throw $lastErr
 }
 
 function Fetch-UEVRProfilesMetadata {

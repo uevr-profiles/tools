@@ -1,6 +1,6 @@
 #region Variables & Configuration
 $RepoRoot       = Split-Path $PSScriptRoot -Parent
-$RepoRawUrl     = "https://github.com/Bluscream/UnrealVRMod/raw/master"
+$RepoRawUrl     = "https://github.com/Bluscream/UnrealVRMod/raw/main"
 $ProfilesDir    = Join-Path $RepoRoot "profiles"
 $SchemaFile     = Join-Path $RepoRoot "schemas" "ProfileMeta.schema.json"
 $Global:SchemaContent = $null
@@ -534,7 +534,8 @@ function Get-PreparedProxyPool($requestedProxies) {
 }
 
 function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 3, $Silent = $false, $Proxies = $null) {
-    if (-not $headers["User-Agent"]) { $headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" }
+    $userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    if ($headers["User-Agent"]) { $userAgent = $headers["User-Agent"]; $headers.Remove("User-Agent") }
     
     # Prepare the pool: Start with active proxies, then always add Direct ($null) at the end
     $proxyPool = Get-PreparedProxyPool $Proxies
@@ -560,8 +561,10 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
             $requestParams = @{
                 Uri = $url
                 Headers = $headers
+                UserAgent = $userAgent
+                SkipCertificateCheck = $true
                 ErrorAction = "Stop"
-                TimeoutSec = 30
+                TimeoutSec = 15
             }
             if ($targetFile) { $requestParams["OutFile"] = $targetFile }
             if ($p) { $requestParams["Proxy"] = $p }
@@ -574,7 +577,7 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
                 # Add random jitter between 500ms and 2s to avoid bot detection
                 if ($i -gt 1) { Start-Sleep -Milliseconds (Get-Random -Minimum 500 -Maximum 2000) }
                 
-                Invoke-WebRequest @requestParams | Out-Null
+                Invoke-WebRequest @requestParams
                 return # SUCCESS!
             } catch {
                 $lastErr = $_.Exception.Message
