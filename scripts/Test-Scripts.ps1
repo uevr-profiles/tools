@@ -1,5 +1,6 @@
 param(
-    [switch]$Clean,
+    [string]$Proxies = "http://121.126.185.63:25152,http://38.145.203.135:8443,http://216.180.127.45:1080,http://85.198.96.242:3128,http://38.145.218.82:8443,http://45.136.130.216:8443,http://103.30.30.226:20326,http://45.136.130.211:8447,DIRECT",
+    [switch]$Clean = $true,
     [switch]$Silent,
     [switch]$Debug,
     [int]$ProfileLimit = 2,
@@ -52,7 +53,7 @@ try {
             if (Test-Path $scriptPath) {
                 Write-Host "`n>>> Testing $s (Download) <<<" -ForegroundColor Cyan
                 try {
-                    & $scriptPath -Fetch -Download -ProfileLimit $ProfileLimit -Silent:$Silent -Debug:$Debug
+                    & $scriptPath -Fetch -Download -ProfileLimit $ProfileLimit -Silent:$Silent -Debug:$Debug -Proxies $Proxies
                 } catch {
                     Write-Host "    [!] Download test failed for ${s}: $($_.Exception.Message)" -ForegroundColor Red
                 }

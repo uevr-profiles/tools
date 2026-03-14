@@ -1,7 +1,7 @@
 #region Variables & Configuration
 $RepoRoot       = Split-Path $PSScriptRoot -Parent
 $RepoRawUrl     = "https://github.com/Bluscream/UnrealVRMod/raw/main"
-$ProfilesDir    = Join-Path $RepoRoot "profiles"
+$ProfilesDir    = Join-Path $RepoRoot "repo"
 $SchemaFile     = Join-Path $RepoRoot "schemas" "ProfileMeta.schema.json"
 $Global:SchemaContent = $null
 if (Test-Path $SchemaFile) {
@@ -288,7 +288,7 @@ function Get-ProfileDownloadUrl($uuid, $exeName) {
     if ([string]::IsNullOrWhiteSpace($exeName)) {
         throw "Cannot generate Download URL: exeName is missing for profile $uuid."
     }
-    $baseUrl = "https://github.com/uevr-profiles/repo/tree/main/profiles/$uuid"
+    $baseUrl = "https://github.com/uevr-profiles/repo/tree/main/$uuid"
     $encodedUrl = [System.Web.HttpUtility]::UrlEncode($baseUrl)
     
     $name = $exeName.Replace(" ", "_").Replace(".", "_")
