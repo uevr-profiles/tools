@@ -79,7 +79,10 @@ foreach ($p in $Profiles) {
         $old = $meta.gameName
         $new = $CorrectGameForExe[$meta.exeName]
         Write-Host "[ISSUE] Profile $($meta.ID) ($($meta.exeName)): GameName mismatch ('$old' -> '$new')" -ForegroundColor Yellow
-        if ($Fix) { $meta.gameName = $new; $dirty = $true }
+        if ($Fix) { 
+            $meta | Add-Member -MemberType NoteProperty -Name "gameName" -Value $new -Force
+            $dirty = $true 
+        }
     }
 
     # Check Header
@@ -97,7 +100,7 @@ foreach ($p in $Profiles) {
         }
 
         if ($newHeader -and $Fix) {
-            $meta.headerPictureUrl = $newHeader
+            $meta | Add-Member -MemberType NoteProperty -Name "headerPictureUrl" -Value $newHeader -Force
             $dirty = $true
         }
     }

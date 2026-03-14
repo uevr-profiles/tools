@@ -22,9 +22,9 @@ try {
             Get-ChildItem -Path $ProfilesDir -Directory | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue 2>$null
         }
     }
-    .\tools\Update-FromDiscord.ps1 -Extract -Debug
-    .\tools\Update-FromUEVRDeluxe.ps1 -Extract -CleanCache -CleanDownloads -Debug -Proxies $Proxies
-    .\tools\Update-FromUEVRProfiles.ps1 -Download -Extract -CleanCache -CleanDownloads -Debug -Proxies $Proxies
+    # .\tools\Update-FromDiscord.ps1 -Extract -Debug -CleanCache -CleanDownloads -Debug -Proxies $Proxies
+    # .\tools\Update-FromUEVRDeluxe.ps1 -Extract -CleanCache -CleanDownloads -Debug -Proxies $Proxies
+    .\tools\Update-FromUEVRProfiles.ps1 -Fetch -Download -Extract -CleanCache -CleanDownloads -Debug -Proxies $Proxies
     
     .\tools\Find-Issues.ps1 -Fix -Debug
     .\tools\Process-Whitelist.ps1 -Delete -Debug

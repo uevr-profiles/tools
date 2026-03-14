@@ -536,15 +536,23 @@ function Get-PreparedProxyPool($requestedProxies) {
 function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 3, $Silent = $false, $Proxies = $null) {
     if (-not $headers["User-Agent"]) { $headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" }
     
+    # Prepare the pool: Start with active proxies, then always add Direct ($null) at the end
     $proxyPool = Get-PreparedProxyPool $Proxies
-    $workingPool = @($proxyPool)
-    # Always ensure direct connection ($null) is the final fallback
-    $workingPool += $null
-    $workingPool = $workingPool | Select-Object -Unique
+    $workingPool = @()
+    if ($proxyPool) { $workingPool += $proxyPool }
+    $workingPool += $null # Add Direct connection as fallback
+    
+    # Ensure uniqueness but keep order (Proxies first, then Direct)
+    $finalPool = @()
+    $seen = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($p in $workingPool) {
+        $pKey = $p ? $p : "DIRECT_FALLBACK"
+        if ($seen.Add($pKey)) { $finalPool += $p }
+    }
 
     $lastErr = "No connection attempted"
     
-    foreach ($p in $workingPool) {
+    foreach ($p in $finalPool) {
         $proxyLabel = $p ? $p : "Direct"
         Debug-Log "[common.ps1] Trying $url via $proxyLabel"
 
