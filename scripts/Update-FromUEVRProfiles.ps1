@@ -10,7 +10,7 @@ param(
     [switch]$Debug,
     [switch]$CleanCache,
     [switch]$CleanDownloads,
-    [string]$Proxies
+    [switch]$UseProxies
 )
 #endregion
 
@@ -97,8 +97,7 @@ function Fetch-UEVRProfilesMetadata {
 }
 
 function Download-UEVRProfiles {
-    if (-not (Test-Path $MetadataJson)) { Write-Error "Metadata not found at $MetadataJson. Run with -Fetch first."; return }
-    $profiles = Get-Content $MetadataJson -Raw | ConvertFrom-Json
+    $profiles = Load-ProfilesFromFile $MetadataJson
     $count = 0; $failCount = 0; $total = $profiles.Count; $index = 0
     foreach ($p in $profiles) {
         $index++
@@ -147,6 +146,7 @@ function Download-UEVRProfiles {
 #region Main Logic
 Debug-Log "[Update-FromUEVRProfiles.ps1] Main Logic Start"
 $Global:Debug = $Debug
+$Proxies = $UseProxies ? $Global:Proxies : $null
 
 # Handle cleanup logic
 Debug-Log "[Update-FromUEVRProfiles.ps1] Checking cleanup flags"
@@ -173,11 +173,7 @@ foreach ($d in @($SourceTempDir, $DownloadDir)) {
 if ($Fetch) { 
     Debug-Log "[Update-FromUEVRProfiles.ps1] Calling Fetch-UEVRProfilesMetadata"
     Fetch-UEVRProfilesMetadata
-    if (Test-Path $MetadataJson) {
-        $data = Get-Content $MetadataJson -Raw | ConvertFrom-Json
-    } else {
-        $data = @()
-    }
+    $data = Load-ProfilesFromFile $MetadataJson
     Assert-ProfileCount -count $data.Count -expected $ProfileLimit -Silent:$Silent -stage "Fetch"
     $ExpectedCount = [Math]::Min($ExpectedCount, $data.Count)
 }

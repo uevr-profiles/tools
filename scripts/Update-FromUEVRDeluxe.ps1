@@ -10,7 +10,7 @@ param(
     [switch]$Debug,
     [switch]$CleanCache,
     [switch]$CleanDownloads,
-    [string]$Proxies
+    [switch]$UseProxies
 )
 #endregion
 
@@ -34,11 +34,7 @@ $ExpectedCount = ($ProfileLimit -ne [int]::MaxValue) ? $ProfileLimit : [int]::Ma
 function Invoke-DeluxeRequest($url, $Proxies = $null) {
     $headers = @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" }
     
-    $proxyList = @()
-    if ($Proxies) {
-        if ($Proxies -is [array]) { $proxyList = $Proxies }
-        else { $proxyList = $Proxies -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ } }
-    }
+    $proxyList = Get-PreparedProxyPool $Proxies $url
 
     $retries = [Math]::Max(1, $proxyList.Count)
     $lastErr = $null
@@ -73,8 +69,7 @@ function Fetch-UEVRDeluxeMetadata {
 }
 
 function Download-UEVRDeluxeProfiles {
-    if (-not (Test-Path $MetadataJson)) { Write-Error "Metadata not found at $MetadataJson. Run with -Fetch first."; return }
-    $profiles = Get-Content $MetadataJson -Raw | ConvertFrom-Json
+    $profiles = Load-ProfilesFromFile $MetadataJson
     $count = 0; $failCount = 0; $total = $profiles.Count; $index = 0
     foreach ($p in $profiles) {
         $index++
@@ -132,6 +127,7 @@ function Download-UEVRDeluxeProfiles {
 #region Main Logic
 Debug-Log "[Update-FromUEVRDeluxe.ps1] Main Logic Start"
 $Global:Debug = $Debug
+$Proxies = $UseProxies ? $Global:Proxies : $null
 
 # Handle cleanup logic
 Debug-Log "[Update-FromUEVRDeluxe.ps1] Checking cleanup flags"
@@ -158,11 +154,7 @@ foreach ($d in @($SourceTempDir, $DownloadDir)) {
 if ($Fetch) { 
     Debug-Log "[Update-FromUEVRDeluxe.ps1] Calling Fetch-UEVRDeluxeMetadata"
     Fetch-UEVRDeluxeMetadata
-    if (Test-Path $MetadataJson) {
-        $data = Get-Content $MetadataJson -Raw | ConvertFrom-Json
-    } else {
-        $data = @()
-    }
+    $data = Load-ProfilesFromFile $MetadataJson
     Assert-ProfileCount -count $data.Count -expected $ProfileLimit -Silent:$Silent -stage "Fetch"
     $ExpectedCount = [Math]::Min($ExpectedCount, $data.Count)
 }

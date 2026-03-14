@@ -8,6 +8,16 @@ if (Test-Path $SchemaFile) {
     $Global:SchemaContent = Get-Content $SchemaFile -Raw
 }
 
+function Load-ProxiesFromFile($path = $ProxiesFile) {
+    if (Test-Path $path) {
+        try { return Get-Content $path -Raw | ConvertFrom-Json } catch { }
+    }
+    return @("DIRECT")
+}
+
+$ProxiesFile = Join-Path $PSScriptRoot "proxies.json"
+$Global:Proxies = Load-ProxiesFromFile $ProxiesFile
+
 # Progress preference to avoid terminal spam during bulk file operations
 $ProgressPreference = 'SilentlyContinue'
 
@@ -398,6 +408,21 @@ function Finalize-GlobalTracking {
         $Global:TempFolders = @()
     }
 }
+function Load-ProfilesFromFile($path) {
+    if (-not (Test-Path $path)) { return @() }
+    try {
+        $content = Get-Content $path -Raw -ErrorAction Stop
+        if ([string]::IsNullOrWhiteSpace($content)) { return @() }
+        $data = $content | ConvertFrom-Json -ErrorAction Stop
+        if ($null -eq $data) { return @() }
+        if ($data -is [array]) { return $data }
+        return @($data)
+    } catch {
+        Write-Warning "Failed to load profiles from ${path}: $($_.Exception.Message)"
+        return @()
+    }
+}
+
 #endregion
 
 #region File & IO Utilities
@@ -543,11 +568,36 @@ function Move-Item-Smart($Source, $Destination) {
 $Global:ActiveProxyPool = @()
 $Global:DeadProxies     = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
 
-function Get-PreparedProxyPool($requestedProxies) {
-    if ([string]::IsNullOrWhiteSpace($requestedProxies)) { return @($null) }
+function Get-PreparedProxyPool($requestedProxies, $url = $null) {
+    if ($null -eq $requestedProxies) { return @($null) }
     
     $rawList = @()
-    if ($requestedProxies -is [array]) { $rawList = $requestedProxies }
+    if ($requestedProxies -is [System.Management.Automation.PSCustomObject]) {
+        # Map format: { "proxy": ["domain1", "domain2"] }
+        foreach ($prop in $requestedProxies.PSObject.Properties) {
+            $proxy = $prop.Name
+            $domains = @($prop.Value)
+
+            if ($null -eq $url -or $proxy -eq "DIRECT") {
+                $rawList += $proxy
+            } else {
+                # Check if this proxy is verified for the target domain
+                foreach ($d in $domains) {
+                    if ($url -match [regex]::Escape($d)) {
+                        $rawList += $proxy
+                        break
+                    }
+                }
+            }
+        }
+        # If no specialized proxies found for this domain, fall back to all
+        if ($rawList.Count -le 1 -and $rawList -contains "DIRECT" -and $null -ne $url) {
+             foreach ($prop in $requestedProxies.PSObject.Properties) {
+                if ($prop.Name -ne "DIRECT") { $rawList += $prop.Name }
+             }
+        }
+    }
+    elseif ($requestedProxies -is [array]) { $rawList = $requestedProxies }
     else { $rawList = $requestedProxies -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ } }
 
     $finalPool = @()
@@ -559,17 +609,12 @@ function Get-PreparedProxyPool($requestedProxies) {
             continue
         }
         
-        # Track new proxies in global pool
-        if (-not $Global:DeadProxies.Contains($p) -and $Global:ActiveProxyPool -notcontains $p) {
-            $Global:ActiveProxyPool += $p
-        }
-
-        # Add to current pool if healthy
         if (-not $Global:DeadProxies.Contains($p)) {
             if ($seen.Add($p)) { $finalPool += $p }
         }
     }
 
+    if ($finalPool.Count -eq 0) { $finalPool += $null } 
     return $finalPool
 }
 
@@ -577,8 +622,8 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
     $userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     if ($headers["User-Agent"]) { $userAgent = $headers["User-Agent"]; $headers.Remove("User-Agent") }
     
-    # Prepare the pool: Respect the user's order and handle the 'DIRECT' keyword
-    $finalPool = Get-PreparedProxyPool $Proxies
+    # Prepare the pool: Respect the user's order and handle the new map format
+    $finalPool = Get-PreparedProxyPool $Proxies $url
 
     $lastErr = "No connection attempted"
     
@@ -596,7 +641,8 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
                 TimeoutSec = $TimeoutSec
             }
             if ($targetFile) { $requestParams["OutFile"] = $targetFile }
-            if ($p) { $requestParams["Proxy"] = $p }
+            $actualProxy = ($p -eq "DIRECT") ? $null : $p
+            if ($actualProxy) { $requestParams["Proxy"] = $actualProxy }
 
             try {
                 if ($i -gt 1) { 

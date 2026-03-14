@@ -10,7 +10,7 @@ param(
     [switch]$Debug,
     [switch]$CleanCache,
     [switch]$CleanDownloads,
-    [string]$Proxies
+    [switch]$UseProxies
 )
 #endregion
 
@@ -44,13 +44,23 @@ function Fetch-DiscordMetadata {
     $env:PROFILES_CSV    = $ProfilesCsv
     $env:BOT_STATE_JSON  = $BotStateJson
     if ($Proxies) {
-        $proxyList = @()
-        if ($Proxies -is [array]) { $proxyList = $Proxies }
-        else { $proxyList = $Proxies -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ } }
-        if ($proxyList.Count -gt 0) {
-            $env:HTTPS_PROXY = $proxyList[0]
-            $env:HTTP_PROXY  = $proxyList[0]
-            Debug-Log "[Update-FromDiscord.ps1] Set Node Bot Proxy to $($proxyList[0])"
+        $proxyString = ""
+        if ($Proxies -is [System.Management.Automation.PSCustomObject]) {
+            foreach ($p in $Proxies.PSObject.Properties) {
+                if ($p.Name -ne "DIRECT" -and $p.Name -notmatch "^DIRECT") { 
+                    $proxyString = $p.Name
+                    break 
+                }
+            }
+        } else {
+            $proxyList = @()
+            if ($Proxies -is [array]) { $proxyList = $Proxies }
+            else { $proxyList = $Proxies -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ } }
+            if ($proxyList.Count -gt 0) { $proxyString = $proxyList[0] }
+        }
+
+        if ($proxyString -and $proxyString -ne "DIRECT") {
+            Debug-Log "[Update-FromDiscord.ps1] Node Bot Proxy identified as $proxyString"
         }
     }
     Debug-Log "[Update-FromDiscord.ps1] Running bot in $BotDir"
@@ -67,8 +77,7 @@ function Download-DiscordProfiles {
         Write-Error "Metadata not found at $MetadataJson. Run with -Fetch first."
         return 
     }
-    Debug-Log "[Update-FromDiscord.ps1] Loading metadata from $MetadataJson"
-    $profiles = Get-Content $MetadataJson -Raw | ConvertFrom-Json
+    $profiles = Load-ProfilesFromFile $MetadataJson
     Write-Host "Downloading profiles from Discord metadata ($($profiles.Count))..." -ForegroundColor Cyan
     $count = 0
     $failCount = 0
@@ -99,7 +108,7 @@ function Download-DiscordProfiles {
             Write-Host "[$index/$total] Downloading: $($p.gameName) ($($p.zipName))..." -ForegroundColor Gray
             try {
                 Debug-Log "[Update-FromDiscord.ps1] Calling Invoke-WebRequestWithRetry"
-                Invoke-WebRequestWithRetry -url $p.sourceDownloadUrl -targetFile $targetFile -Silent $Silent -Proxies $Proxies
+                Invoke-WebRequestWithRetry -url $p.sourceDownloadUrl -targetFile $targetFile -Silent $Silent -Proxies $Proxies -TimeoutSec 60
                 
                 Debug-Log "[Update-FromDiscord.ps1] Download OK, creating HashSet"
                 $tagSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
@@ -160,6 +169,7 @@ function Download-DiscordProfiles {
 #region Main Logic
 Debug-Log "[Update-FromDiscord.ps1] Main Logic Start"
 $Global:Debug = $Debug
+$Proxies = $UseProxies ? $Global:Proxies : $null
 
 # Handle cleanup logic
 Debug-Log "[Update-FromDiscord.ps1] Checking cleanup flags"
@@ -185,11 +195,7 @@ foreach ($d in @($SourceTempDir, $DownloadDir, $ProfilesDir)) {
 if ($Fetch) { 
     Debug-Log "[Update-FromDiscord.ps1] Calling Fetch-DiscordMetadata"
     Fetch-DiscordMetadata
-    if (Test-Path $MetadataJson) {
-        $results = Get-Content $MetadataJson -Raw | ConvertFrom-Json
-    } else {
-        $results = @()
-    }
+    $results = Load-ProfilesFromFile $MetadataJson
     Assert-ProfileCount -count $results.Count -expected $ProfileLimit -Silent:$Silent -stage "Fetch"
     $ExpectedCount = [Math]::Min($ExpectedCount, $results.Count)
 }
