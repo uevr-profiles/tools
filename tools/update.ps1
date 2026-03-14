@@ -24,7 +24,7 @@ try {
     }
     # .\tools\Update-FromDiscord.ps1 -Extract -Debug -CleanCache -CleanDownloads -Debug -Proxies $Proxies
     # .\tools\Update-FromUEVRDeluxe.ps1 -Extract -CleanCache -CleanDownloads -Debug -Proxies $Proxies
-    .\tools\Update-FromUEVRProfiles.ps1 -Fetch -Download -Extract -CleanCache -CleanDownloads -Debug -Proxies $Proxies
+    .\tools\Update-FromUEVRProfiles.ps1 -Fetch -Download -Extract -CleanCache -CleanDownloads -Debug -Silent -Proxies $Proxies
     
     .\tools\Find-Issues.ps1 -Fix -Debug
     .\tools\Process-Whitelist.ps1 -Delete -Debug

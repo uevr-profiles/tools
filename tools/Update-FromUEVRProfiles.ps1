@@ -42,7 +42,7 @@ function Invoke-ProfileRequest($url, $Proxies = $null) {
         }
     } catch {
         if (Test-Path $tempFile) { Remove-Item $tempFile -Force -ErrorAction SilentlyContinue }
-        throw $_
+        if (-not $Silent) { throw $_ }
     }
 }
 

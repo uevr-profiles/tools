@@ -547,7 +547,7 @@ function Get-PreparedProxyPool($requestedProxies) {
     return $finalPool
 }
 
-function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 3, $Silent = $false, $Proxies = $null, $TimeoutSec = 15) {
+function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 2, $Silent = $false, $Proxies = $null, $TimeoutSec = 10) {
     $userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     if ($headers["User-Agent"]) { $userAgent = $headers["User-Agent"]; $headers.Remove("User-Agent") }
     
@@ -580,14 +580,29 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
                 # Add random jitter between 500ms and 2s to avoid bot detection
                 if ($i -gt 1) { Start-Sleep -Milliseconds (Get-Random -Minimum 500 -Maximum 2000) }
                 
-                Invoke-WebRequest @requestParams
-                return # SUCCESS!
+                # We use a background thread for the request because Invoke-WebRequest can ignore TimeoutSec 
+                # if the connection is established but data is flowing at ~0 bytes/sec.
+                $job = Start-Job -ScriptBlock {
+                    param($p, $rp)
+                    if ($p) { $rp["Proxy"] = $p }
+                    Invoke-WebRequest @rp | Out-Null
+                } -ArgumentList $p, $requestParams
+
+                $waitTimeout = $TimeoutSec + 5 # Give it a few extra seconds for the job overhead
+                if (Wait-Job $job -Timeout $waitTimeout) {
+                    $result = Receive-Job $job -ErrorAction Stop
+                    return # SUCCESS!
+                } else {
+                    Stop-Job $job -PassThru | Remove-Job -Force
+                    throw "Absolute timeout ($($waitTimeout)s) reached"
+                }
             } catch {
                 $lastErr = $_.Exception.Message
+                if ($_.Exception.InnerException) { $lastErr = $_.Exception.InnerException.Message }
                 $statusCode = 0
                 if ($_.Exception.Response) { 
                     $statusCode = [int]$_.Exception.Response.StatusCode 
-                } elseif ($_.Exception.Message -match "\((\d{3})\)") {
+                } elseif ($lastErr -match "\((\d{3})\)") {
                     $statusCode = [int]$matches[1]
                 }
 
