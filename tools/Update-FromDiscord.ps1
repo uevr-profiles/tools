@@ -115,16 +115,11 @@ function Download-DiscordProfiles {
                     $tagSet.Add($category) | Out-Null
                 }
                 
-                $finalExe = ""
-                if ($p.exeName) {
-                    $finalExe = $p.exeName
-                } else {
-                    $finalExe = $p.archive -replace '\.zip$', ''
-                }
+                $finalExe = Get-SafeExeName ($p.exeName ? $p.exeName : ($p.archive -replace '\.zip$', ''))
                 Debug-Log "[Update-FromDiscord.ps1] FinalExe: $finalExe"
 
                 Debug-Log "[Update-FromDiscord.ps1] Calling Get-ProfileDownloadUrl"
-                $dlUrl = Get-ProfileDownloadUrl $uuid $p.exeName
+                $dlUrl = Get-ProfileDownloadUrl $uuid $finalExe
                 
                 $sidecarObj = [ordered]@{
                     "ID"                = $uuid

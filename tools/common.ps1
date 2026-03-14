@@ -285,13 +285,13 @@ class ProfileArchive {
 #region Profile Helpers
 function Get-ProfileDownloadUrl($uuid, $exeName) {
     Debug-Log "[common.ps1] Entering Get-ProfileDownloadUrl (ID: $uuid, Exe: $exeName)"
+    if ([string]::IsNullOrWhiteSpace($exeName)) {
+        throw "Cannot generate Download URL: exeName is missing for profile $uuid."
+    }
     $baseUrl = "https://github.com/uevr-profiles/repo/tree/main/profiles/$uuid"
     $encodedUrl = [System.Web.HttpUtility]::UrlEncode($baseUrl)
     
-    $name = $uuid
-    if ($exeName) {
-        $name = $exeName.Replace(" ", "_").Replace(".", "_")
-    }
+    $name = $exeName.Replace(" ", "_").Replace(".", "_")
     Debug-Log "[common.ps1] Name for downloader: $name"
     
     $res = "https://gitfolderdownloader.github.io/?url=$encodedUrl&name=$name"
@@ -423,6 +423,14 @@ function Flatten-Folder($targetDir) {
 function Get-FileHashMD5($path) {
     if (-not (Test-Path $path)) { return $null }
     return (Get-FileHash -Path $path -Algorithm MD5).Hash.ToUpper()
+}
+
+function Get-SafeExeName($name) {
+    if ([string]::IsNullOrWhiteSpace($name)) { return "" }
+    # Remove .exe suffix (case-insensitive)
+    # Remove _\d+ suffixes (common in uevr-profiles.com versioning)
+    # Remove (v\d+) or [v\d+] patterns
+    return ($name.Trim() -replace "(?i)\.exe$", "" -replace "_(\d+)$", "" -replace "\s*[\[\(][vV]?\d+[\)\]]$", "").Trim()
 }
 
 function Get-DeterministicGuid($seed) {

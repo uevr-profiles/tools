@@ -83,15 +83,16 @@ function Download-UEVRDeluxeProfiles {
         
         $uuid = Get-OrCreateUUID $p
         $uuidClean = ([guid]$uuid).ToString("n")
-        $actualExe = $p.exeName
+        $rawExe  = $p.exeName
+        $safeExe = Get-SafeExeName $rawExe
         $targetFile = Join-Path $DownloadDir "$uuid.zip"
         $sidecar    = $targetFile + ".json"
         
-        Debug-Log "[Update-FromUEVRDeluxe.ps1] ID: $uuid, Exe: $actualExe"
+        Debug-Log "[Update-FromUEVRDeluxe.ps1] ID: $uuid, Raw: $rawExe, Safe: $safeExe"
 
         if (-not (Test-Path $targetFile)) {
-            $url = "$ProfilesUrlBase/$([uri]::EscapeDataString($actualExe))/$uuidClean"
-            Write-Host "[$index/$total] Downloading $($p.gameName) ($actualExe)..." -ForegroundColor Gray
+            $url = "$ProfilesUrlBase/$([uri]::EscapeDataString($rawExe))/$uuidClean"
+            Write-Host "[$index/$total] Downloading $($p.gameName) ($safeExe)..." -ForegroundColor Gray
 
             try {
                 Debug-Log "[Update-FromUEVRDeluxe.ps1] Calling Invoke-WebRequestWithRetry: $url"
@@ -104,7 +105,7 @@ function Download-UEVRDeluxeProfiles {
                 Debug-Log "[Update-FromUEVRDeluxe.ps1] Creating sidecar with author: $($p.authorName)"
                 $sidecarObj = [ordered]@{
                     "ID"                = $uuid
-                    "exeName"           = $actualExe
+                    "exeName"           = $safeExe
                     "gameName"          = $p.gameName
                     "authorName"        = $p.authorName
                     "modifiedDate"      = Format-DateISO8601 $modDate
@@ -113,7 +114,7 @@ function Download-UEVRDeluxeProfiles {
                     "sourceUrl"         = $url
                     "sourceDownloadUrl" = $url
                     "description"       = $p.remarks
-                    "downloadUrl"       = Get-ProfileDownloadUrl $uuid $actualExe
+                    "downloadUrl"       = Get-ProfileDownloadUrl $uuid $safeExe
                 }
                 $sidecarObj | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
                 $count++; $failCount = 0

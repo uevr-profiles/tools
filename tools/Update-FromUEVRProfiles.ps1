@@ -81,7 +81,7 @@ function Fetch-UEVRProfilesMetadata {
                     "authorName"   = $vf.author.stringValue
                     "modifiedDate" = $vf.creationDate.timestampValue
                     "createdDate"  = $vf.creationDate.timestampValue
-                    "exeName"      = $profileExe ? $profileExe : ($topExe ? $topExe : ($archiveFile -replace '\.zip$', ''))
+                    "exeName"      = Get-SafeExeName ($profileExe ? $profileExe : ($topExe ? $topExe : ($archiveFile -replace '\.zip$', '')))
                     "downloadUrl"  = $dlUrl
                     "archive"      = $archiveFile
                     "description"  = $vf.description.stringValue
@@ -108,29 +108,19 @@ function Download-UEVRProfiles {
         $targetFile = Join-Path $DownloadDir "$uuid.zip"
         $sidecar    = $targetFile + ".json"
         
-        $exeName = ""
-        if ($p.exeName) {
-            $exeName = $p.exeName
-        } else {
-            $exeName = $p.gameName
-        }
+        $safeExe = Get-SafeExeName ($p.exeName ? $p.exeName : $p.gameName)
         
         if (-not (Test-Path $targetFile)) {
             $msg = "[$index/$total] Downloading: $($p.gameName)"
-            if ($p.exeName) { $msg += " ($($p.exeName))" }
+            if ($safeExe) { $msg += " ($($safeExe))" }
             Write-Host "$msg..." -ForegroundColor Gray
 
             try {
                 Invoke-WebRequestWithRetry -url $p.downloadUrl -targetFile $targetFile -Silent $Silent -Debug:$Debug -Proxies $Proxies
-                $cleanExe = $p.exeName
-                if ($cleanExe -match "(_\d+)$") {
-                    $cleanExe = $cleanExe -replace "(_\d+)$", ""
-                    Debug-Log "Stripping suffix from exeName: $($p.exeName) -> $cleanExe"
-                }
-
+                
                 $sidecarObj = [ordered]@{
                     "ID"                = $uuid
-                    "exeName"           = $cleanExe
+                    "exeName"           = $safeExe
                     "gameName"          = $p.gameName
                     "authorName"        = $p.authorName
                     "modifiedDate"      = Format-DateISO8601 $p.modifiedDate
@@ -139,7 +129,7 @@ function Download-UEVRProfiles {
                     "sourceUrl"         = "https://uevr-profiles.com/game/$($p.id)"
                     "sourceDownloadUrl" = $p.downloadUrl
                     "description"       = $p.description
-                    "downloadUrl"       = Get-ProfileDownloadUrl $uuid $p.exeName
+                    "downloadUrl"       = Get-ProfileDownloadUrl $uuid $safeExe
                 }
                 $sidecarObj | ConvertTo-Json | Set-Content $sidecar -Encoding utf8
                 $count++; $failCount = 0
