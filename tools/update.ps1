@@ -7,9 +7,9 @@ param(
 . "$PSScriptRoot\common.ps1"
 #endregion
 
-$LogsDir  = Join-Path $RepoRoot "logs"
+$LogsDir = Join-Path $RepoRoot "logs"
 $UnixTime = [DateTimeOffset]::Now.ToUnixTimeSeconds()
-$LogFile  = Join-Path $LogsDir "$($UnixTime)_update.log"
+$LogFile = Join-Path $LogsDir "$($UnixTime)_update.log"
 
 if (-not (Test-Path $LogsDir)) { New-Item -ItemType Directory -Path $LogsDir -Force | Out-Null }
 Write-Host "Logging to $LogFile" -ForegroundColor DarkGray
@@ -22,8 +22,8 @@ try {
             Get-ChildItem -Path $ProfilesDir -Directory | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue 2>$null
         }
     }
-    # .\tools\Update-FromDiscord.ps1 -Extract -Debug -CleanCache -CleanDownloads -Debug -Proxies $Proxies
-    # .\tools\Update-FromUEVRDeluxe.ps1 -Extract -CleanCache -CleanDownloads -Debug -Proxies $Proxies
+    .\tools\Update-FromDiscord.ps1 -Extract -Debug -CleanCache -CleanDownloads -Debug -Proxies $Proxies
+    .\tools\Update-FromUEVRDeluxe.ps1 -Extract -CleanCache -CleanDownloads -Debug -Proxies $Proxies
     .\tools\Update-FromUEVRProfiles.ps1 -Fetch -Download -Extract -CleanCache -CleanDownloads -Debug -Silent -Proxies $Proxies
     
     .\tools\Find-Issues.ps1 -Fix -Debug

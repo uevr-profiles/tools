@@ -402,6 +402,24 @@ function Finalize-GlobalTracking {
 
 #region File & IO Utilities
 
+function Flatten-Folder($targetDir) {
+    Debug-Log "[common.ps1] Flatten-Folder: $targetDir"
+    # Keep flattening as long as there's only one child and it's a directory
+    while ($true) {
+        $items = Get-ChildItem -Path $targetDir -ErrorAction SilentlyContinue
+        if ($items.Count -eq 1 -and $items[0].PSIsContainer) {
+            $subDir = $items[0].FullName
+            Debug-Log "[common.ps1] Flattening single subfolder: $($items[0].Name)"
+            Get-ChildItem -Path $subDir | ForEach-Object { 
+                Move-Item -Path $_.FullName -Destination $targetDir -Force -ErrorAction SilentlyContinue 
+            }
+            Remove-Item $subDir -Recurse -Force -ErrorAction SilentlyContinue
+        } else {
+            break
+        }
+    }
+}
+
 function Get-FileHashMD5($path) {
     if (-not (Test-Path $path)) { return $null }
     return (Get-FileHash -Path $path -Algorithm MD5).Hash.ToUpper()
@@ -663,6 +681,8 @@ function Extract-And-Discover-Profiles($archivePath) {
         $profileArchive = [ProfileArchive]::new($archivePath)
         $profileArchive.ExtractTo($tempBase)
         
+        # Flatten-Folder will collapse single-folder wrappers (e.g. Zip/ExeName/config.txt -> Zip/config.txt)
+        Flatten-Folder $tempBase
         # Profile discovery: any folder with ProfileMeta.json or known patterns
         # We limit depth to 3 and skip folders like "sdkdump" that can contain thousands of files.
         $searchBlacklist = @("sdkdump", "Source", "Intermediate", "Binaries", "Saved")

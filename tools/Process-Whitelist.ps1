@@ -11,7 +11,13 @@ $Global:Debug = $Debug
 
 #region Filtering Helpers
 function Get-WhitelistPatterns {
-    return @("^README\.md$","^ProfileMeta\.json$","^_interaction_profiles_oculus_touch_controller\.json$","^actions\.json$","^binding_rift\.json$","^binding_vive\.json$","^bindings_knuckles\.json$","^bindings_oculus_touch\.json$","^bindings_vive_controller\.json$","^cameras\.txt$","^config\.txt$","^cvars_data\.txt$","^cvars_standard\.txt$","^uevr_nightly_build\.txt$","^user_script\.txt$","^scripts/.*\.lua$","^plugins/.*\.(dll|so)$","^uobjecthook/.*\.json$","^(_EXTRAS|data|libs|paks)/.+")
+    return @(
+        "^README\.md$", "^ProfileMeta\.json$", "^_interaction_profiles_oculus_touch_controller\.json$",
+        "^actions\.json$", "^binding_rift\.json$", "^binding_vive\.json$", "^bindings_knuckles\.json$",
+        "^bindings_oculus_touch\.json$", "^bindings_vive_controller\.json$", "^cameras\.txt$", "^config\.txt$",
+        "^cvars_data\.txt$", "^cvars_standard\.txt$", "^uevr_nightly_build\.txt$", "^user_script\.txt$",
+        "^scripts/.*\.lua$", "^plugins/.*\.(dll|so)$", "^uobjecthook/.*\.json$", "^(_EXTRAS|data|libs|paks)/.+", ".*\.ini$"
+    )
 }
 
 function Test-Whitelisted($relPath) {
