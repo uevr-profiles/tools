@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "InventoryComponent InventoryComp",
+        "Properties",
+        "LastEquippedItem",
+        "Components",
+        "SceneComponent Root"
+    ],
+    "properties": [],
+    "type": "properties"
+}

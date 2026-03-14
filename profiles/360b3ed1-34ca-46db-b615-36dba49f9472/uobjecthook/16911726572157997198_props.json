@@ -1,0 +1,16 @@
+{
+    "hide": true,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_DoubleBarrelShotgun_C BP_DoubleBarrelShotgun_C_2147011103",
+        "Properties",
+        "BackWeaponModel",
+        "Components",
+        "SkeletalMeshComponent MainMesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

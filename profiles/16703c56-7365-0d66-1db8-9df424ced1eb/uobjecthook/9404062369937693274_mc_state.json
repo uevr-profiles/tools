@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "StaticMeshComponent HeldItem_Static"
+    ],
+    "state": {
+        "hand": 0,
+        "location_offset": {
+            "x": -2.440000057220459,
+            "y": -0.5,
+            "z": 3.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.6436630487442017,
+            "x": -0.4199720025062561,
+            "y": -0.24873793125152588,
+            "z": 0.5894496440887451
+        }
+    },
+    "type": "motion_controller"
+}

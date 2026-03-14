@@ -1,0 +1,20 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Inventory_Comp",
+        "Properties",
+        "BP_Weapon_1",
+        "Properties",
+        "BP_Attach_Sight"
+    ],
+    "properties": [
+        {
+            "data": 1,
+            "name": "Force_Hole"
+        }
+    ],
+    "type": "properties"
+}

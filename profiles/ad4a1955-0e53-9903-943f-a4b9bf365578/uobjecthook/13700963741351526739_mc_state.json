@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_VintageRIfle_C BP_VintageRIfle_C_2147017803",
+        "Components",
+        "SkeletalMeshComponent FPMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 20.0,
+            "y": 119.0199966430664,
+            "z": 10.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.7316888570785522,
+            "x": -0.0,
+            "y": -0.681638777256012,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

@@ -1,0 +1,4 @@
+Engine_r.AmbientOcclusionLevels=2
+Engine_r.MotionBlurQuality=0
+Engine_r.OneFrameThreadLag=1
+Renderer_r.Tonemapper.Sharpen=2.000000

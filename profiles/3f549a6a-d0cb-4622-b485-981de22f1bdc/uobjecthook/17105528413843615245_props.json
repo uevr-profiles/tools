@@ -1,0 +1,11 @@
+{
+    "hide": false,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "CapsuleComponent CollisionCylinder"
+    ],
+    "properties": [],
+    "type": "properties"
+}

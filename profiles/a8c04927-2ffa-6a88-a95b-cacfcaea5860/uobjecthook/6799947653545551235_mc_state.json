@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Equipment_LabyrinthKey_01_C BP_Equipment_LabyrinthKey_01_C_2147315286",
+        "Components",
+        "BWStaticMeshComponent Mesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.505759060382843,
+            "x": 0.8563078045845032,
+            "y": -0.053208835422992706,
+            "z": 0.09007514268159866
+        }
+    },
+    "type": "motion_controller"
+}

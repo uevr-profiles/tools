@@ -1,0 +1,34 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "SpringArm",
+        "Properties",
+        "AttachChildren",
+        "SkeletalMeshComponent CharacterMesh0",
+        "Properties",
+        "AttachParent",
+        "Properties",
+        "AttachChildren",
+        "SkeletalMeshComponent CharacterMesh0",
+        "Properties",
+        "AttachChildren",
+        "SceneComponent NewRootComponent"
+    ],
+    "state": {
+        "hand": 0,
+        "location_offset": {
+            "x": -1.9299999475479126,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.6556936502456665,
+            "x": 0.026241669431328773,
+            "y": 0.7539673447608948,
+            "z": -0.03017471358180046
+        }
+    },
+    "type": "motion_controller"
+}

@@ -1,0 +1,23 @@
+{
+  "ID": "d6c0da60-dc2f-421e-b490-a71977bc67c2",
+  "exeName": "RoboCop-Win64-Shipping",
+  "gameName": "RoboCop: Rogue City",
+  "gameVersion": "Latest",
+  "authorName": "jbusfield",
+  "modifiedDate": "2025-08-05T22:00:00Z",
+  "createdDate": "2025-08-05T22:00:00Z",
+  "downloadDate": "2026-03-14T02:36:52Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/d6c0da60-dc2f-421e-b490-a71977bc67c2",
+  "zipHash": "93EA4C69E19A5373D7222E407A96DC7C",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2fd6c0da60-dc2f-421e-b490-a71977bc67c2&name=RoboCop-Win64-Shipping_3",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FRoboCop-Win64-Shipping_3.zip?alt=media",
+  "nullifyPlugins": false,
+  "lateInjection": false,
+  "description": "FIRST PERSON PROFILE V1.03 LATEST FEATURES:  Fixed issues with subtitles not showing Added more p...",
+  "tags": [
+    "3DOF",
+    "6DoF",
+    "Motion Controls"
+  ]
+}

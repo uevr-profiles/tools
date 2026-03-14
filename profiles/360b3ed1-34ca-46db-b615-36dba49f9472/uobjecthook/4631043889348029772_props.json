@@ -1,0 +1,15 @@
+{
+    "hide": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Torch_C BP_Torch_C_2147250234",
+        "Properties",
+        "BackWeaponModel",
+        "Components",
+        "SkeletalMeshComponent MainMesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

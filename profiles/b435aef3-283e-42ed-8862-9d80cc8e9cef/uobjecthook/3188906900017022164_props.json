@@ -1,0 +1,17 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Player Controller",
+        "Properties",
+        "Children",
+        "BP_WbPlayerCharacter_C BP_WbPlayerCharacter_C_2147478745",
+        "Properties",
+        "Children",
+        "BP_WbWaterpistol_C BP_WbWaterpistol_C_UAID_04421AEDE901DE1602_1974630821",
+        "Components",
+        "NiagaraComponent NiagaraComponentWater"
+    ],
+    "properties": [],
+    "type": "properties"
+}

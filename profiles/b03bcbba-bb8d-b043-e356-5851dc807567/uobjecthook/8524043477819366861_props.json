@@ -1,0 +1,50 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Mesh",
+        "Properties",
+        "AnimScriptInstance"
+    ],
+    "properties": [
+        {
+            "data": 1120403456,
+            "name": "BigTurnIdleThreshold"
+        },
+        {
+            "data": 1120403456,
+            "name": "BigTurnSprintingThreshold"
+        },
+        {
+            "data": 1120403456,
+            "name": "BigTurnStealthIdleThreshold"
+        },
+        {
+            "data": 1120403456,
+            "name": "BigTurnStealthSprintingThreshold"
+        },
+        {
+            "data": 1120403456,
+            "name": "BigTurnStealthWalkingThreshold"
+        },
+        {
+            "data": 1120403456,
+            "name": "BigTurnWalkingThreshold"
+        },
+        {
+            "data": 1082696663,
+            "name": "BankingWalkingInterpolationTime"
+        },
+        {
+            "data": 1079152476,
+            "name": "BankingRunningInterpolationTime"
+        },
+        {
+            "data": 0,
+            "name": "BigTurnTimeout"
+        }
+    ],
+    "type": "properties"
+}

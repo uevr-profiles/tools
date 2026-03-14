@@ -1,0 +1,11 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "GbxSkeletalMeshComponent SK_Play_SirenBrawler_Base_Head"
+    ],
+    "properties": [],
+    "type": "properties"
+}

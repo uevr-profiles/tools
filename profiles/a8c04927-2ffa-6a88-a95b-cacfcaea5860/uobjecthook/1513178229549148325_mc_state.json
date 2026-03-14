@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Trash_BeatPad_C BP_Trash_BeatPad_C_2147433337",
+        "Components",
+        "BWStaticMeshComponent Mesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.9629309773445129,
+            "x": -0.1185014471411705,
+            "y": 0.0004950271104462445,
+            "z": -0.2423243373632431
+        }
+    },
+    "type": "motion_controller"
+}

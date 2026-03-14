@@ -1,0 +1,20 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "GbxSkeletalMeshComponent CharacterMesh0"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "bHiddenInGame"
+        },
+        {
+            "data": 1,
+            "name": "bHideSkin"
+        }
+    ],
+    "type": "properties"
+}

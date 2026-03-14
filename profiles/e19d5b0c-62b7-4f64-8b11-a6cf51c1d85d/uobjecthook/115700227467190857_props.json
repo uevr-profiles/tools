@@ -1,0 +1,15 @@
+{
+    "hide": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_PickaxeTier1_C BP_PickaxeTier1_C_2147418828",
+        "Properties",
+        "BackWeaponModel",
+        "Components",
+        "SkeletalMeshComponent MainMesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

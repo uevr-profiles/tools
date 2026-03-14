@@ -1,0 +1,17 @@
+{
+  "ID": "14f08e92-0e92-7acc-f579-460be33e4bb2",
+  "exeName": "THPD-Win64-Shipping",
+  "gameName": "Tristan Cole's Pro Driver",
+  "authorName": "king.ej.",
+  "createdDate": "2026-03-08T01:50:35Z",
+  "downloadDate": "2026-03-14T01:46:29Z",
+  "sourceName": "discord.gg/flat2vr",
+  "sourceUrl": "https://discord.com/channels/747967102895390741/1480019577780965416/1480019876339777586",
+  "zipHash": "E6F7EB33D676A53650A157AF5B97E904",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f14f08e92-0e92-7acc-f579-460be33e4bb2&name=14f08e92-0e92-7acc-f579-460be33e4bb2",
+  "sourceDownloadUrl": "https://cdn.discordapp.com/attachments/1480019577780965416/1480019875886928014/THPD-Win64-Shipping.zip?ex=69b567ab&is=69b4162b&hm=eeec75f4f2c6924898d3e24e44316e9c93dd47912e395a778da81bda3877e7d9&",
+  "description": "toggle driver seat back or Dpad Up (on controller)",
+  "tags": [
+    "3DOF"
+  ]
+}

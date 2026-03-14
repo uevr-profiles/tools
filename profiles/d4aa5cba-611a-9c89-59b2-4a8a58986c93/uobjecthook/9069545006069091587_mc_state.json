@@ -1,0 +1,27 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_ChemicalShotgun_C BP_ChemicalShotgun_C_2147462621",
+        "Properties",
+        "BlueprintCreatedComponents",
+        "ParticleSystemComponent P_ChemicalShotgun_MuzzleIdle1"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 35.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.9996874928474426,
+            "x": 0.0,
+            "y": 0.024997394531965256,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

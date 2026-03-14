@@ -1,0 +1,20 @@
+{
+  "ID": "4a35a9d0-2b4e-496e-95c9-236374548f08",
+  "exeName": "Bramble_TMK-WinGDK-Shipping",
+  "gameName": "Bramble: The Mountain King",
+  "authorName": "Alex G",
+  "modifiedDate": "2024-01-08T23:00:00Z",
+  "createdDate": "2024-01-08T23:00:00Z",
+  "downloadDate": "2026-03-14T02:36:19Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/4a35a9d0-2b4e-496e-95c9-236374548f08",
+  "zipHash": "A471AFE5B93DADA054CE3222D9648538",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f4a35a9d0-2b4e-496e-95c9-236374548f08&name=Bramble_TMK-WinGDK-Shipping",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FBramble_TMK-WinGDK-Shipping.zip?alt=media",
+  "description": "First Person View, GamePass Profile.",
+  "profileName": "Bramble_TMK-WinGDK-Shipping",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

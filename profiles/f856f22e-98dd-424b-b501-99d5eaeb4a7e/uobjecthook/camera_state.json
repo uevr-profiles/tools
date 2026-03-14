@@ -1,0 +1,13 @@
+{
+    "offset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 65.8538818359375
+    },
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "CapsuleComponent CollisionCylinder"
+    ],
+    "type": "camera"
+}

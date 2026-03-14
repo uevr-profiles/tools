@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "FirstPersonSkeletalMeshComponent WeaponBaseFP"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -8.634919166564941,
+            "y": -7.486082077026367,
+            "z": 8.94150161743164
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.7066429853439331,
+            "x": 0.0017532259225845337,
+            "y": 0.7052642107009888,
+            "z": 0.057050082832574844
+        }
+    },
+    "type": "motion_controller"
+}

@@ -1,0 +1,19 @@
+{
+  "ID": "74665c40-19dc-4478-91d2-b2f9b24af7fd",
+  "exeName": "MK12",
+  "gameName": "Mortal Kombat 1",
+  "authorName": "hideinlight",
+  "modifiedDate": "2024-03-20T23:00:00Z",
+  "createdDate": "2024-03-20T23:00:00Z",
+  "downloadDate": "2026-03-14T02:36:28Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/74665c40-19dc-4478-91d2-b2f9b24af7fd",
+  "zipHash": "670EFB724FAB66C6E7555A041CEF8478",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f74665c40-19dc-4478-91d2-b2f9b24af7fd&name=MK12",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FMK12.zip?alt=media",
+  "description": "Keybinds:  7,8,9 is to recenter play space.  0 is normal camera. 1 is world scale @ 10 camera.  2...",
+  "profileName": "MK12",
+  "tags": [
+    "3DOF"
+  ]
+}

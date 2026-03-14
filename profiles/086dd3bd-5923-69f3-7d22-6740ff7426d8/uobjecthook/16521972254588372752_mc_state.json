@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_MauserDual_C BP_MauserDual_C_2147082754",
+        "Components",
+        "SkeletalMeshComponent FPMesh"
+    ],
+    "state": {
+        "hand": 0,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": -0.5590544939041138,
+            "x": -0.3633035719394684,
+            "y": 0.6919195055961609,
+            "z": -0.2769763171672821
+        }
+    },
+    "type": "motion_controller"
+}

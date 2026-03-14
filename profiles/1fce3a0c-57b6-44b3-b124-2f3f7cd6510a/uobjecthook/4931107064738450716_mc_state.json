@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "CRWDMachineGun_BP_C CRWDMachineGun_BP_C_2147454027",
+        "Components",
+        "StaticMeshComponent LiquidMag_Test"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.3100000023841858,
+            "y": 10.1899995803833,
+            "z": 13.869999885559082
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.9999874830245972,
+            "x": 0.0,
+            "y": 0.004999978933483362,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

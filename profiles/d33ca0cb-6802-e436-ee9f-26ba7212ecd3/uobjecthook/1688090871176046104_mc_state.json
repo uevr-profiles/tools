@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_RemoteMine_C BP_RemoteMine_C_2147059585",
+        "Components",
+        "SkeletalMeshComponent FPMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.7061518430709839,
+            "x": -0.7045974135398865,
+            "y": -0.049511730670928955,
+            "z": -0.04940273240208626
+        }
+    },
+    "type": "motion_controller"
+}

@@ -1,0 +1,16 @@
+{
+    "hide": true,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent UpperSkelMesh1P"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "bPauseAnims"
+        }
+    ],
+    "type": "properties"
+}

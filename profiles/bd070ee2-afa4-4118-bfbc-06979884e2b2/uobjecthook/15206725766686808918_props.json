@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BPWeap_SM_Dahl_C BPWeap_SM_Dahl_C_2",
+        "Components",
+        "SkeletalMeshComponent Mesh3P_0"
+    ],
+    "properties": [],
+    "type": "properties"
+}

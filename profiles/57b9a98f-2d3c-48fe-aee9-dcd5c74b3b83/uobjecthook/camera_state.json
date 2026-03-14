@@ -1,0 +1,14 @@
+{
+    "offset": {
+        "x": 6.5,
+        "y": 7.099999904632568,
+        "z": 176.6999969482422
+    },
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_DriverPawn_C BP_DriverPawn_C_2147438067"
+    ],
+    "type": "camera"
+}

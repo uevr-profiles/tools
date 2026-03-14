@@ -1,0 +1,7 @@
+Core_r.ScreenPercentage=139.061996
+Renderer_r.DefaultFeature.AntiAliasing=1
+Renderer_r.LightCulling.Quality=0
+Renderer_r.SubsurfaceScattering=1
+Renderer_r.TemporalAA.Upsampling=0
+Renderer_r.Upscale.Quality=0
+Renderer_r.Upscale.Softness=0.000000

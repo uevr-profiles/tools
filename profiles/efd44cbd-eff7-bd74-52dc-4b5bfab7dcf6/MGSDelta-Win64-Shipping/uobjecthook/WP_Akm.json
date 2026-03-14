@@ -1,0 +1,41 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_WP_Akm_C BP_WP_Akm_C_2147469472",
+        "Components",
+        "SceneComponent RootSceneComponent"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -4.7170000076293945,
+            "y": -4.171000003814697,
+            "z": -0.5180000066757202
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.5983449816703796,
+            "x": -0.03894972428679466,
+            "y": 0.785906970500946,
+            "z": -0.15105122327804565
+		},
+		"right_hand_rotation_offset": {
+			"Pitch": -6.866,
+            "Yaw": 16.437,
+            "Roll": -16.624
+		},
+		"left_hand_location_offset" : {
+			"x": 0.491,
+            "y": 23.647,
+            "z": 3.575
+		},
+		"left_hand_rotation_offset" : {
+			"Pitch": -85.382,
+            "Yaw": 15.147,
+            "Roll": 38.867
+		}
+    },
+    "type": "motion_controller"
+}

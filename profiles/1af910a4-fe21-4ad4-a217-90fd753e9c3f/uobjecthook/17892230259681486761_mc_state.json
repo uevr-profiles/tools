@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_EnergyRail_C BP_EnergyRail_C_2147462568",
+        "Components",
+        "SkeletalMeshComponent WeaponMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 10.990079879760742,
+            "y": 1.1355278491973877,
+            "z": -0.22806549072265625
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.6999647617340088,
+            "x": -0.09374077618122101,
+            "y": -0.7005230188369751,
+            "z": -0.10261420905590057
+        }
+    },
+    "type": "motion_controller"
+}

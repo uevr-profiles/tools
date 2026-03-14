@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_AutoRifle_Light_C BP_AutoRifle_Light_C_2147385448",
+        "Components",
+        "SkeletalMeshComponent WeaponMesh1Pb"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.7037659287452698,
+            "x": 0.010557281784713268,
+            "y": 0.7102735042572021,
+            "z": 0.010654899291694164
+        }
+    },
+    "type": "motion_controller"
+}

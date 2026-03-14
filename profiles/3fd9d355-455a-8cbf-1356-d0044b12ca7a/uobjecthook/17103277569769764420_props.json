@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Mesh",
+        "Properties",
+        "AttachChildren",
+        "SkeletalMeshComponent Customization_2147480966"
+    ],
+    "properties": [],
+    "type": "properties"
+}

@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "StaticMeshComponent Pistol"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": -0.6637312769889832,
+            "x": 0.0,
+            "y": 0.7479711174964905,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

@@ -1,0 +1,19 @@
+{
+  "ID": "cd23ba4d-d0ab-47fe-ab48-c40033e9d243",
+  "exeName": "BurgerZombies-Win64-Shipping",
+  "gameName": "Burger Zombies",
+  "authorName": "Sintek",
+  "modifiedDate": "2025-09-08T22:00:00Z",
+  "createdDate": "2025-09-08T22:00:00Z",
+  "downloadDate": "2026-03-14T02:36:50Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/cd23ba4d-d0ab-47fe-ab48-c40033e9d243",
+  "zipHash": "DA684689373C024F7963888880A67F17",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2fcd23ba4d-d0ab-47fe-ab48-c40033e9d243&name=BurgerZombies-Win64-Shipping",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FBurgerZombies-Win64-Shipping.zip?alt=media",
+  "description": "Experimental First Person Profile",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Mesh",
+        "Properties",
+        "AttachParent"
+    ],
+    "properties": [],
+    "type": "properties"
+}

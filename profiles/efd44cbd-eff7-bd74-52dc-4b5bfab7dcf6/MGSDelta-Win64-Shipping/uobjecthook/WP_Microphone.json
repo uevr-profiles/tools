@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_WP_Microphone_C BP_WP_Microphone_C_2146141394",
+        "Properties",
+        "RootComponent"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -3.680000066757202,
+            "y": -4.860000133514404,
+            "z": -0.9200000166893005
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.5983449816703796,
+            "x": -0.03894972428679466,
+            "y": 0.785906970500946,
+            "z": -0.15105122327804565
+        }
+    },
+    "type": "motion_controller"
+}

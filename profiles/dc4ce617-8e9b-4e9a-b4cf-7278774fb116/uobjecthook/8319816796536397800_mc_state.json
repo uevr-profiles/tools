@@ -1,0 +1,25 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent FPS Skeletal Weapon",
+        "Properties",
+        "AttachParent"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 60.0,
+            "y": 148.4667510986328,
+            "z": 4.209599494934082
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.6881290674209595,
+            "x": 0.06497320532798767,
+            "y": 0.7226637601852417,
+            "z": -0.003739682026207447
+        }
+    },
+    "type": "motion_controller"
+}

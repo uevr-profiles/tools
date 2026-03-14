@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "FPMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 26.0,
+            "y": 16.836999893188477,
+            "z": 66.5809326171875
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.20765431225299835,
+            "x": 0.63493812084198,
+            "y": 0.72133469581604,
+            "z": -0.18278288841247559
+        }
+    },
+    "type": "motion_controller"
+}

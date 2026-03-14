@@ -1,0 +1,18 @@
+{
+  "ID": "5b57cb4c-0183-4a2f-93bd-45d2b4e1d8b9",
+  "exeName": "SandFall-Win64-Shipping",
+  "gameName": "Clair Obscur: Expedition 33",
+  "authorName": "markmon",
+  "modifiedDate": "2025-05-24T22:00:00Z",
+  "createdDate": "2025-05-24T22:00:00Z",
+  "downloadDate": "2026-03-14T02:36:24Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/5b57cb4c-0183-4a2f-93bd-45d2b4e1d8b9",
+  "zipHash": "DFC8E5586CB2B07C98D09DE681EF3241",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f5b57cb4c-0183-4a2f-93bd-45d2b4e1d8b9&name=SandFall-Win64-Shipping_3",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FSandFall-Win64-Shipping_3.zip?alt=media",
+  "description": "Features: Configuration in UEVR menu on the scriptsUI tab. Needs UEVR 1061 or newer. Configurable...",
+  "tags": [
+    "3DOF"
+  ]
+}

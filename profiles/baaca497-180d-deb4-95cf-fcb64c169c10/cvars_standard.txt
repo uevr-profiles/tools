@@ -1,0 +1,2 @@
+Renderer_r.DefaultFeature.AntiAliasing=2
+Renderer_r.TemporalAA.Algorithm=0

@@ -1,0 +1,17 @@
+r.LandscapeLODBias 999
+r.SkeletalMeshLODBias -999
+r.PostProcessAAQuality 0
+r.DisableDistortion 0
+r.DontLimitOnBattery 1
+r.LensFlareQuality 0
+r.GraphicsMode 1
+r.ParticleLightQuality 0
+r.ShadowQuality 0
+r.SkyLightingQuality 0
+r.HZBOcclusion 0
+r.Fog 0
+r.DefaultFeature.Bloom 0
+r.BloomQuality 0
+r.LensflareQuality 0
+r.DefaultFeature.LensFlare 0
+ActorSequence.DefaultDisplayRate 60

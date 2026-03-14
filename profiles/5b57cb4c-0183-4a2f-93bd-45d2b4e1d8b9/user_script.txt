@@ -1,0 +1,19 @@
+r.postprocessing.disablematerials 1
+r.SSFS 0
+r.DistanceFieldShadowing 0
+r.Shadow.CSM.MaxCascades 4
+r.FRXGI.GridPixelSize 128
+r.TemporalAA.Quality 0
+r.FinishCurrentFrame 0
+r.MotionBlur.Max 0
+r.MotionBlurQuality 0
+r.DefaultFeature.MotionBlur 0
+r.PostProcessAAQuality 1
+r.SceneColorFringe.Max 0
+r.SceneColorFringeQuality 0
+r.Tonemapper.GrainQuantization 0 
+foliage.LODDistanceScale 2.5
+r.ViewDistanceScale 2
+r.SkeletalMeshLODBias -15
+
+

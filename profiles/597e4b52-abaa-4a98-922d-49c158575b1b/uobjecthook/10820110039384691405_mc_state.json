@@ -1,0 +1,28 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "InventoryComponent InventoryComp",
+        "Properties",
+        "InventoryItems",
+        "Grenade_Stinger_V2_C Grenade_Stinger_V2_C_2147237753",
+        "Components",
+        "SkeletalMeshComponent ItemMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.7038453221321106,
+            "x": 0.0,
+            "y": 0.7103532552719116,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

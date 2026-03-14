@@ -1,0 +1,6 @@
+Renderer_r.DefaultFeature.AmbientOcclusion=0
+Renderer_r.DefaultFeature.AntiAliasing=0
+Renderer_r.LightCulling.Quality=0
+Renderer_r.SubsurfaceScattering=0
+Renderer_r.TemporalAA.Algorithm=1
+Renderer_r.TranslucentLightingVolume=0

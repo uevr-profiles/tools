@@ -1,0 +1,22 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Mesh",
+        "Properties",
+        "AttachChildren",
+        "SkeletalMeshComponent Customization_2147480969",
+        "Properties",
+        "OverrideMaterials",
+        "MaterialInstanceConstant MI_Hero13_Gloves01_Common"
+    ],
+    "properties": [
+        {
+            "data": 1,
+            "name": "bHasStaticPermutationResource"
+        }
+    ],
+    "type": "properties"
+}

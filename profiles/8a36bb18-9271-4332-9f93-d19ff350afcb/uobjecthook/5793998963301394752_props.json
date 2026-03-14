@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_PhotonRepeater_C BP_PhotonRepeater_C_2147266352",
+        "Components",
+        "SkeletalMeshComponent Mesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

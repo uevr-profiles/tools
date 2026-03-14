@@ -1,0 +1,13 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Player Controller",
+        "Properties",
+        "Pawn",
+        "Components",
+        "SkeletalMeshComponent CC_HairstyleHidden"
+    ],
+    "properties": [],
+    "type": "properties"
+}

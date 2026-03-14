@@ -1,0 +1,19 @@
+[
+    {
+        "circle_segs": 32,
+        "color": {
+            "A": 0.7,
+            "B": 0.8,
+            "G": 1.0,
+            "R": 0.8
+        },
+        "gap": 5,
+        "length": 18,
+        "prev_lt": false,
+        "shape": "Circle",
+        "thickness": 3,
+        "trigger_idx": 1,
+        "visible": true,
+        "width": 50
+    }
+]

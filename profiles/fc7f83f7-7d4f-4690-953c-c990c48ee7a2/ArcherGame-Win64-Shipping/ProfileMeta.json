@@ -1,0 +1,16 @@
+{
+  "ID": "fc7f83f7-7d4f-4690-953c-c990c48ee7a2",
+  "exeName": "ArcherGame-Win64-Shipping",
+  "gameName": "Arcus",
+  "authorName": "markmon",
+  "modifiedDate": "2024-01-16T23:00:00Z",
+  "createdDate": "2024-01-16T23:00:00Z",
+  "downloadDate": "2026-03-14T02:37:02Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/fc7f83f7-7d4f-4690-953c-c990c48ee7a2",
+  "zipHash": "087377D6EE08DFC69A701970017E04C8",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2ffc7f83f7-7d4f-4690-953c-c990c48ee7a2&name=ArcherGame-Win64-Shipping",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FArcherGame-Win64-Shipping.zip?alt=media",
+  "description": "I wrote a plugin included in the profile so that you can aim and fire with the right controller. ...",
+  "profileName": "ArcherGame-Win64-Shipping"
+}

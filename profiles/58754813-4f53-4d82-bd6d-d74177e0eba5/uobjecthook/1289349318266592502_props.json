@@ -1,0 +1,22 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Player Controller",
+        "Properties",
+        "Pawn",
+        "Properties",
+        "Children",
+        "BPWeap_SM_Hyperion_C BPWeap_SM_Hyperion_C_2",
+        "Properties",
+        "BlueprintCreatedComponents",
+        "BPWeapon_RedDot_Short_C UM0_SC1"
+    ],
+    "properties": [
+        {
+            "data": 1,
+            "name": "bShowCrosshairWhenZoomed"
+        }
+    ],
+    "type": "properties"
+}

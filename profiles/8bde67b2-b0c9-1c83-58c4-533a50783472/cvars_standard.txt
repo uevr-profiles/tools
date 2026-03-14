@@ -1,0 +1,5 @@
+Renderer_r.DefaultFeature.AntiAliasing=2
+Renderer_r.SSGI.Enable=0
+Renderer_r.TemporalAA.Upsampling=0
+Renderer_r.Upscale.Quality=2
+Renderer_r.Upscale.Softness=0.000000

@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "SK_Arms"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 35.955718994140625,
+            "y": 150.4812774658203,
+            "z": 6.588598251342773
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.7184740304946899,
+            "x": 0.010450208559632301,
+            "y": -0.6952190399169922,
+            "z": 0.01888534426689148
+        }
+    },
+    "type": "motion_controller"
+}

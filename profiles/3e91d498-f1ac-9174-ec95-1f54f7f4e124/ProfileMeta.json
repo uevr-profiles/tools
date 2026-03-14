@@ -1,0 +1,23 @@
+{
+  "ID": "3e91d498-f1ac-9174-ec95-1f54f7f4e124",
+  "exeName": "RoboCopUnfinishedBusiness-Win64-Shipping",
+  "gameName": "RoboCop: Rogue City Unfinished Business",
+  "gameVersion": "Latest",
+  "authorName": "jb_ender",
+  "modifiedDate": "2025-04-20T23:00:00Z",
+  "createdDate": "2025-07-31T18:19:41Z",
+  "downloadDate": "2026-03-14T01:47:58Z",
+  "sourceName": "discord.gg/flat2vr",
+  "sourceUrl": "https://discord.com/channels/747967102895390741/1395599692187828337/1400543460205006889",
+  "zipHash": "BB3C8EA643077D7DA28441B8C0171349",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f3e91d498-f1ac-9174-ec95-1f54f7f4e124&name=3e91d498-f1ac-9174-ec95-1f54f7f4e124",
+  "sourceDownloadUrl": "https://cdn.discordapp.com/attachments/1395599692187828337/1400543460271984862/RoboCopUnfinishedBusiness-Win64-Shipping.zip?ex=69b4fdfd&is=69b3ac7d&hm=7def0b6a20288e66b626068abf42e908c693db5d2c299cff2907ae7967d6a118&",
+  "nullifyPlugins": false,
+  "lateInjection": false,
+  "description": "FIRST PERSON PROFILE V1.02   LATEST FEATURES:  v1.02 Added zooming to scopes (move right stick fo...",
+  "tags": [
+    "3DOF",
+    "6DoF",
+    "Motion Controls"
+  ]
+}

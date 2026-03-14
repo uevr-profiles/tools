@@ -1,0 +1,16 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Mickey_PaintBrush_C BP_Mickey_PaintBrush_C_2147481306",
+        "Components",
+        "SkeletalMeshComponent SK_Mickey_Brush",
+        "Properties",
+        "AttachParent"
+    ],
+    "properties": [],
+    "type": "properties"
+}

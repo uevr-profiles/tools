@@ -1,0 +1,13 @@
+{
+    "hide": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BPThrowableTool_LightBulb_C BPThrowableTool_LightBulb_C_0",
+        "Components",
+        "SkeletalMeshComponent Mesh3P"
+    ],
+    "properties": [],
+    "type": "properties"
+}

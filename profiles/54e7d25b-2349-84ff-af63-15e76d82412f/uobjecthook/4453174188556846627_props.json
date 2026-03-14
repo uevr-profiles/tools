@@ -1,0 +1,18 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "WeaponInHands",
+        "Properties",
+        "Mag",
+        "Properties",
+        "StaticMesh",
+        "Properties",
+        "AttachChildren",
+        "InstancedStaticMeshComponent InstancedStaticMesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

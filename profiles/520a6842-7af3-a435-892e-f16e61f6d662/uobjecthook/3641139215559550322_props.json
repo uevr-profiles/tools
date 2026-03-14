@@ -1,0 +1,13 @@
+{
+    "hide": true,
+    "hide_legacy": false,
+    "path": [
+        "Player Controller",
+        "Properties",
+        "Pawn",
+        "Components",
+        "SkeletalMeshComponent CC_Armor"
+    ],
+    "properties": [],
+    "type": "properties"
+}

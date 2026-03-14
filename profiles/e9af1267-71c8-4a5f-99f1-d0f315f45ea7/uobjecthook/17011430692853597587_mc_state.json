@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "StaticMeshComponent SM_BaseballBat_01"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -1.2151126861572266,
+            "y": -0.42929840087890625,
+            "z": -20.600067138671875
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.0019195638597011566,
+            "x": -0.052711278200149536,
+            "y": -0.7512550354003906,
+            "z": -0.6579009890556335
+        }
+    },
+    "type": "motion_controller"
+}

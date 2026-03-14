@@ -1,0 +1,19 @@
+{
+  "ID": "3565c5b5-5552-442b-8845-9454e228e0a3",
+  "exeName": "recolored-Win64-Shipping",
+  "gameName": "Disney Epic Mickey: Rebrushed",
+  "authorName": "Angelus",
+  "modifiedDate": "2024-09-24T22:00:00Z",
+  "createdDate": "2024-09-24T22:00:00Z",
+  "downloadDate": "2026-03-14T02:36:11Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/3565c5b5-5552-442b-8845-9454e228e0a3",
+  "zipHash": "9B31EE05188E3BAB95D7991B32366264",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f3565c5b5-5552-442b-8845-9454e228e0a3&name=recolored-Win64-Shipping",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2Frecolored-Win64-Shipping.zip?alt=media",
+  "description": "6DOF.  Note: Press Left-Ctrl key to Enable/Disable the 1st Person View for 2.5D Sidescroller mini...",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

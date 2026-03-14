@@ -1,0 +1,16 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "FirstPersonCamera"
+    ],
+    "properties": [
+        {
+            "data": 1,
+            "name": "bIsActive"
+        }
+    ],
+    "type": "properties"
+}

@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "WeaponComponent",
+        "Properties",
+        "AttachChildren",
+        "ChildActorComponent BP_ChromaGunDynamic"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 19.046083450317383,
+            "y": -1.8262567520141602,
+            "z": -0.2854738235473633
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.6998627185821533,
+            "x": -0.0060575008392333984,
+            "y": 0.7129314541816711,
+            "z": -0.04341082274913788
+        }
+    },
+    "type": "motion_controller"
+}

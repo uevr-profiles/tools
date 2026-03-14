@@ -1,0 +1,13 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Equipped_Eyewear",
+        "Components",
+        "StaticMeshComponent StaticMesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

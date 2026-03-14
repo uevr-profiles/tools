@@ -1,0 +1,15 @@
+r.SimpleForwardShading 1
+r.AOAsyncBuildQueue 1
+r.MeshDrawCommands.AllowOnDemandShaderCreation 1
+r.MeshDrawCommands.DynamicInstancing 1
+r.ForceAllCoresForShaderCompiling 1
+r.Shaders.FastMath 1
+r.UseShaderPredraw 1
+r.RDG.AsyncCompute 2
+r.UseAsyncShaderPrecompilation 1
+r.AmbientOcclusion.AsyncComputeBudget 4
+r.AsyncCreateLightPrimitiveInteractions 1
+r.UseShaderCaching 1
+r.MultithreadedShadowmapEncode 1
+r.MultithreadedLightmapEncode 1
+r.oneframethreadlag 0

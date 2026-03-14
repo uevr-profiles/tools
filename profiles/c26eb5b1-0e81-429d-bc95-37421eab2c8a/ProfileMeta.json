@@ -1,0 +1,15 @@
+{
+  "ID": "c26eb5b1-0e81-429d-bc95-37421eab2c8a",
+  "exeName": "ComancheClient-Win64-Shipping",
+  "gameName": "Comanche",
+  "authorName": "Keyser-Soze",
+  "modifiedDate": "2025-08-23T22:00:00Z",
+  "createdDate": "2025-08-23T22:00:00Z",
+  "downloadDate": "2026-03-14T02:36:47Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/c26eb5b1-0e81-429d-bc95-37421eab2c8a",
+  "zipHash": "B49C96DD12FCB0E5FD96DA21F903A0D3",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2fc26eb5b1-0e81-429d-bc95-37421eab2c8a&name=ComancheClient-Win64-Shipping",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FComancheClient-Win64-Shipping.zip?alt=media",
+  "description": "COMANCHE PROFILE (HUD/UI FIX) Resized hud, AHUD fix enabled UI adjusted to be as accurate as poss..."
+}

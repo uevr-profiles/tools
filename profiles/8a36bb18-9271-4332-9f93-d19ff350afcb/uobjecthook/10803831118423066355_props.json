@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_MicroStinger_C BP_MicroStinger_C_2147276428",
+        "Components",
+        "SkeletalMeshComponent Mesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

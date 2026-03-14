@@ -1,0 +1,5 @@
+first_person=0
+enable_lumen=1
+toggle_fp_dpad_left=1
+toggle_lumen_dpad_right=1
+enable_fog=0

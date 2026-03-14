@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "LunaSpringArmComponent LunaSpringArm",
+        "Properties",
+        "AttachChildren",
+        "CameraComponent FirstPersonCamera"
+    ],
+    "properties": [],
+    "type": "properties"
+}

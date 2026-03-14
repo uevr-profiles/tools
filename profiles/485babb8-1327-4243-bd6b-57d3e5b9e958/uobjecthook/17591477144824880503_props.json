@@ -1,0 +1,24 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Player Controller",
+        "Properties",
+        "MyHUD",
+        "Properties",
+        "VignetteWidget",
+        "Properties",
+        "ImgVignette"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "Visibility"
+        },
+        {
+            "data": 0,
+            "name": "RenderOpacity"
+        }
+    ],
+    "type": "properties"
+}

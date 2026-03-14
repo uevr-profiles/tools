@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_PAR_C BP_PAR_C_2147194588",
+        "Components",
+        "SkeletalMeshComponent FPMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.7104784250259399,
+            "x": -0.024876905605196953,
+            "y": -0.7028484344482422,
+            "z": -0.024609744548797607
+        }
+    },
+    "type": "motion_controller"
+}

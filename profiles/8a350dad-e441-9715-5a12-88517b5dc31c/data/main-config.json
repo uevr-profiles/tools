@@ -1,0 +1,11 @@
+{
+    "GripIsReload": false,
+    "GripIsReload_C": false,
+    "MotionMovementStrength_C": 14.92199993133545,
+    "MotionMovement_C": false,
+    "NaloHWt_C": 4,
+    "NaloLhWt_C": 1,
+    "NaloMin_C": 0.01,
+    "NaloRhWt_C": 1,
+    "NaloSprintTreshhold_C": 1.2
+}

@@ -1,0 +1,18 @@
+{
+  "ID": "5895b3d2-8294-4c98-b2f7-4af53ed422e3",
+  "exeName": "Skulltide",
+  "gameName": "Skulltide",
+  "authorName": "Sintek",
+  "modifiedDate": "2024-10-29T23:00:00Z",
+  "createdDate": "2024-10-29T23:00:00Z",
+  "downloadDate": "2026-03-14T02:36:23Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/5895b3d2-8294-4c98-b2f7-4af53ed422e3",
+  "zipHash": "BADEA63CC9AF585A114BF7D590489E90",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f5895b3d2-8294-4c98-b2f7-4af53ed422e3&name=Skulltide",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FSkulltide.zip?alt=media",
+  "description": "First person view profile with the skull mesh hidden.",
+  "tags": [
+    "3DOF"
+  ]
+}

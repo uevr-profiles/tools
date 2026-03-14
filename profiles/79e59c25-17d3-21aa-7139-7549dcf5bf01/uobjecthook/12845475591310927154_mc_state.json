@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SceneComponent FirstPersonCameraParent"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 27.429264068603516,
+            "y": -24.00978660583496,
+            "z": -43.59111404418945
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.9994840621948242,
+            "x": -0.021349143236875534,
+            "y": -0.017243891954421997,
+            "z": 0.016692178323864937
+        }
+    },
+    "type": "motion_controller"
+}

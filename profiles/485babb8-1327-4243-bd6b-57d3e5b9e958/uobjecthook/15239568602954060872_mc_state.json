@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Machete_C BP_Machete_C_2147426280",
+        "Properties",
+        "WeaponMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": -3.0,
+            "z": -3.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.004072067327797413,
+            "x": 0.0010362606262788177,
+            "y": 0.9689038991928101,
+            "z": -0.24740168452262878
+        }
+    },
+    "type": "motion_controller"
+}

@@ -1,0 +1,14 @@
+{
+    "hide": true,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_SkeletonPart_Skull_C BP_SkeletonPart_Skull_C_2147472432",
+        "Components",
+        "SkeletalMeshComponent SkeletalMesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

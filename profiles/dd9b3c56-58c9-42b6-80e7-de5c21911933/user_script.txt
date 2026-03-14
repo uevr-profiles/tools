@@ -1,0 +1,2 @@
+r.LensFlareQuality 0
+foliage.LODDistanceScale 3

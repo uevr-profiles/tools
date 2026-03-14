@@ -1,0 +1,16 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "CurrentWeapon"
+    ],
+    "properties": [
+        {
+            "data": 1065353216,
+            "name": "CrosshairOverlayAlphaDelay"
+        }
+    ],
+    "type": "properties"
+}

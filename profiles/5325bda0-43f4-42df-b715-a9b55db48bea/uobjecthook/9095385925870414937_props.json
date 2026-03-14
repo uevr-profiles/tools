@@ -1,0 +1,10 @@
+{
+    "hide": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "CameraComponent FirstPersonCamera"
+    ],
+    "properties": [],
+    "type": "properties"
+}

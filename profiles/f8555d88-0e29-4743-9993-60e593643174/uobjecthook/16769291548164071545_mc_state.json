@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "Eqp_Lighter_C Eqp_Lighter_C_2147470844",
+        "Components",
+        "SkeletalMeshComponent Wep_Skeli"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": -2.130000114440918,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.9460423588752747,
+            "x": 0.32404300570487976,
+            "y": 0.0,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

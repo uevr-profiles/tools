@@ -1,0 +1,14 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Mesh",
+        "Properties",
+        "AttachChildren",
+        "BPC_ScabComponent_C SK_SCAB"
+    ],
+    "properties": [],
+    "type": "properties"
+}

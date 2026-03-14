@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "ChildActorComponent HorrorEngine",
+        "Properties",
+        "ChildActor",
+        "Components",
+        "StaticMeshComponent FlashlightMesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

@@ -1,0 +1,29 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_RifleWeaponActor_C BP_RifleWeaponActor_C_2147473421",
+        "Properties",
+        "RootComponent",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 4608443426566832128,
+            "name": "Z"
+        },
+        {
+            "data": 4606281698659794944,
+            "name": "Y"
+        },
+        {
+            "data": 4607632778870128640,
+            "name": "X"
+        }
+    ],
+    "type": "properties"
+}

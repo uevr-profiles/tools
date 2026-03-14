@@ -1,0 +1,15 @@
+{
+    "hide": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "CameraComponent Camera"
+    ],
+    "properties": [
+        {
+            "data": 1,
+            "name": "bUsePawnControlRotation"
+        }
+    ],
+    "type": "properties"
+}

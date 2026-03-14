@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Weapon_Mace_Uncommon_01_C BP_Weapon_Mace_Uncommon_01_C_2147428662",
+        "Components",
+        "BWStaticMeshComponent Mesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.019999999552965164,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.776597797870636,
+            "x": 0.1279262751340866,
+            "y": -0.5934295654296875,
+            "z": 0.16844016313552856
+        }
+    },
+    "type": "motion_controller"
+}

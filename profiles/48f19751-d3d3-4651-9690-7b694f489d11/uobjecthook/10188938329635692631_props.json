@@ -1,0 +1,16 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "SprintShakeRef"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "ShakeScale"
+        }
+    ],
+    "type": "properties"
+}

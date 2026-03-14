@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "StaticMeshComponent FlashHand"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -3.5,
+            "y": 4.0,
+            "z": -0.4099999964237213
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.611671507358551,
+            "x": 0.24786290526390076,
+            "y": 0.6962853670120239,
+            "z": 0.282150000333786
+        }
+    },
+    "type": "motion_controller"
+}

@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "DB_Shotgun_C DB_Shotgun_C_2147481987",
+        "Components",
+        "SkeletalMeshComponent SkeletalMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 1.5048885345458984,
+            "y": -2.996161937713623,
+            "z": 0.602002739906311
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.688347339630127,
+            "x": 0.05898307263851166,
+            "y": -0.7217462062835693,
+            "z": 0.04221075028181076
+        }
+    },
+    "type": "motion_controller"
+}

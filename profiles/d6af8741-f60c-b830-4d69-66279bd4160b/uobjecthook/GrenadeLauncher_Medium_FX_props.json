@@ -1,0 +1,22 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_GrenadeLauncher_Medium_C BP_GrenadeLauncher_Medium_C_2146875376",
+        "Properties",
+        "Mesh1P",
+        "Properties",
+        "AttachChildren",
+        "DimensionParticleSystemComponent HomingModeParticle"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "bRenderWithCustomFOV"
+        }
+    ],
+    "type": "properties"
+}

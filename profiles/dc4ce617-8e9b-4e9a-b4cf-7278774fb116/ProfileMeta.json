@@ -1,0 +1,20 @@
+{
+  "ID": "dc4ce617-8e9b-4e9a-b4cf-7278774fb116",
+  "exeName": "PneumataPCMaster-Win64-Shipping",
+  "gameName": "Pneumata",
+  "authorName": "Angelus",
+  "modifiedDate": "2026-03-14T02:32:38Z",
+  "createdDate": "2026-03-14T02:32:38Z",
+  "downloadDate": "2026-03-14T02:36:54Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/dc4ce617-8e9b-4e9a-b4cf-7278774fb116",
+  "zipHash": "4E5BA3A75B23ABAA1A0B084C5790F6AD",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2fdc4ce617-8e9b-4e9a-b4cf-7278774fb116&name=PneumataPCMaster-Win64-Shipping",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FPneumataPCMaster-Win64-Shipping.zip?alt=media",
+  "description": "3DOF  You can chose a GameUserSettings (GlobalIllumination 0 is Low, GlobalIllumination 2 is High...",
+  "tags": [
+    "3DoF",
+    "6DOF",
+    "Motion Controls"
+  ]
+}

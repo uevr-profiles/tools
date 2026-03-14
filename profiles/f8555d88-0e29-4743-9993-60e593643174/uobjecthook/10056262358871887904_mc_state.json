@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "Wep_AntiMat_Rifle_C Wep_AntiMat_Rifle_C_2147465898",
+        "Components",
+        "SkeletalMeshComponent Wep_Skeli"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.6801339983940125,
+            "x": -0.11325196921825409,
+            "y": 0.7144501209259033,
+            "z": -0.11896566301584244
+        }
+    },
+    "type": "motion_controller"
+}

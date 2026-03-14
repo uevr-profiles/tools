@@ -1,0 +1,18 @@
+{
+  "ID": "ffdc3920-2cab-20b4-af18-55d5603947b0",
+  "exeName": "Talos1-Win64-Shipping",
+  "gameName": "The Talos Principle: Reawakened",
+  "authorName": "tensai30",
+  "createdDate": "2026-02-24T16:27:06Z",
+  "downloadDate": "2026-03-14T01:50:27Z",
+  "sourceName": "discord.gg/flat2vr",
+  "sourceUrl": "https://discord.com/channels/747967102895390741/1343715834987675689/1475891802165870724",
+  "zipHash": "98F93C28CD9AB70D177FF296DF7E07D6",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2fffdc3920-2cab-20b4-af18-55d5603947b0&name=ffdc3920-2cab-20b4-af18-55d5603947b0",
+  "sourceDownloadUrl": "https://cdn.discordapp.com/attachments/1343715834987675689/1475891801872142417/Talos1-Win64-Shipping.zip?ex=69b58c5a&is=69b43ada&hm=610512cf617fd30accfdeb19cd2f4088338d4d0c648f31ff6a996b0643a8b4da&",
+  "description": "6DOF Motion Control Profile (Work in Progress)  Features • Both arms work • Items attach to the r...",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "InGameUI",
+        "Properties",
+        "CombatCrosshair",
+        "Properties",
+        "Brush",
+        "Properties",
+        "ImageSize"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "X"
+        },
+        {
+            "data": 0,
+            "name": "Y"
+        }
+    ],
+    "type": "properties"
+}

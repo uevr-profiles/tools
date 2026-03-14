@@ -1,0 +1,19 @@
+{
+  "ID": "cd4ca374-41fc-43ea-89b3-e303ba19f3ee",
+  "exeName": "EBOLA-Win64-Shipping",
+  "gameName": "EBOLA VILLAGE",
+  "authorName": "Sintek",
+  "modifiedDate": "2025-08-06T22:00:00Z",
+  "createdDate": "2025-08-06T22:00:00Z",
+  "downloadDate": "2026-03-14T02:36:50Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/cd4ca374-41fc-43ea-89b3-e303ba19f3ee",
+  "zipHash": "23C9B42EACCA74BAC78069E2F33846D6",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2fcd4ca374-41fc-43ea-89b3-e303ba19f3ee&name=EBOLA-Win64-Shipping",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FEBOLA-Win64-Shipping.zip?alt=media",
+  "description": "First person profile with the gun attached to the right hand (body is invisible).",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

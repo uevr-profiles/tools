@@ -1,0 +1,20 @@
+{
+    "hide": true,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "OperatorHUD",
+        "Properties",
+        "OperatorWidget",
+        "Properties",
+        "CrosshairStatusIcon"
+    ],
+    "properties": [
+        {
+            "data": 2,
+            "name": "Visibility"
+        }
+    ],
+    "type": "properties"
+}

@@ -1,0 +1,16 @@
+{
+    "hide": true,
+    "hide_legacy": false,
+    "path": [
+        "Player Controller",
+        "Properties",
+        "AcknowledgedPawn",
+        "Properties",
+        "Mesh",
+        "Properties",
+        "AttachChildren",
+        "IgnitionSkeletalMeshComponent Rider"
+    ],
+    "properties": [],
+    "type": "properties"
+}

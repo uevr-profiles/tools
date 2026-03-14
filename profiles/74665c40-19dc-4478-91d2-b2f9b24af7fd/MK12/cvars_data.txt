@@ -1,0 +1,4 @@
+Engine_r.DepthOfFieldQuality=0
+Renderer_r.Color.Max=1.000000
+Renderer_r.Tonemapper.Sharpen=0.600000
+Renderer_r.TonemapperGamma=2.600000

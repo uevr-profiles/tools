@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "StaticMeshComponent RadioCB"
+    ],
+    "state": {
+        "hand": 0,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.7677736878395081,
+            "x": 0.22477710247039795,
+            "y": 0.38803762197494507,
+            "z": 0.45763036608695984
+        }
+    },
+    "type": "motion_controller"
+}

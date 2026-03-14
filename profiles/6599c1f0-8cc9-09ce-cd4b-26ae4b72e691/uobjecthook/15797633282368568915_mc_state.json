@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Item_HealBottle_C BP_Item_HealBottle_C_2147458979",
+        "Components",
+        "SkeletalMeshComponent SKM_HealBottle"
+    ],
+    "state": {
+        "hand": 0,
+        "location_offset": {
+            "x": 22.018999099731445,
+            "y": 10.300000190734863,
+            "z": 17.674999237060547
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.1948009580373764,
+            "x": 0.659313440322876,
+            "y": 0.37106990814208984,
+            "z": -0.6242319345474243
+        }
+    },
+    "type": "motion_controller"
+}

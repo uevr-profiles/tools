@@ -1,0 +1,31 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_WP_ChaffGrenade_C BP_WP_ChaffGrenade_C_2147168006",
+        "Components",
+        "SceneComponent RootSceneComponent"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.38499999046325684,
+            "y": -3.9089999198913574,
+            "z": 0.5400000214576721
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.3018953502178192,
+            "x": -0.14644882082939148,
+            "y": 0.9116641879081726,
+            "z": -0.23723472654819489
+        },
+		"right_hand_rotation_offset": {
+			"Pitch": 7.111,
+            "Yaw": 51.337,
+            "Roll": -31.670
+		}
+    },
+    "type": "motion_controller"
+}

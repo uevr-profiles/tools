@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "WidgetComponent Wristwatch"
+    ],
+    "state": {
+        "hand": 0,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.06853815168142319,
+            "x": 0.01750067062675953,
+            "y": 0.966485321521759,
+            "z": -0.24678422510623932
+        }
+    },
+    "type": "motion_controller"
+}

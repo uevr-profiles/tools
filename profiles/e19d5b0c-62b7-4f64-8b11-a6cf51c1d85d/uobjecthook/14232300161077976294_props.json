@@ -1,0 +1,15 @@
+{
+    "hide": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_MeatCutterKnife_C BP_MeatCutterKnife_C_2147387589",
+        "Properties",
+        "BackWeaponModel",
+        "Components",
+        "SkeletalMeshComponent MainMesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

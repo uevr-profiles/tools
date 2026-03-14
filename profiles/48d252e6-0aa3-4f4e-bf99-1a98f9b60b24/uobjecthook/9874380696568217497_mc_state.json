@@ -1,0 +1,25 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "CurrentGun",
+        "Components",
+        "SkeletalMeshComponent GunMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 1.2279236316680908,
+            "y": 8.910232543945313,
+            "z": 0.8219249248504639
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.7248359322547913,
+            "x": -2.700224266405371e-09,
+            "y": -0.6889215111732483,
+            "z": -2.566432621975423e-09
+        }
+    },
+    "type": "motion_controller"
+}

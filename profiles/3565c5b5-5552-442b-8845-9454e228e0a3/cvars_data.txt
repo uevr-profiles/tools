@@ -1,0 +1,5 @@
+Engine_r.AllowOcclusionQueries=1
+Engine_r.AmbientOcclusionLevels=4
+Engine_r.DepthOfFieldQuality=0
+Engine_r.VolumetricCloud=1
+Renderer_r.Tonemapper.Sharpen=1.612000

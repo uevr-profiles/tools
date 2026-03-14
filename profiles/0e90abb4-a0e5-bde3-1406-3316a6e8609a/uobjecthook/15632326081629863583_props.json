@@ -1,0 +1,26 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent PlayerHands",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 4598895795335331840,
+            "name": "Y"
+        },
+        {
+            "data": 4601597955219128320,
+            "name": "X"
+        },
+        {
+            "data": 4600877379429072896,
+            "name": "Z"
+        }
+    ],
+    "type": "properties"
+}

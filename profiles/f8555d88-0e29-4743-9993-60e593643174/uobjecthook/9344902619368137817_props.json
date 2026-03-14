@@ -1,0 +1,17 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "Wep_LightAR_03_C Wep_LightAR_03_C_2147475315"
+    ],
+    "properties": [
+        {
+            "data": 3197334716,
+            "name": "Anim_Recoil_RecoveryTime"
+        }
+    ],
+    "type": "properties"
+}

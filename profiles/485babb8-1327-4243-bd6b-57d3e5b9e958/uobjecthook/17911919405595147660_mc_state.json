@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "P_DroneScanBeam01"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.7073882818222046,
+            "x": 0.7068251371383667,
+            "y": 4.276726610114197e-14,
+            "z": -4.2733832016647946e-14
+        }
+    },
+    "type": "motion_controller"
+}

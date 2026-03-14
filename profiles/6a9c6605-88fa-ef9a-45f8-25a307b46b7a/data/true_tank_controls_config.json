@@ -1,0 +1,12 @@
+{
+    "backward_speed": 3,
+    "collision_detection": true,
+    "collision_mode": 1,
+    "deadzone": 12000,
+    "revert_3d_button": 10,
+    "run_button": 1,
+    "run_speed_multiplier": 2.0,
+    "show_mesh_in_3d": true,
+    "turn_speed": 0.1,
+    "walk_speed": 600
+}

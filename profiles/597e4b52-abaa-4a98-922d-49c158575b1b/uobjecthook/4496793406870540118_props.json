@@ -1,0 +1,30 @@
+{
+    "hide": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "InventoryComponent InventoryComp",
+        "Properties",
+        "InventoryItems",
+        "Device_Tablet_C Device_Tablet_C_2147331931",
+        "Components",
+        "SkeletalMeshComponent ItemMesh",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 1073741824,
+            "name": "X"
+        },
+        {
+            "data": 1073741824,
+            "name": "Y"
+        },
+        {
+            "data": 1073741824,
+            "name": "Z"
+        }
+    ],
+    "type": "properties"
+}

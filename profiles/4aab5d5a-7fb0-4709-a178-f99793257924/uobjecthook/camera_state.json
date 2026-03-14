@@ -1,0 +1,13 @@
+{
+    "offset": {
+        "x": 0.0,
+        "y": -5.599999904632568,
+        "z": -31.485000610351563
+    },
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "ArrowComponent CharacterMovementDirectionArrow"
+    ],
+    "type": "camera"
+}

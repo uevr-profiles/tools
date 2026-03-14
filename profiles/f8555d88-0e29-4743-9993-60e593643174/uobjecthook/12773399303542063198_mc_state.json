@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "Eqp_Bolt_C Eqp_Bolt_C_2147476056",
+        "Components",
+        "SkeletalMeshComponent Wep_Skeli"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.9134962558746338,
+            "x": 0.40684714913368225,
+            "y": 3.8252718326248214e-08,
+            "z": 3.82527041153935e-08
+        }
+    },
+    "type": "motion_controller"
+}

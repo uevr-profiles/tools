@@ -1,0 +1,12 @@
+{
+    "hide": true,
+    "path": [
+        "Player Controller",
+        "Properties",
+        "Original Player",
+        "Components",
+        "PalSkeletalMeshComponent HairMesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

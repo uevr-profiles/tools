@@ -1,0 +1,13 @@
+{
+    "hide": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_EnergyRail_C BP_EnergyRail_C_0047461616",
+        "Components",
+        "SkeletalMeshComponent WeaponMesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

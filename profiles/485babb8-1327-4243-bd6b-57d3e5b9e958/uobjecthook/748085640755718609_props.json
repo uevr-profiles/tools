@@ -1,0 +1,19 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_EnergyRail_C BP_EnergyRail_C_2147461631",
+        "Components",
+        "SkeletalMeshComponent WeaponMesh"
+    ],
+    "properties": [
+        {
+            "data": 1,
+            "name": "bAbsoluteScale"
+        }
+    ],
+    "type": "properties"
+}

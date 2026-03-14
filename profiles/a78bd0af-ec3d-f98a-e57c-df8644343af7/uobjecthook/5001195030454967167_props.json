@@ -1,0 +1,24 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Mesh",
+        "Properties",
+        "AttachChildren",
+        "SkeletalMeshComponent Customization_2147480969",
+        "Properties",
+        "OverrideMaterials",
+        "MaterialInstanceDynamic MaterialInstanceDynamic_2147474439",
+        "Properties",
+        "Parent"
+    ],
+    "properties": [
+        {
+            "data": 1,
+            "name": "bHasStaticPermutationResource"
+        }
+    ],
+    "type": "properties"
+}

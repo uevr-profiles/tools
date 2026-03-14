@@ -1,0 +1,68 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "CurrentWeapon",
+        "Properties",
+        "WeaponConfig",
+        "Properties",
+        "Recoil"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "Base"
+        },
+        {
+            "data": 0,
+            "name": "AddPerShot"
+        },
+        {
+            "data": 0,
+            "name": "DampingAddPerShot"
+        },
+        {
+            "data": 0,
+            "name": "DampingStabilizationSpeed"
+        },
+        {
+            "data": 0,
+            "name": "DampingMultiplier"
+        },
+        {
+            "data": 0,
+            "name": "DampingMaxPerBurst"
+        },
+        {
+            "data": 0,
+            "name": "DecrementSpeed"
+        },
+        {
+            "data": 0,
+            "name": "IncrementSpeed"
+        },
+        {
+            "data": 0,
+            "name": "MaxPerBurst"
+        },
+        {
+            "data": 0,
+            "name": "MaxPitchDecrementAfterBurst"
+        },
+        {
+            "data": 0,
+            "name": "ShakeMultiplier"
+        },
+        {
+            "data": 0,
+            "name": "RecoilMultiplier"
+        },
+        {
+            "data": 0,
+            "name": "MinPerBurst"
+        }
+    ],
+    "type": "properties"
+}

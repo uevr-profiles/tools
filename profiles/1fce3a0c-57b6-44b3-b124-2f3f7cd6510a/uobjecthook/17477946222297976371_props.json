@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "CRWDMachineGun_BP_C CRWDMachineGun_BP_C_2147477641",
+        "Components",
+        "NiagaraComponent LoopReloadComponent"
+    ],
+    "properties": [],
+    "type": "properties"
+}

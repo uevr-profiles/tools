@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Weapon_Magicsword_Common_01_C BP_Weapon_Magicsword_Common_01_C_2147469090",
+        "Components",
+        "BWStaticMeshComponent Mesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": -0.5751449465751648,
+            "x": 0.16789907217025757,
+            "y": 0.786811113357544,
+            "z": -0.1481434553861618
+        }
+    },
+    "type": "motion_controller"
+}

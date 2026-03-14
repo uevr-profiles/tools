@@ -1,0 +1,12 @@
+{
+    "hide": true,
+    "path": [
+        "Camera Manager",
+        "Properties",
+        "Character",
+        "Components",
+        "SkeletalMeshComponent Hair"
+    ],
+    "properties": [],
+    "type": "properties"
+}

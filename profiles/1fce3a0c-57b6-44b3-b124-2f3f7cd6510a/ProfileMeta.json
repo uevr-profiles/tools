@@ -1,0 +1,19 @@
+{
+  "ID": "1fce3a0c-57b6-44b3-b124-2f3f7cd6510a",
+  "exeName": "CRToiPrototype-Win64-Shipping",
+  "gameName": "Crisol: Theater of Idols",
+  "authorName": "KingEJ",
+  "modifiedDate": "2026-02-14T23:00:00Z",
+  "createdDate": "2026-02-14T23:00:00Z",
+  "downloadDate": "2026-03-14T02:36:07Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/1fce3a0c-57b6-44b3-b124-2f3f7cd6510a",
+  "zipHash": "1B70A7C4491E737C4EA60BB9697C0BA3",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f1fce3a0c-57b6-44b3-b124-2f3f7cd6510a&name=CRToiPrototype-Win64-Shipping_2",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FCRToiPrototype-Win64-Shipping_2.zip?alt=media",
+  "description": "WIP 6dof all weapons (early work)  Buttons remapped (to remove button remap and swing left contro...",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

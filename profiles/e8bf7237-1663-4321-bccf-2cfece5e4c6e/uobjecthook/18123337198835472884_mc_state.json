@@ -1,0 +1,24 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "BlueprintCreatedComponents",
+        "SkeletalMeshComponent Shotgun_ShadowsOnly"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.7109135389328003,
+            "x": -0.0,
+            "y": -0.7032793760299683,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

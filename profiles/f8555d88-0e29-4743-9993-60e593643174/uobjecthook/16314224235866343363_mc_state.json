@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "Wep_GrenadeLauncher_01_C Wep_GrenadeLauncher_01_C_2147463471",
+        "Components",
+        "SkeletalMeshComponent Wep_Skeli"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 2.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.6801337003707886,
+            "x": -0.11325175315141678,
+            "y": 0.7144504189491272,
+            "z": -0.11896584182977676
+        }
+    },
+    "type": "motion_controller"
+}

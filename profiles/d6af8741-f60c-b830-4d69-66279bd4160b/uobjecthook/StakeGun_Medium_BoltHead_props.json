@@ -1,0 +1,19 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_StakeGun_Medium_C BP_StakeGun_Medium_C_2146825743",
+        "Properties",
+        "BoltHead_P"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "bRenderWithCustomFOV"
+        }
+    ],
+    "type": "properties"
+}

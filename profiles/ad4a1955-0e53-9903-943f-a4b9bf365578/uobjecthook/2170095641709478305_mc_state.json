@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Blunderbuss_C BP_Blunderbuss_C_2147478868",
+        "Components",
+        "SkeletalMeshComponent FPMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.029999999329447746,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": -0.6820080876350403,
+            "x": 0.01705368049442768,
+            "y": 0.7309173345565796,
+            "z": 0.018276838585734367
+        }
+    },
+    "type": "motion_controller"
+}

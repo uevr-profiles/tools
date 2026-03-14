@@ -1,0 +1,11 @@
+{
+    "offset": {
+        "x": 15.5,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "path": [
+        "Camera Manager"
+    ],
+    "type": "camera"
+}

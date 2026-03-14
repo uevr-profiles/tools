@@ -1,0 +1,13 @@
+{
+    "hide": true,
+    "hide_legacy": false,
+    "path": [
+        "Player Controller",
+        "Properties",
+        "AcknowledgedPawn",
+        "Components",
+        "StaticMeshComponent StaticImpostorShadow"
+    ],
+    "properties": [],
+    "type": "properties"
+}

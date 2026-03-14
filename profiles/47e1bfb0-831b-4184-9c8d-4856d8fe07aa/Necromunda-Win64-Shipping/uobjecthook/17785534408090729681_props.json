@@ -1,0 +1,13 @@
+{
+    "hide": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent ArmsMesh1P",
+        "Properties",
+        "AttachChildren",
+        "SkeletalMeshComponent WeaponMesh1P"
+    ],
+    "properties": [],
+    "type": "properties"
+}

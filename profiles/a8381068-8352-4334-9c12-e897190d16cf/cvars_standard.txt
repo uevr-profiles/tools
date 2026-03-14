@@ -1,0 +1,7 @@
+Core_r.ScreenPercentage=66.699997
+Renderer_r.DefaultFeature.AmbientOcclusion=0
+Renderer_r.LightCulling.Quality=0
+Renderer_r.SubsurfaceScattering=1
+Renderer_r.TemporalAA.Upsampling=1
+Renderer_r.Upscale.Quality=3
+Renderer_r.Upscale.Softness=0.000000

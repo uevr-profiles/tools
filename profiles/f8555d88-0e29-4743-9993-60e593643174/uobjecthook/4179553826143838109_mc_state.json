@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "MeleeWep_Machette_C MeleeWep_Machette_C_2147469059",
+        "Components",
+        "SkeletalMeshComponent Wep_Skeli"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.6522942185401917,
+            "x": -0.22342701256275177,
+            "y": 0.6852068305015564,
+            "z": -0.23470035195350647
+        }
+    },
+    "type": "motion_controller"
+}

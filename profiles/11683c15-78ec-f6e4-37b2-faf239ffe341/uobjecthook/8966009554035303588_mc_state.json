@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent BarbedHammer"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": -5.869999885559082,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": -0.6419432759284973,
+            "x": -0.21988126635551453,
+            "y": 0.6949136257171631,
+            "z": -0.2380254715681076
+        }
+    },
+    "type": "motion_controller"
+}

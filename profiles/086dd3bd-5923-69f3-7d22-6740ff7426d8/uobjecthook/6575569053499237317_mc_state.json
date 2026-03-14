@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_RaygunCarbine_C BP_RaygunCarbine_C_2147035807",
+        "Components",
+        "SkeletalMeshComponent FPMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": -0.6999694108963013,
+            "x": 0.021005380898714066,
+            "y": 0.713542640209198,
+            "z": 0.02141270600259304
+        }
+    },
+    "type": "motion_controller"
+}

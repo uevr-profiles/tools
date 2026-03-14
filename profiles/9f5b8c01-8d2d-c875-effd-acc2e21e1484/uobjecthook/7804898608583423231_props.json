@@ -1,0 +1,12 @@
+{
+    "hide": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "CurrentWeapon",
+        "Components",
+        "INSAudioComponent WeaponAudioComponent"
+    ],
+    "properties": [],
+    "type": "properties"
+}

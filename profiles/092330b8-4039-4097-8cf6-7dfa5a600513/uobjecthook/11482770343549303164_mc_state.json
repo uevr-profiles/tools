@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_BuildGun_C BP_BuildGun_C_2147472597",
+        "Components",
+        "SkeletalMeshComponent BuildGun_Skl_01"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -9.508453369140625,
+            "y": -11.570927619934082,
+            "z": -5.3925628662109375
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.6150470972061157,
+            "x": -0.33244839310646057,
+            "y": 0.6512512564659119,
+            "z": -0.295071542263031
+        }
+    },
+    "type": "motion_controller"
+}

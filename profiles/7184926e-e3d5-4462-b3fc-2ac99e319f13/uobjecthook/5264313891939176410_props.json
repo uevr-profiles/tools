@@ -1,0 +1,12 @@
+{
+    "hide": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "EnvSuitVisuals",
+        "Components",
+        "SkeletalMeshComponent EnvSuitUpgrade"
+    ],
+    "properties": [],
+    "type": "properties"
+}

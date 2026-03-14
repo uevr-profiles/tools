@@ -1,0 +1,19 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Mesh1P",
+        "Properties",
+        "AttachChildren",
+        "StaticMeshComponent RearSight_R"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "bRenderWithCustomFOV"
+        }
+    ],
+    "type": "properties"
+}

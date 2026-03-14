@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "ChildActorComponent MeleeWeapon"
+    ],
+    "state": {
+        "hand": 0,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.982629120349884,
+            "x": 0.024570832028985023,
+            "y": -0.18388904631137848,
+            "z": 0.004598184954375029
+        }
+    },
+    "type": "motion_controller"
+}

@@ -1,0 +1,12 @@
+{
+    "hide": false,
+    "path": [
+        "Player Controller",
+        "Properties",
+        "Original Player",
+        "Components",
+        "PalSkeletalMeshComponent HeadMesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

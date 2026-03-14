@@ -1,0 +1,2251 @@
+{
+    "animations": {
+        "Shared": {
+            "poses": {
+                "grip_left_weapon": [
+                    [
+                        "left_grip_weapon",
+                        "on"
+                    ],
+                    [
+                        "left_trigger_weapon",
+                        "off"
+                    ]
+                ],
+                "grip_left_weapon_device": [
+                    [
+                        "left_grip_weapon_device",
+                        "on"
+                    ],
+                    [
+                        "left_trigger_weapon_device",
+                        "off"
+                    ]
+                ],
+                "grip_left_weapon_flare": [
+                    [
+                        "left_grip_weapon_flare",
+                        "on"
+                    ],
+                    [
+                        "left_trigger_weapon_flare",
+                        "off"
+                    ]
+                ],
+                "grip_left_weapon_flashlight_grip": [
+                    [
+                        "left_grip_weapon_flashlight_grip",
+                        "on"
+                    ],
+                    [
+                        "left_trigger_weapon_flashlight_grip",
+                        "off"
+                    ]
+                ],
+                "grip_left_weapon_inhaler": [
+                    [
+                        "left_grip_weapon_inhaler",
+                        "on"
+                    ],
+                    [
+                        "left_trigger_weapon_inhaler",
+                        "off"
+                    ]
+                ],
+                "grip_right_weapon": [
+                    [
+                        "right_grip_weapon",
+                        "on"
+                    ],
+                    [
+                        "right_trigger_weapon",
+                        "off"
+                    ]
+                ],
+                "grip_right_weapon_device": [
+                    [
+                        "right_grip_weapon_device",
+                        "on"
+                    ],
+                    [
+                        "right_trigger_weapon_device",
+                        "off"
+                    ]
+                ],
+                "grip_right_weapon_flare": [
+                    [
+                        "right_grip_weapon_flare",
+                        "on"
+                    ],
+                    [
+                        "right_trigger_weapon_flare",
+                        "off"
+                    ]
+                ],
+                "grip_right_weapon_flashlight_grip": [
+                    [
+                        "right_grip_weapon_flashlight_grip",
+                        "on"
+                    ],
+                    [
+                        "right_trigger_weapon_flashlight_grip",
+                        "off"
+                    ]
+                ],
+                "grip_right_weapon_inhaler": [
+                    [
+                        "right_grip_weapon_inhaler",
+                        "on"
+                    ],
+                    [
+                        "right_trigger_weapon_inhaler",
+                        "off"
+                    ]
+                ],
+                "open_left": [
+                    [
+                        "left_grip",
+                        "off"
+                    ],
+                    [
+                        "left_trigger",
+                        "off"
+                    ],
+                    [
+                        "left_thumb",
+                        "off"
+                    ]
+                ],
+                "open_right": [
+                    [
+                        "right_grip",
+                        "off"
+                    ],
+                    [
+                        "right_trigger",
+                        "off"
+                    ],
+                    [
+                        "right_thumb",
+                        "off"
+                    ]
+                ]
+            },
+            "positions": {
+                "left_grip": {
+                    "off": {
+                        "MiddleFinger1_L": [
+                            -18.876,
+                            4.0191,
+                            5.3024
+                        ],
+                        "MiddleFinger2_L": [
+                            -19.9413,
+                            0.9843,
+                            -0.1721
+                        ],
+                        "MiddleFinger3_L": [
+                            -7.6551,
+                            1.1763,
+                            -0.1513
+                        ],
+                        "PinkyFinger1_L": [
+                            -20.9,
+                            15.5684,
+                            12.2693
+                        ],
+                        "PinkyFinger2_L": [
+                            -14.5643,
+                            1.5527,
+                            -0.235
+                        ],
+                        "PinkyFinger3_L": [
+                            -11.4493,
+                            2.1164,
+                            -0.1191
+                        ],
+                        "RingFinger1_L": [
+                            -18.716,
+                            17.2077,
+                            8.1541
+                        ],
+                        "RingFinger2_L": [
+                            -18.4327,
+                            1.9565,
+                            -0.3516
+                        ],
+                        "RingFinger3_L": [
+                            -15.4962,
+                            2.1105,
+                            -0.271
+                        ],
+                        "ThumbFinger1_L": [
+                            -24.838,
+                            -45.69,
+                            -74.798
+                        ],
+                        "ThumbFinger2_L": [
+                            -30.9711,
+                            3.3317,
+                            0.0
+                        ],
+                        "ThumbFinger3_L": [
+                            -26.9331,
+                            -0.7384,
+                            -0.1722
+                        ]
+                    },
+                    "on": {
+                        "MiddleFinger1_L": [
+                            -82.2743,
+                            -177.6415,
+                            -172.7656
+                        ],
+                        "MiddleFinger2_L": [
+                            -75.6,
+                            -0.0698,
+                            0.9703
+                        ],
+                        "MiddleFinger3_L": [
+                            -60.3,
+                            0.1709,
+                            0.8977
+                        ],
+                        "PinkyFinger1_L": [
+                            -85.672,
+                            -9.61,
+                            48.5998
+                        ],
+                        "PinkyFinger2_L": [
+                            -82.8003,
+                            24.2999,
+                            -18.0001
+                        ],
+                        "PinkyFinger3_L": [
+                            -52.9711,
+                            0.1098,
+                            0.0062
+                        ],
+                        "RingFinger1_L": [
+                            -87.5503,
+                            -164.224,
+                            -170.2069
+                        ],
+                        "RingFinger2_L": [
+                            -86.5093,
+                            1.0981,
+                            0.6995
+                        ],
+                        "RingFinger3_L": [
+                            -61.9912,
+                            1.2905,
+                            0.7056
+                        ],
+                        "ThumbFinger1_L": [
+                            -25.2001,
+                            -41.3442,
+                            -52.3932
+                        ],
+                        "ThumbFinger2_L": [
+                            -41.891,
+                            3.3317,
+                            0.0
+                        ],
+                        "ThumbFinger3_L": [
+                            -67.5001,
+                            -0.7384,
+                            -0.1722
+                        ]
+                    }
+                },
+                "left_grip_weapon": {
+                    "off": {
+                        "MiddleFinger1_L": [
+                            -5.8269,
+                            7.4656,
+                            0.5474
+                        ],
+                        "MiddleFinger2_L": [
+                            -3.0581,
+                            -0.0065,
+                            0.0
+                        ],
+                        "MiddleFinger3_L": [
+                            1.6637,
+                            0.0056,
+                            0.0
+                        ],
+                        "PinkyFinger1_L": [
+                            3.4284,
+                            27.2897,
+                            -0.3514
+                        ],
+                        "PinkyFinger2_L": [
+                            -3.2418,
+                            -0.1297,
+                            0.0
+                        ],
+                        "PinkyFinger3_L": [
+                            2.829,
+                            0.11,
+                            0.0062
+                        ],
+                        "RingFinger1_L": [
+                            2.8613,
+                            24.8712,
+                            -1.4663
+                        ],
+                        "RingFinger2_L": [
+                            -3.399,
+                            -0.0277,
+                            0.0
+                        ],
+                        "RingFinger3_L": [
+                            0.1793,
+                            0.0084,
+                            0.0
+                        ],
+                        "ThumbFinger1_L": [
+                            -0.1697,
+                            -48.5442,
+                            -51.4935
+                        ],
+                        "ThumbFinger2_L": [
+                            -13.0911,
+                            3.3318,
+                            0.0
+                        ],
+                        "ThumbFinger3_L": [
+                            -0.5617,
+                            -0.7384,
+                            -0.1722
+                        ]
+                    },
+                    "on": {
+                        "MiddleFinger1_L": [
+                            -5.8269,
+                            7.4656,
+                            0.5474
+                        ],
+                        "MiddleFinger2_L": [
+                            -3.0581,
+                            -0.0065,
+                            0.0
+                        ],
+                        "MiddleFinger3_L": [
+                            1.6637,
+                            0.0056,
+                            0.0
+                        ],
+                        "PinkyFinger1_L": [
+                            3.4284,
+                            27.2897,
+                            -0.3514
+                        ],
+                        "PinkyFinger2_L": [
+                            -3.2418,
+                            -0.1297,
+                            0.0
+                        ],
+                        "PinkyFinger3_L": [
+                            2.829,
+                            0.11,
+                            0.0062
+                        ],
+                        "RingFinger1_L": [
+                            2.8613,
+                            24.8712,
+                            -1.4663
+                        ],
+                        "RingFinger2_L": [
+                            -3.399,
+                            -0.0277,
+                            0.0
+                        ],
+                        "RingFinger3_L": [
+                            0.1793,
+                            0.0084,
+                            0.0
+                        ],
+                        "ThumbFinger1_L": [
+                            -0.1697,
+                            -48.5442,
+                            -51.4935
+                        ],
+                        "ThumbFinger2_L": [
+                            -13.0911,
+                            3.3318,
+                            0.0
+                        ],
+                        "ThumbFinger3_L": [
+                            -0.5617,
+                            -0.7384,
+                            -0.1722
+                        ]
+                    }
+                },
+                "left_grip_weapon_device": {
+                    "off": {
+                        "MiddleFinger1_L": [
+                            -51.8232,
+                            11.6584,
+                            26.7632
+                        ],
+                        "MiddleFinger2_L": [
+                            -31.598,
+                            2.1208,
+                            -3.3244
+                        ],
+                        "MiddleFinger3_L": [
+                            -44.507,
+                            0.0,
+                            0.0
+                        ],
+                        "PinkyFinger1_L": [
+                            -38.4571,
+                            8.1049,
+                            18.7259
+                        ],
+                        "PinkyFinger2_L": [
+                            -52.4515,
+                            -0.1293,
+                            0.0013
+                        ],
+                        "PinkyFinger3_L": [
+                            -12.9526,
+                            1.3782,
+                            3.9274
+                        ],
+                        "RingFinger1_L": [
+                            -42.245,
+                            18.375,
+                            23.024
+                        ],
+                        "RingFinger2_L": [
+                            -45.503,
+                            -0.0349,
+                            0.0163
+                        ],
+                        "RingFinger3_L": [
+                            -35.5265,
+                            -4.8577,
+                            8.6546
+                        ],
+                        "ThumbFinger1_L": [
+                            -19.2228,
+                            -48.8233,
+                            -113.025
+                        ],
+                        "ThumbFinger2_L": [
+                            -13.0889,
+                            3.3306,
+                            -0.002
+                        ],
+                        "ThumbFinger3_L": [
+                            -22.5175,
+                            -0.6658,
+                            -0.185
+                        ]
+                    },
+                    "on": {
+                        "MiddleFinger1_L": [
+                            -51.8231,
+                            11.6585,
+                            26.7633
+                        ],
+                        "MiddleFinger2_L": [
+                            -31.598,
+                            2.1208,
+                            -3.3243
+                        ],
+                        "MiddleFinger3_L": [
+                            -44.5069,
+                            0.0,
+                            0.0
+                        ],
+                        "PinkyFinger1_L": [
+                            -38.4571,
+                            8.1049,
+                            18.7259
+                        ],
+                        "PinkyFinger2_L": [
+                            -52.4514,
+                            -0.1293,
+                            0.0013
+                        ],
+                        "PinkyFinger3_L": [
+                            -12.9526,
+                            1.3782,
+                            3.9274
+                        ],
+                        "RingFinger1_L": [
+                            -42.245,
+                            18.375,
+                            23.024
+                        ],
+                        "RingFinger2_L": [
+                            -45.503,
+                            -0.0348,
+                            0.0163
+                        ],
+                        "RingFinger3_L": [
+                            -35.5264,
+                            -4.8576,
+                            8.6546
+                        ],
+                        "ThumbFinger1_L": [
+                            -19.2228,
+                            -48.8232,
+                            -113.0249
+                        ],
+                        "ThumbFinger2_L": [
+                            -13.0889,
+                            3.3306,
+                            -0.0019
+                        ],
+                        "ThumbFinger3_L": [
+                            -22.5175,
+                            -0.6657,
+                            -0.1849
+                        ]
+                    }
+                },
+                "left_grip_weapon_flashlight_grip": {
+                    "off": {
+                        "MiddleFinger1_L": [
+                            -18.1771,
+                            39.97,
+                            8.0675
+                        ],
+                        "MiddleFinger2_L": [
+                            -55.5943,
+                            -5.2892,
+                            8.81
+                        ],
+                        "MiddleFinger3_L": [
+                            -64.4813,
+                            0.0,
+                            0.0
+                        ],
+                        "PinkyFinger1_L": [
+                            -66.445,
+                            -20.873,
+                            94.4999
+                        ],
+                        "PinkyFinger2_L": [
+                            -20.7211,
+                            0.2529,
+                            1.1153
+                        ],
+                        "PinkyFinger3_L": [
+                            -26.1771,
+                            2.5922,
+                            -0.1072
+                        ],
+                        "RingFinger1_L": [
+                            -45.2818,
+                            33.5088,
+                            38.3017
+                        ],
+                        "RingFinger2_L": [
+                            -70.3423,
+                            -4.6231,
+                            5.8962
+                        ],
+                        "RingFinger3_L": [
+                            -45.912,
+                            -1.8841,
+                            6.7866
+                        ],
+                        "ThumbFinger1_L": [
+                            -15.219,
+                            -13.5,
+                            -82.1251
+                        ],
+                        "ThumbFinger2_L": [
+                            -17.2111,
+                            3.3292,
+                            -0.0004
+                        ],
+                        "ThumbFinger3_L": [
+                            -22.671,
+                            -0.6658,
+                            -0.1842
+                        ]
+                    },
+                    "on": {
+                        "MiddleFinger1_L": [
+                            -18.1771,
+                            39.97,
+                            8.0675
+                        ],
+                        "MiddleFinger2_L": [
+                            -55.5943,
+                            -5.2891,
+                            8.81
+                        ],
+                        "MiddleFinger3_L": [
+                            -64.4812,
+                            0.0,
+                            0.0
+                        ],
+                        "PinkyFinger1_L": [
+                            -66.445,
+                            -20.873,
+                            94.5
+                        ],
+                        "PinkyFinger2_L": [
+                            -20.7211,
+                            0.2529,
+                            1.1153
+                        ],
+                        "PinkyFinger3_L": [
+                            -26.177,
+                            2.5922,
+                            -0.1072
+                        ],
+                        "RingFinger1_L": [
+                            -45.2818,
+                            33.5088,
+                            38.3018
+                        ],
+                        "RingFinger2_L": [
+                            -70.3422,
+                            -4.6231,
+                            5.8962
+                        ],
+                        "RingFinger3_L": [
+                            -45.912,
+                            -1.8841,
+                            6.7867
+                        ],
+                        "ThumbFinger1_L": [
+                            -15.219,
+                            -13.5,
+                            -82.1251
+                        ],
+                        "ThumbFinger2_L": [
+                            -17.2111,
+                            3.3292,
+                            -0.0004
+                        ],
+                        "ThumbFinger3_L": [
+                            -22.671,
+                            -0.6658,
+                            -0.1841
+                        ]
+                    }
+                },
+                "left_thumb": {
+                    "off": {
+                        "ThumbFinger1_L": [
+                            -22.3851,
+                            -46.704,
+                            -74.798
+                        ],
+                        "ThumbFinger2_L": [
+                            -26.678,
+                            3.3317,
+                            0.0
+                        ],
+                        "ThumbFinger3_L": [
+                            -26.9331,
+                            -0.7384,
+                            -0.1722
+                        ]
+                    },
+                    "on": {
+                        "ThumbFinger1_L": [
+                            -38.079,
+                            -43.184,
+                            -68.9521
+                        ],
+                        "ThumbFinger2_L": [
+                            -41.891,
+                            3.3317,
+                            0.0
+                        ],
+                        "ThumbFinger3_L": [
+                            -67.5001,
+                            -0.7384,
+                            -0.1722
+                        ]
+                    }
+                },
+                "left_trigger": {
+                    "off": {
+                        "IndexFinger1_L": [
+                            -11.5852,
+                            8.1695,
+                            -1.6971
+                        ],
+                        "IndexFinger2_L": [
+                            -3.705,
+                            0.1757,
+                            0.0
+                        ],
+                        "IndexFinger3_L": [
+                            -18.7081,
+                            -0.0409,
+                            -0.0042
+                        ]
+                    },
+                    "on": {
+                        "IndexFinger1_L": [
+                            -89.8852,
+                            -171.8306,
+                            178.3029
+                        ],
+                        "IndexFinger2_L": [
+                            -89.1,
+                            -15.1772,
+                            18.0527
+                        ],
+                        "IndexFinger3_L": [
+                            -59.4002,
+                            -0.0409,
+                            -0.0042
+                        ]
+                    }
+                },
+                "left_trigger_weapon": {
+                    "off": {
+                        "IndexFinger1_L": [
+                            1.915,
+                            8.1695,
+                            -1.6969
+                        ],
+                        "IndexFinger2_L": [
+                            -5.5052,
+                            0.1759,
+                            0.0
+                        ],
+                        "IndexFinger3_L": [
+                            1.0924,
+                            -0.0409,
+                            -0.004
+                        ]
+                    },
+                    "on": {
+                        "IndexFinger1_L": [
+                            1.915,
+                            8.1695,
+                            -1.6969
+                        ],
+                        "IndexFinger2_L": [
+                            -5.5052,
+                            0.1759,
+                            0.0
+                        ],
+                        "IndexFinger3_L": [
+                            1.0924,
+                            -0.0409,
+                            -0.004
+                        ]
+                    }
+                },
+                "left_trigger_weapon_device": {
+                    "off": {
+                        "IndexFinger1_L": [
+                            -23.2951,
+                            18.6229,
+                            15.0679
+                        ],
+                        "IndexFinger2_L": [
+                            -3.08,
+                            0.175,
+                            -0.0021
+                        ],
+                        "IndexFinger3_L": [
+                            -45.0761,
+                            -0.0389,
+                            0.0102
+                        ]
+                    },
+                    "on": {
+                        "IndexFinger1_L": [
+                            -23.2951,
+                            18.6229,
+                            15.0679
+                        ],
+                        "IndexFinger2_L": [
+                            -3.08,
+                            0.175,
+                            -0.0021
+                        ],
+                        "IndexFinger3_L": [
+                            -45.0761,
+                            -0.0389,
+                            0.0102
+                        ]
+                    }
+                },
+                "left_trigger_weapon_flashlight_grip": {
+                    "off": {
+                        "IndexFinger1_L": [
+                            5.8249,
+                            20.25,
+                            -0.389
+                        ],
+                        "IndexFinger2_L": [
+                            6.65,
+                            0.1761,
+                            -0.0014
+                        ],
+                        "IndexFinger3_L": [
+                            -26.2452,
+                            3.4282,
+                            3.9205
+                        ]
+                    },
+                    "on": {
+                        "IndexFinger1_L": [
+                            5.8249,
+                            20.25,
+                            -0.389
+                        ],
+                        "IndexFinger2_L": [
+                            6.65,
+                            0.1761,
+                            -0.0014
+                        ],
+                        "IndexFinger3_L": [
+                            -26.2452,
+                            3.4282,
+                            3.9205
+                        ]
+                    }
+                },
+                "right_grip": {
+                    "off": {
+                        "MiddleFinger1_R": [
+                            -18.876,
+                            4.0191,
+                            5.3024
+                        ],
+                        "MiddleFinger2_R": [
+                            -19.9413,
+                            0.9844,
+                            -0.1719
+                        ],
+                        "MiddleFinger3_R": [
+                            -7.6551,
+                            1.1766,
+                            -0.1513
+                        ],
+                        "PinkyFinger1_R": [
+                            -20.9,
+                            15.5685,
+                            12.2693
+                        ],
+                        "PinkyFinger2_R": [
+                            -14.5641,
+                            1.5527,
+                            -0.235
+                        ],
+                        "PinkyFinger3_R": [
+                            -11.4493,
+                            2.1164,
+                            -0.119
+                        ],
+                        "RingFinger1_R": [
+                            -18.716,
+                            17.2078,
+                            8.1541
+                        ],
+                        "RingFinger2_R": [
+                            -18.4326,
+                            1.9565,
+                            -0.3516
+                        ],
+                        "RingFinger3_R": [
+                            -15.4962,
+                            2.1105,
+                            -0.271
+                        ],
+                        "ThumbFinger1_R": [
+                            -0.1697,
+                            -48.5443,
+                            -51.4935
+                        ],
+                        "ThumbFinger2_R": [
+                            -13.0911,
+                            3.3317,
+                            0.0
+                        ],
+                        "ThumbFinger3_R": [
+                            -0.5617,
+                            -0.7384,
+                            -0.1722
+                        ]
+                    },
+                    "on": {
+                        "MiddleFinger1_R": [
+                            -82.2742,
+                            -177.6415,
+                            -172.7656
+                        ],
+                        "MiddleFinger2_R": [
+                            -75.6,
+                            -0.0697,
+                            0.9703
+                        ],
+                        "MiddleFinger3_R": [
+                            -60.3,
+                            0.1709,
+                            0.8977
+                        ],
+                        "PinkyFinger1_R": [
+                            -85.672,
+                            -9.61,
+                            48.5998
+                        ],
+                        "PinkyFinger2_R": [
+                            -82.8002,
+                            24.2999,
+                            -18.0001
+                        ],
+                        "PinkyFinger3_R": [
+                            -52.9711,
+                            0.1099,
+                            0.0062
+                        ],
+                        "RingFinger1_R": [
+                            -87.5502,
+                            -164.224,
+                            -170.2069
+                        ],
+                        "RingFinger2_R": [
+                            -86.5092,
+                            1.0982,
+                            0.6995
+                        ],
+                        "RingFinger3_R": [
+                            -61.9912,
+                            1.2906,
+                            0.7057
+                        ],
+                        "ThumbFinger1_R": [
+                            -25.2001,
+                            -41.3441,
+                            -52.3931
+                        ],
+                        "ThumbFinger2_R": [
+                            -41.891,
+                            3.3317,
+                            0.0
+                        ],
+                        "ThumbFinger3_R": [
+                            -67.5001,
+                            -0.7384,
+                            -0.1722
+                        ]
+                    }
+                },
+                "right_grip_weapon": {
+                    "off": {
+                        "MiddleFinger1_R": [
+                            -5.8269,
+                            7.4656,
+                            0.5474
+                        ],
+                        "MiddleFinger2_R": [
+                            -3.0581,
+                            -0.0065,
+                            0.0
+                        ],
+                        "MiddleFinger3_R": [
+                            1.6637,
+                            0.0056,
+                            0.0
+                        ],
+                        "PinkyFinger1_R": [
+                            3.4284,
+                            27.2897,
+                            -0.3514
+                        ],
+                        "PinkyFinger2_R": [
+                            -3.2418,
+                            -0.1297,
+                            0.0
+                        ],
+                        "PinkyFinger3_R": [
+                            2.829,
+                            0.11,
+                            0.0062
+                        ],
+                        "RingFinger1_R": [
+                            2.8613,
+                            24.8712,
+                            -1.4663
+                        ],
+                        "RingFinger2_R": [
+                            -3.399,
+                            -0.0277,
+                            0.0
+                        ],
+                        "RingFinger3_R": [
+                            0.1793,
+                            0.0084,
+                            0.0
+                        ],
+                        "ThumbFinger1_R": [
+                            -0.1697,
+                            -48.5442,
+                            -51.4935
+                        ],
+                        "ThumbFinger2_R": [
+                            -13.0911,
+                            3.3318,
+                            0.0
+                        ],
+                        "ThumbFinger3_R": [
+                            -0.5617,
+                            -0.7384,
+                            -0.1722
+                        ]
+                    },
+                    "on": {
+                        "MiddleFinger1_R": [
+                            -5.8269,
+                            7.4656,
+                            0.5474
+                        ],
+                        "MiddleFinger2_R": [
+                            -3.0581,
+                            -0.0065,
+                            0.0
+                        ],
+                        "MiddleFinger3_R": [
+                            1.6637,
+                            0.0056,
+                            0.0
+                        ],
+                        "PinkyFinger1_R": [
+                            3.4284,
+                            27.2897,
+                            -0.3514
+                        ],
+                        "PinkyFinger2_R": [
+                            -3.2418,
+                            -0.1297,
+                            0.0
+                        ],
+                        "PinkyFinger3_R": [
+                            2.829,
+                            0.11,
+                            0.0062
+                        ],
+                        "RingFinger1_R": [
+                            2.8613,
+                            24.8712,
+                            -1.4663
+                        ],
+                        "RingFinger2_R": [
+                            -3.399,
+                            -0.0277,
+                            0.0
+                        ],
+                        "RingFinger3_R": [
+                            0.1793,
+                            0.0084,
+                            0.0
+                        ],
+                        "ThumbFinger1_R": [
+                            -0.1697,
+                            -48.5442,
+                            -51.4935
+                        ],
+                        "ThumbFinger2_R": [
+                            -13.0911,
+                            3.3318,
+                            0.0
+                        ],
+                        "ThumbFinger3_R": [
+                            -0.5617,
+                            -0.7384,
+                            -0.1722
+                        ]
+                    }
+                },
+                "right_grip_weapon_flare": {
+                    "off": {
+                        "MiddleFinger1_R": [
+                            -66.3835,
+                            -0.7668,
+                            -0.239
+                        ],
+                        "MiddleFinger2_R": [
+                            -82.852,
+                            7.8408,
+                            -7.818
+                        ],
+                        "MiddleFinger3_R": [
+                            -41.1251,
+                            0.0054,
+                            0.0
+                        ],
+                        "PinkyFinger1_R": [
+                            -55.4715,
+                            15.5984,
+                            3.9354
+                        ],
+                        "PinkyFinger2_R": [
+                            -55.0378,
+                            -14.1091,
+                            19.0771
+                        ],
+                        "PinkyFinger3_R": [
+                            -22.1449,
+                            0.9247,
+                            1.7919
+                        ],
+                        "RingFinger1_R": [
+                            -54.7345,
+                            19.4689,
+                            4.0787
+                        ],
+                        "RingFinger2_R": [
+                            -83.4937,
+                            -0.0277,
+                            0.0
+                        ],
+                        "RingFinger3_R": [
+                            -48.5422,
+                            -0.8084,
+                            0.3477
+                        ],
+                        "ThumbFinger1_R": [
+                            12.2725,
+                            -72.3687,
+                            -64.2875
+                        ],
+                        "ThumbFinger2_R": [
+                            -22.0457,
+                            3.3317,
+                            0.0
+                        ],
+                        "ThumbFinger3_R": [
+                            12.89,
+                            -0.7796,
+                            -0.1766
+                        ]
+                    },
+                    "on": {
+                        "MiddleFinger1_R": [
+                            -66.3835,
+                            -0.7668,
+                            -0.2389
+                        ],
+                        "MiddleFinger2_R": [
+                            -82.852,
+                            7.8409,
+                            -7.8179
+                        ],
+                        "MiddleFinger3_R": [
+                            -41.1251,
+                            0.0055,
+                            0.0001
+                        ],
+                        "PinkyFinger1_R": [
+                            -55.4714,
+                            15.5984,
+                            3.9354
+                        ],
+                        "PinkyFinger2_R": [
+                            -55.0377,
+                            -14.109,
+                            19.0772
+                        ],
+                        "PinkyFinger3_R": [
+                            -22.1448,
+                            0.9247,
+                            1.7919
+                        ],
+                        "RingFinger1_R": [
+                            -54.7344,
+                            19.4689,
+                            4.0787
+                        ],
+                        "RingFinger2_R": [
+                            -83.4937,
+                            -0.0277,
+                            0.0
+                        ],
+                        "RingFinger3_R": [
+                            -48.5422,
+                            -0.8084,
+                            0.3478
+                        ],
+                        "ThumbFinger1_R": [
+                            12.2725,
+                            -72.3687,
+                            -64.2875
+                        ],
+                        "ThumbFinger2_R": [
+                            -22.0456,
+                            3.3318,
+                            0.0
+                        ],
+                        "ThumbFinger3_R": [
+                            12.8901,
+                            -0.7795,
+                            -0.1766
+                        ]
+                    }
+                },
+                "right_grip_weapon_inhaler": {
+                    "on": {
+                        "MiddleFinger1_R": [
+                            -70.1192,
+                            -74.2765,
+                            81.2071
+                        ],
+                        "MiddleFinger2_R": [
+                            -63.6437,
+                            -7.608,
+                            8.1589
+                        ],
+                        "MiddleFinger3_R": [
+                            -34.1653,
+                            -2.3985,
+                            1.5054
+                        ],
+                        "PinkyFinger1_R": [
+                            -52.3899,
+                            -0.8278,
+                            30.9538
+                        ],
+                        "PinkyFinger2_R": [
+                            -43.2515,
+                            -0.1289,
+                            0.002
+                        ],
+                        "PinkyFinger3_R": [
+                            -45.3661,
+                            0.1036,
+                            0.0059
+                        ],
+                        "RingFinger1_R": [
+                            -67.03,
+                            -24.123,
+                            47.027
+                        ],
+                        "RingFinger2_R": [
+                            -64.4154,
+                            -5.9245,
+                            6.6876
+                        ],
+                        "RingFinger3_R": [
+                            -31.9732,
+                            -2.3248,
+                            1.0407
+                        ],
+                        "ThumbFinger1_R": [
+                            11.3496,
+                            -69.6558,
+                            -47.01
+                        ],
+                        "ThumbFinger2_R": [
+                            -23.0966,
+                            3.3311,
+                            -0.0025
+                        ],
+                        "ThumbFinger3_R": [
+                            -76.7612,
+                            -0.0138,
+                            -0.7431
+                        ]
+                    }
+                },
+                "right_thumb": {
+                    "off": {
+                        "ThumbFinger1_R": [
+                            -22.3851,
+                            -46.704,
+                            -74.798
+                        ],
+                        "ThumbFinger2_R": [
+                            -26.678,
+                            3.3317,
+                            0.0
+                        ],
+                        "ThumbFinger3_R": [
+                            -26.9331,
+                            -0.7384,
+                            -0.1722
+                        ]
+                    },
+                    "on": {
+                        "ThumbFinger1_R": [
+                            -38.079,
+                            -43.184,
+                            -68.9521
+                        ],
+                        "ThumbFinger2_R": [
+                            -41.891,
+                            3.3317,
+                            0.0
+                        ],
+                        "ThumbFinger3_R": [
+                            -67.5001,
+                            -0.7384,
+                            -0.1722
+                        ]
+                    }
+                },
+                "right_trigger": {
+                    "off": {
+                        "IndexFinger1_R": [
+                            -11.5851,
+                            8.1695,
+                            -1.697
+                        ],
+                        "IndexFinger2_R": [
+                            -3.705,
+                            0.1758,
+                            0.0
+                        ],
+                        "IndexFinger3_R": [
+                            -18.7081,
+                            -0.0409,
+                            -0.0041
+                        ]
+                    },
+                    "on": {
+                        "IndexFinger1_R": [
+                            -89.8851,
+                            -171.8305,
+                            178.303
+                        ],
+                        "IndexFinger2_R": [
+                            -89.1,
+                            -15.1771,
+                            18.0528
+                        ],
+                        "IndexFinger3_R": [
+                            -59.4001,
+                            -0.0409,
+                            -0.0041
+                        ]
+                    }
+                },
+                "right_trigger_weapon": {
+                    "off": {
+                        "IndexFinger1_R": [
+                            1.915,
+                            8.1695,
+                            -1.6969
+                        ],
+                        "IndexFinger2_R": [
+                            -5.5052,
+                            0.1759,
+                            0.0
+                        ],
+                        "IndexFinger3_R": [
+                            1.0924,
+                            -0.0409,
+                            -0.004
+                        ]
+                    },
+                    "on": {
+                        "IndexFinger1_R": [
+                            1.915,
+                            8.1695,
+                            -1.6969
+                        ],
+                        "IndexFinger2_R": [
+                            -5.5052,
+                            0.1759,
+                            0.0
+                        ],
+                        "IndexFinger3_R": [
+                            1.0924,
+                            -0.0409,
+                            -0.004
+                        ]
+                    }
+                },
+                "right_trigger_weapon_flare": {
+                    "off": {
+                        "IndexFinger1_R": [
+                            -66.906,
+                            4.7909,
+                            -4.106
+                        ],
+                        "IndexFinger2_R": [
+                            -80.743,
+                            -20.441,
+                            0.0698
+                        ],
+                        "IndexFinger3_R": [
+                            -63.877,
+                            -0.0376,
+                            -0.0051
+                        ]
+                    },
+                    "on": {
+                        "IndexFinger1_R": [
+                            -66.906,
+                            4.7909,
+                            -4.106
+                        ],
+                        "IndexFinger2_R": [
+                            -80.743,
+                            -20.441,
+                            0.0698
+                        ],
+                        "IndexFinger3_R": [
+                            -63.877,
+                            -0.0376,
+                            -0.0051
+                        ]
+                    }
+                },
+                "right_trigger_weapon_inhaler": {
+                    "on": {
+                        "IndexFinger1_R": [
+                            -60.966,
+                            -62.0111,
+                            61.875
+                        ],
+                        "IndexFinger2_R": [
+                            -68.5703,
+                            0.1732,
+                            0.0003
+                        ],
+                        "IndexFinger3_R": [
+                            -43.6313,
+                            5.7845,
+                            -6.519
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "attachments": {
+        "device": {
+            "label": "Device"
+        },
+        "flare": {
+            "label": "Flare"
+        },
+        "flashlight_grip": {
+            "label": "Flashlight Grip"
+        },
+        "inhaler": {
+            "label": "Inhaler"
+        }
+    },
+    "profiles": {
+        "Main": {
+            "Arms": {
+                "FOV": "",
+                "IgnoreRelativeOffset": false,
+                "InitialTransform": {
+                    "left_hand": {
+                        "CupIndex_L": {
+                            "location": [
+                                -3.2877704482489207,
+                                1.7705872324950178,
+                                0.5727638107591702
+                            ],
+                            "rotation": [
+                                2.707923650741574,
+                                -9.839586257934581,
+                                -1.24996650218966
+                            ]
+                        },
+                        "CupMid_L": {
+                            "location": [
+                                -3.1469734555466857,
+                                0.2286191221428453,
+                                0.4338783900575436
+                            ],
+                            "rotation": [
+                                6.131635665893549,
+                                -3.8703749179840066,
+                                -0.00724567612633698
+                            ]
+                        },
+                        "Cup_L": {
+                            "location": [
+                                -2.9036544076298014,
+                                -2.1345235990083893,
+                                0.24017502909555333
+                            ],
+                            "rotation": [
+                                2.2461004257202033,
+                                -17.15805816650391,
+                                6.3842382431030344
+                            ]
+                        },
+                        "ElbowPart1_L": {
+                            "location": [
+                                -11.898373803871436,
+                                8.798997441772372e-08,
+                                -6.106411092332564e-07
+                            ],
+                            "rotation": [
+                                8.269442171805145e-14,
+                                -3.1805546814635105e-14,
+                                8.269442171805142e-14
+                            ]
+                        },
+                        "IndexFinger1_L": {
+                            "location": [
+                                -4.778628126890908,
+                                1.4825900507275946e-06,
+                                -6.363061402225867e-07
+                            ],
+                            "rotation": [
+                                1.9150652885437012,
+                                8.169509887695325,
+                                -1.6968785524368204
+                            ]
+                        },
+                        "IndexFinger2_L": {
+                            "location": [
+                                -3.5913388263325032,
+                                -0.1870603764864427,
+                                0.1567236293467431
+                            ],
+                            "rotation": [
+                                -5.505153179168695,
+                                0.17594236135483024,
+                                -6.648584135047235e-11
+                            ]
+                        },
+                        "IndexFinger3_L": {
+                            "location": [
+                                -1.7859863102694362,
+                                -2.023098204517737e-07,
+                                -7.12698238203302e-08
+                            ],
+                            "rotation": [
+                                1.0924066305160418,
+                                -0.040836740285158414,
+                                -0.003929331433033967
+                            ]
+                        },
+                        "IndexFinger4_L": {
+                            "location": [
+                                -2.13902010453603,
+                                -3.742334229173139e-07,
+                                7.402422852464952e-07
+                            ],
+                            "rotation": [
+                                -1.272221872585407e-14,
+                                -1.471006540176877e-14,
+                                1.2722218725854075e-14
+                            ]
+                        },
+                        "MiddleFinger1_L": {
+                            "location": [
+                                -5.26777681108797,
+                                -8.580836947658099e-07,
+                                -1.1650890883174725e-06
+                            ],
+                            "rotation": [
+                                -5.826873302459697,
+                                7.465611457824705,
+                                0.547457635402664
+                            ]
+                        },
+                        "MiddleFinger2_L": {
+                            "location": [
+                                -3.699872095403407,
+                                -0.10623608156129194,
+                                -0.051008482484576234
+                            ],
+                            "rotation": [
+                                -3.0580990314483776,
+                                -0.006426567677391255,
+                                -2.9712359032300464e-12
+                            ]
+                        },
+                        "MiddleFinger3_L": {
+                            "location": [
+                                -2.3483565100832493,
+                                -2.43971953750588e-07,
+                                -5.235388016444631e-07
+                            ],
+                            "rotation": [
+                                1.6637462377547985,
+                                0.00562351010738542,
+                                8.313183935970655e-05
+                            ]
+                        },
+                        "MiddleFinger4_L": {
+                            "location": [
+                                -2.238216506622848,
+                                -3.6553683457896113e-07,
+                                -7.10379026713781e-08
+                            ],
+                            "rotation": [
+                                4.1347210983228974e-14,
+                                -3.975692060115396e-15,
+                                3.5799154958763384e-06
+                            ]
+                        },
+                        "PinkyFinger1_L": {
+                            "location": [
+                                -3.5260340050554078,
+                                -2.3400874489443595,
+                                -0.05259257510351745
+                            ],
+                            "rotation": [
+                                3.4284379482269416,
+                                27.289712905883807,
+                                -0.3513702750205767
+                            ]
+                        },
+                        "PinkyFinger2_L": {
+                            "location": [
+                                -2.9188955927656934,
+                                -0.0010579805521047092,
+                                -0.026410347349155927
+                            ],
+                            "rotation": [
+                                -3.2417790889739986,
+                                -0.12965872883796295,
+                                -2.4582853133022346e-10
+                            ]
+                        },
+                        "PinkyFinger3_L": {
+                            "location": [
+                                -1.4157944384751318,
+                                6.346454028971493e-09,
+                                -4.518187779467553e-08
+                            ],
+                            "rotation": [
+                                2.8290190696716495,
+                                0.11002513021231919,
+                                0.006222027819588089
+                            ]
+                        },
+                        "PinkyFinger4_L": {
+                            "location": [
+                                -1.8677971227862145,
+                                -1.275966496905312e-07,
+                                -5.705187504645437e-07
+                            ],
+                            "rotation": [
+                                -3.1805546814635164e-15,
+                                -5.565970692561157e-15,
+                                1.9083328088781107e-14
+                            ]
+                        },
+                        "RingFinger1_L": {
+                            "location": [
+                                -4.864236586561674,
+                                -0.9910074502631687,
+                                0.02241450934070599
+                            ],
+                            "rotation": [
+                                2.8613505363464284,
+                                24.871252059936545,
+                                -1.4662868976593157
+                            ]
+                        },
+                        "RingFinger2_L": {
+                            "location": [
+                                -3.680524238767248,
+                                -0.03844175146332418,
+                                0.09052233060447179
+                            ],
+                            "rotation": [
+                                -3.3989744186401314,
+                                -0.027618719264864297,
+                                -2.713343075817105e-11
+                            ]
+                        },
+                        "RingFinger3_L": {
+                            "location": [
+                                -2.0492662892975204,
+                                -1.7444108380004764e-07,
+                                -8.681799954501912e-07
+                            ],
+                            "rotation": [
+                                0.17934040725231656,
+                                0.008458601310849797,
+                                1.3238062843627962e-05
+                            ]
+                        },
+                        "RingFinger4_L": {
+                            "location": [
+                                -2.205525443499937,
+                                -9.922041499521583e-08,
+                                -5.2402356232050806e-08
+                            ],
+                            "rotation": [
+                                6.361109362927034e-14,
+                                1.4967290186416442e-21,
+                                2.696267300251648e-06
+                            ]
+                        },
+                        "SleeveDown_L": {
+                            "location": [
+                                -0.8734091905771493,
+                                -2.2660962044155895,
+                                -0.11646861980625545
+                            ],
+                            "rotation": [
+                                7.309619903564463,
+                                86.74423217773436,
+                                100.41695404052736
+                            ]
+                        },
+                        "SleeveIn_L": {
+                            "location": [
+                                -0.16077829459572968,
+                                -0.5081180340457649,
+                                3.3706462064560583
+                            ],
+                            "rotation": [
+                                -82.75839996337906,
+                                78.79563140869159,
+                                122.5626983642579
+                            ]
+                        },
+                        "SleeveOut_L": {
+                            "location": [
+                                0.09699157738032227,
+                                0.1237460589472903,
+                                -3.385141697031713
+                            ],
+                            "rotation": [
+                                79.76538085937514,
+                                55.55345916748058,
+                                42.565902709961044
+                            ]
+                        },
+                        "SleeveUp_L": {
+                            "location": [
+                                -0.5348375571284123,
+                                2.295429425103066,
+                                0.17815011170546313
+                            ],
+                            "rotation": [
+                                -1.0977495908737183,
+                                -80.50370788574219,
+                                -97.04186248779301
+                            ]
+                        },
+                        "Sleeve_L": {
+                            "location": [
+                                -21.98480427073264,
+                                -0.031370836859423434,
+                                0.7288812775786937
+                            ],
+                            "rotation": [
+                                -3.157812356948861,
+                                -0.4425085186958321,
+                                77.51039886474611
+                            ]
+                        },
+                        "ThumbFinger1_L": {
+                            "location": [
+                                -2.293576699041296,
+                                2.406044098410348,
+                                1.9499428949702633
+                            ],
+                            "rotation": [
+                                -0.1696573495864909,
+                                -48.54411697387698,
+                                -51.493461608886726
+                            ]
+                        },
+                        "ThumbFinger2_L": {
+                            "location": [
+                                -2.969263224156748,
+                                -0.19676384850117756,
+                                0.19959687009486515
+                            ],
+                            "rotation": [
+                                -13.091064453125018,
+                                3.331870794296257,
+                                -2.7263548713971605e-08
+                            ]
+                        },
+                        "ThumbFinger3_L": {
+                            "location": [
+                                -2.5015643542010366,
+                                2.852175384759903e-09,
+                                5.320516720530577e-07
+                            ],
+                            "rotation": [
+                                -0.5616312026977683,
+                                -0.738389432430288,
+                                -0.17210246622561765
+                            ]
+                        },
+                        "ThumbFinger4_L": {
+                            "location": [
+                                -3.0375160930270795,
+                                2.5320332497358322e-09,
+                                3.109917088295333e-07
+                            ],
+                            "rotation": [
+                                1.5902773314967755e-14,
+                                7.156248238514761e-15,
+                                1.4787792592213047e-06
+                            ]
+                        },
+                        "Weapon_L": {
+                            "location": [
+                                -6.906789649819984,
+                                -0.8946245757488214,
+                                2.9079403154319152
+                            ],
+                            "rotation": [
+                                8.935524940490717,
+                                -80.42544555664064,
+                                -54.4098625183106
+                            ]
+                        },
+                        "Wrist_L": {
+                            "location": [
+                                -23.79674377216179,
+                                6.491954991361126e-07,
+                                1.85288445209153e-06
+                            ],
+                            "rotation": [
+                                -2.8766555786132835,
+                                -0.8284784555435116,
+                                -8.330379486083965
+                            ]
+                        }
+                    },
+                    "right_hand": {
+                        "CupIndex_R": {
+                            "location": [
+                                3.2877705385453737,
+                                -1.7705872118485786,
+                                -0.5727634625118299
+                            ],
+                            "rotation": [
+                                2.7079236507415927,
+                                -9.83958625793457,
+                                -1.2499665021896624
+                            ]
+                        },
+                        "CupMid_R": {
+                            "location": [
+                                3.1469734568827334,
+                                -0.22861926299901825,
+                                -0.4338781709984687
+                            ],
+                            "rotation": [
+                                6.131635665893555,
+                                -3.8703749179840043,
+                                -0.007245676126321959
+                            ]
+                        },
+                        "Cup_R": {
+                            "location": [
+                                2.9036542709982314,
+                                2.1345232140347434,
+                                -0.24017501197613456
+                            ],
+                            "rotation": [
+                                2.246100425720221,
+                                -17.15805816650389,
+                                6.38423824310303
+                            ]
+                        },
+                        "ElbowPart1_R": {
+                            "location": [
+                                11.898370919795525,
+                                1.6657850210322067e-07,
+                                7.266935426741838e-07
+                            ],
+                            "rotation": [
+                                3.4190962825732795e-14,
+                                6.361109362927048e-15,
+                                5.220582332620974e-14
+                            ]
+                        },
+                        "IndexFinger1_R": {
+                            "location": [
+                                4.778627971959395,
+                                -1.1355232345522381e-06,
+                                3.918539732694626e-07
+                            ],
+                            "rotation": [
+                                1.9150652885437007,
+                                8.169509887695316,
+                                -1.6968785524368122
+                            ]
+                        },
+                        "IndexFinger2_R": {
+                            "location": [
+                                3.591337625536653,
+                                0.1870612781995078,
+                                -0.15672210073535098
+                            ],
+                            "rotation": [
+                                -5.505153179168688,
+                                0.17594236135481686,
+                                -6.651480493166952e-11
+                            ]
+                        },
+                        "IndexFinger3_R": {
+                            "location": [
+                                1.785986508733913,
+                                2.4035216483753175e-08,
+                                3.570039552869275e-08
+                            ],
+                            "rotation": [
+                                1.0924066305160323,
+                                -0.04083674028516589,
+                                -0.00392933143302674
+                            ]
+                        },
+                        "IndexFinger4_R": {
+                            "location": [
+                                2.139019549391378,
+                                3.889708750648424e-07,
+                                1.398384483763948e-07
+                            ],
+                            "rotation": [
+                                2.942013080353752e-14,
+                                5.724998426634331e-14,
+                                2.45064223015109e-14
+                            ]
+                        },
+                        "MiddleFinger1_R": {
+                            "location": [
+                                5.267778392732907,
+                                -1.3610770110972226e-07,
+                                -4.234225343680009e-07
+                            ],
+                            "rotation": [
+                                -5.826873302459733,
+                                7.465611457824707,
+                                0.547457635402678
+                            ]
+                        },
+                        "MiddleFinger2_R": {
+                            "location": [
+                                3.6998712532194986,
+                                0.10623601717088604,
+                                0.05100987326022732
+                            ],
+                            "rotation": [
+                                -3.0580990314483545,
+                                -0.00642656767740952,
+                                -3.0318976208658186e-12
+                            ]
+                        },
+                        "MiddleFinger3_R": {
+                            "location": [
+                                2.3483571557044343,
+                                -2.541892172303051e-07,
+                                4.8258698370773345e-08
+                            ],
+                            "rotation": [
+                                1.663746237754798,
+                                0.005623510107399214,
+                                8.165305914778092e-05
+                            ]
+                        },
+                        "MiddleFinger4_R": {
+                            "location": [
+                                2.2382167150417445,
+                                -1.6686226445017383e-07,
+                                1.0041458153864369e-07
+                            ],
+                            "rotation": [
+                                7.951386703658808e-16,
+                                6.361109362927035e-15,
+                                -2.5742614453095345e-14
+                            ]
+                        },
+                        "PinkyFinger1_R": {
+                            "location": [
+                                3.5260345623673857,
+                                2.3400861133814033,
+                                0.05259238042526704
+                            ],
+                            "rotation": [
+                                3.428437948226966,
+                                27.2897129058838,
+                                -0.35137027502061197
+                            ]
+                        },
+                        "PinkyFinger2_R": {
+                            "location": [
+                                2.918895744087422,
+                                0.0010565298680376145,
+                                0.026410094672428386
+                            ],
+                            "rotation": [
+                                -3.2417790889740146,
+                                -0.12965872883796373,
+                                -2.457994536970429e-10
+                            ]
+                        },
+                        "PinkyFinger3_R": {
+                            "location": [
+                                1.415794449859277,
+                                -1.382095433655195e-07,
+                                6.21921572019346e-08
+                            ],
+                            "rotation": [
+                                2.82901906967162,
+                                0.11002513021228758,
+                                0.006222027819597522
+                            ]
+                        },
+                        "PinkyFinger4_R": {
+                            "location": [
+                                1.8677975433920437,
+                                -3.0312548915389925e-07,
+                                -9.94969013845548e-08
+                            ],
+                            "rotation": [
+                                -6.997220299219736e-14,
+                                -3.975693351829394e-14,
+                                -1.9182720422576807e-14
+                            ]
+                        },
+                        "RingFinger1_R": {
+                            "location": [
+                                4.864237603479523,
+                                0.9910065030335318,
+                                -0.022414079056034097
+                            ],
+                            "rotation": [
+                                2.861350536346433,
+                                24.871252059936516,
+                                -1.4662868976593004
+                            ]
+                        },
+                        "RingFinger2_R": {
+                            "location": [
+                                3.6805252610356547,
+                                0.0384409109947228,
+                                -0.09052374722341483
+                            ],
+                            "rotation": [
+                                -3.3989744186401576,
+                                -0.02761871926487944,
+                                -2.6998039399018388e-11
+                            ]
+                        },
+                        "RingFinger3_R": {
+                            "location": [
+                                2.0492671175916257,
+                                -3.319682946312241e-07,
+                                -9.630912245484069e-08
+                            ],
+                            "rotation": [
+                                0.17934040725230543,
+                                0.008458601310838604,
+                                1.3238062804747173e-05
+                            ]
+                        },
+                        "RingFinger4_R": {
+                            "location": [
+                                2.205525448908702,
+                                -5.20807589055039e-07,
+                                1.643165887799114e-07
+                            ],
+                            "rotation": [
+                                -1.2722218725854067e-14,
+                                1.2722218725854073e-14,
+                                -2.097178243090007e-14
+                            ]
+                        },
+                        "SleeveDown_R": {
+                            "location": [
+                                0.8734100374886111,
+                                2.2660963040352726,
+                                0.11646898696290009
+                            ],
+                            "rotation": [
+                                7.309619903564453,
+                                86.74423217773439,
+                                100.41695404052736
+                            ]
+                        },
+                        "SleeveIn_R": {
+                            "location": [
+                                0.16077927695823746,
+                                0.508117138918351,
+                                -3.3706451790831125
+                            ],
+                            "rotation": [
+                                -82.75839996337902,
+                                78.79563140869155,
+                                122.56269836425786
+                            ]
+                        },
+                        "SleeveOut_R": {
+                            "location": [
+                                -0.09699244380135497,
+                                -0.12374516972795391,
+                                3.385140753367523
+                            ],
+                            "rotation": [
+                                79.76538085937504,
+                                55.5534591674806,
+                                42.56590270996105
+                            ]
+                        },
+                        "SleeveUp_R": {
+                            "location": [
+                                0.5348372008365914,
+                                -2.295429182119733,
+                                -0.17815080322816357
+                            ],
+                            "rotation": [
+                                -1.0977495908737025,
+                                -80.50370788574219,
+                                -97.04186248779303
+                            ]
+                        },
+                        "Sleeve_R": {
+                            "location": [
+                                21.984802383828537,
+                                0.03137171892922197,
+                                -0.7288782201812865
+                            ],
+                            "rotation": [
+                                -3.1578123569488423,
+                                -0.4425085186958235,
+                                77.51039886474608
+                            ]
+                        },
+                        "ThumbFinger1_R": {
+                            "location": [
+                                2.293576718057011,
+                                -2.4060438310261816,
+                                -1.9499427016298796
+                            ],
+                            "rotation": [
+                                -0.1696573495864909,
+                                -48.544116973877,
+                                -51.49346160888672
+                            ]
+                        },
+                        "ThumbFinger2_R": {
+                            "location": [
+                                2.9692638456235727,
+                                0.19676434287066513,
+                                -0.19959741833099542
+                            ],
+                            "rotation": [
+                                -13.091064453125014,
+                                3.331870794296273,
+                                -2.7263567030929394e-08
+                            ]
+                        },
+                        "ThumbFinger3_R": {
+                            "location": [
+                                2.501564291633713,
+                                7.827657100278884e-08,
+                                -1.336612740487908e-07
+                            ],
+                            "rotation": [
+                                -0.5616312026977618,
+                                -0.7383894324302646,
+                                -0.1721024662256249
+                            ]
+                        },
+                        "ThumbFinger4_R": {
+                            "location": [
+                                3.0375161909946655,
+                                8.421193342655897e-08,
+                                2.368238938288414e-08
+                            ],
+                            "rotation": [
+                                -3.578124016646455e-15,
+                                9.54166404439055e-15,
+                                -1.3517357396219947e-14
+                            ]
+                        },
+                        "Weapon_R": {
+                            "location": [
+                                6.906789413350452,
+                                0.8946242900838115,
+                                -2.907940142809821
+                            ],
+                            "rotation": [
+                                8.935524940490728,
+                                -80.42544555664058,
+                                -54.40986251831054
+                            ]
+                        },
+                        "Wrist_R": {
+                            "location": [
+                                23.79674183958923,
+                                3.3315700420644134e-07,
+                                1.4533834473695606e-06
+                            ],
+                            "rotation": [
+                                -2.8766555786132657,
+                                -0.8284784555435207,
+                                -8.330379486083961
+                            ]
+                        }
+                    }
+                },
+                "Left": {
+                    "AnimationID": "left_arms",
+                    "Location": [
+                        14.600000381469727,
+                        0.0,
+                        -30.0
+                    ],
+                    "Name": "Elbow_L",
+                    "OptimizeAnimationsRootBone": "DeformationSystem",
+                    "Rotation": [
+                        -110.0,
+                        180.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "UseDefaultPose": true
+                },
+                "Mesh": "Pawn.Arms",
+                "Offset": {
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "X": 0,
+                    "Y": 0,
+                    "Yaw": 0.0,
+                    "Z": 0
+                },
+                "OptimizeAnimations": true,
+                "Right": {
+                    "AnimationID": "right_arms",
+                    "Location": [
+                        -10.899999618530273,
+                        0.0,
+                        -30.700000762939453
+                    ],
+                    "Name": "Elbow_R",
+                    "OptimizeAnimationsRootBone": "DeformationSystem",
+                    "Rotation": [
+                        80.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "UseDefaultPose": true
+                }
+            }
+        }
+    }
+}

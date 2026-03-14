@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "ChildActorComponent mk4+C8_skeleton"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -0.9800000190734863,
+            "y": 7.690000057220459,
+            "z": -19.1299991607666
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.7246910333633423,
+            "x": 0.014495757408440113,
+            "y": -0.6887836456298828,
+            "z": 0.013777511194348335
+        }
+    },
+    "type": "motion_controller"
+}

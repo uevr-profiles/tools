@@ -1,0 +1,19 @@
+{
+  "ID": "64b4c18d-0e6e-4840-bf8e-7883addaab6d",
+  "exeName": "KillOption-Win64-Shipping",
+  "gameName": "Alpha Response",
+  "authorName": "KingEJ",
+  "modifiedDate": "2025-08-28T22:00:00Z",
+  "createdDate": "2025-08-28T22:00:00Z",
+  "downloadDate": "2026-03-14T02:36:25Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/64b4c18d-0e6e-4840-bf8e-7883addaab6d",
+  "zipHash": "4325C1AE090E08FA8E747479D590D229",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f64b4c18d-0e6e-4840-bf8e-7883addaab6d&name=KillOption-Win64-Shipping",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FKillOption-Win64-Shipping.zip?alt=media",
+  "headerPictureUrl": "https://cdn.discordapp.com/attachments/1378954428819701780/1378954429163765760/capsule_616x353_jpg.png?ex=69b58da3&is=69b43c23&hm=241c5f67cbf2bb99517346dac6aeeb891589e5228b9dedb9fc3b03bbe224a8fd&",
+  "description": "3DOF WIP  Edit input.ini to add some controller support.  LB = slide LT = aim/revers car RT = fir...",
+  "tags": [
+    "3DoF"
+  ]
+}

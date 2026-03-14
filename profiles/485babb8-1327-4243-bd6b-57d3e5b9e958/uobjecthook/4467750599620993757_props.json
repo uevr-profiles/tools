@@ -1,0 +1,19 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Player Controller",
+        "Properties",
+        "PlayerCameraManager",
+        "Properties",
+        "Children",
+        "CameraActor CameraActor_2147415820"
+    ],
+    "properties": [
+        {
+            "data": 1124204544,
+            "name": "FOVAngle"
+        }
+    ],
+    "type": "properties"
+}

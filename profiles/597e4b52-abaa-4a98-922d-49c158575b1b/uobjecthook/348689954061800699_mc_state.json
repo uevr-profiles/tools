@@ -1,0 +1,28 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "InventoryComponent InventoryComp",
+        "Properties",
+        "InventoryItems",
+        "Device_C2_Charge_C Device_C2_Charge_C_2146953360",
+        "Components",
+        "SkeletalMeshComponent ItemMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -3.859999895095825,
+            "y": -3.390000104904175,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.6894984245300293,
+            "x": 0.0,
+            "y": 0.724287211894989,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

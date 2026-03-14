@@ -1,0 +1,13 @@
+r.FinishCurrentFrame 0
+r.TemporalAA.Quality 0
+r.MotionBlur.Max 0
+r.MotionBlurQuality 0
+r.DefaultFeature.MotionBlur 0
+r.Shadow.Virtual.Enable 1
+r.Shadow.Virtual.ContactShadowLength 1
+r.SceneColorFringe.Max 0
+r.SceneColorFringeQuality 0
+r.Tonemapper.GrainQuantization 0
+r.FilmGrain 0
+r.DistanceFieldShadowing 0
+r.ViewDistanceScale 0.5

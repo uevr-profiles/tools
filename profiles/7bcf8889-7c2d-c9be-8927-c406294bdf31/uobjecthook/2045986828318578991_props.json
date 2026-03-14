@@ -1,0 +1,18 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Mesh",
+        "Properties",
+        "BodyInstance"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "CollisionEnabled"
+        }
+    ],
+    "type": "properties"
+}

@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Machete_Upgraded_C BP_Machete_Upgraded_C_2147461517",
+        "Components",
+        "SkeletalMeshComponent WeaponMesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

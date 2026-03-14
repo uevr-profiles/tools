@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "EquipComponent Equip"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -12.127033233642578,
+            "y": -1.9175169467926025,
+            "z": 5.1803812980651855
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.9987700581550598,
+            "x": 0.029756665229797363,
+            "y": 0.03134939447045326,
+            "z": -0.024289287626743317
+        }
+    },
+    "type": "motion_controller"
+}

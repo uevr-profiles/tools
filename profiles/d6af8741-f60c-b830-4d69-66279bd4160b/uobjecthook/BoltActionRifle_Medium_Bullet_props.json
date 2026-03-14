@@ -1,0 +1,14 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_BoltActionRifle_Medium_C BP_BoltActionRifle_Medium_C_2147394091",
+        "Components",
+        "StaticMeshComponent bullet"
+    ],
+    "properties": [],
+    "type": "properties"
+}

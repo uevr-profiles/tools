@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_RechargeableFlashlight_C BP_RechargeableFlashlight_C_2147238081",
+        "Components",
+        "StaticMeshComponent SM_ManualFlashlight_case"
+    ],
+    "state": {
+        "hand": 0,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.5353689193725586,
+            "x": -0.464631050825119,
+            "y": 0.4987471401691437,
+            "z": -0.4987478256225586
+        }
+    },
+    "type": "motion_controller"
+}

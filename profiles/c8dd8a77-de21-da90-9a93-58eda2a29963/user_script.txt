@@ -1,0 +1,3 @@
+r.WaterSurfaceReflections 0
+r.MotionBlurQuality 0
+ 

@@ -1,0 +1,1 @@
+r.postprocessing.disablematerials 1

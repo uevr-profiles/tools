@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_TS1Minigun_C BP_TS1Minigun_C_2146748839",
+        "Components",
+        "SkeletalMeshComponent FPMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.000703616882674396,
+            "x": 0.0,
+            "y": 0.9999997615814209,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

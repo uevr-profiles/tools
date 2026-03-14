@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Echis_Partner_C BP_Echis_Partner_C_2147479329",
+        "Components",
+        "SkeletalMeshComponent Weapon Mesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.7002847790718079,
+            "x": 0.0,
+            "y": 0.7138636112213135,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

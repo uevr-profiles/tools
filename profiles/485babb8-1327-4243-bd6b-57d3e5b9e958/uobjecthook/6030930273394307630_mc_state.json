@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_HeatBeam_C BP_HeatBeam_C_2147441106",
+        "Properties",
+        "WeaponMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -4.699999809265137,
+            "y": -2.8499999046325684,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.7070348262786865,
+            "x": 0.0,
+            "y": 0.7071787714958191,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

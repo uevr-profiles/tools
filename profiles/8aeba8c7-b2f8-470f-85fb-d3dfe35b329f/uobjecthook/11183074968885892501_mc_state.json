@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Knife_C BP_Knife_C_2147463480",
+        "Components",
+        "SkeletalMeshComponent MeshFPP"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.8975672125816345,
+            "x": 0.4335744082927704,
+            "y": 0.07195892184972763,
+            "z": -0.03476030379533768
+        }
+    },
+    "type": "motion_controller"
+}

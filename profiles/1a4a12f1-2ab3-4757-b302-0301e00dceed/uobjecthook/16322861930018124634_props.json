@@ -1,0 +1,17 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "Gus_WeaponItem_BP_C Gus_WeaponItem_BP_C_2147465111",
+        "Properties",
+        "Children",
+        "Gus_WeaponAttachment_BP_C Gus_WeaponAttachment_BP_C_2147465108",
+        "Components",
+        "SkeletalMeshComponent ItemMesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

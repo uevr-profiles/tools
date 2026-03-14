@@ -1,0 +1,29 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "Sweezy_WeaponItem_BP_C Sweezy_WeaponItem_BP_C_2147465259",
+        "Properties",
+        "Children",
+        "Sweezy_WeaponAttachment_BP_C Sweezy_WeaponAttachment_BP_C_2147465256",
+        "Components",
+        "SkeletalMeshComponent ItemMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 12.548542022705078,
+            "y": -9.548928260803223,
+            "z": -28.9451904296875
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.9969462752342224,
+            "x": 0.064350426197052,
+            "y": 0.03554555028676987,
+            "z": 0.026332814246416092
+        }
+    },
+    "type": "motion_controller"
+}

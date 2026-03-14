@@ -1,0 +1,6 @@
+Engine_r.MotionBlur.Max=-1.000000
+Engine_r.MotionBlurQuality=0
+Engine_r.SceneColorFringeQuality=1
+Engine_r.VolumetricCloud=0
+Renderer_r.Color.Max=1.381000
+Renderer_r.Color.Mid=0.434000

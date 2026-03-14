@@ -1,0 +1,13 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "StaticMeshComponent SM_BaseballBat_01",
+        "Properties",
+        "AttachParent"
+    ],
+    "properties": [],
+    "type": "properties"
+}

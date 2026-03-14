@@ -1,0 +1,14 @@
+{
+    "hide": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "ItemVisualizationComponent LongTacticalVisualizationComponent",
+        "Properties",
+        "BasedOfItem",
+        "Components",
+        "SceneComponent Root"
+    ],
+    "properties": [],
+    "type": "properties"
+}

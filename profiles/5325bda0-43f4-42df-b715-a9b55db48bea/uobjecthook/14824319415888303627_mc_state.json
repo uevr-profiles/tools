@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "ChildActorComponent FlashBeacon"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -0.6790032386779785,
+            "y": 0.3289637565612793,
+            "z": -16.65802764892578
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.024630531668663025,
+            "x": 0.02305988408625126,
+            "y": 0.9994173645973206,
+            "z": -0.005167175084352493
+        }
+    },
+    "type": "motion_controller"
+}

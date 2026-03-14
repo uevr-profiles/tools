@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_PsychicGiantsHead_C BP_PsychicGiantsHead_C_2146910952",
+        "Components",
+        "SkeletalMeshComponent Mesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

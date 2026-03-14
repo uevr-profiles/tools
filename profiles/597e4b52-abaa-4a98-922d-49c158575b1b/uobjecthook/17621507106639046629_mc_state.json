@@ -1,0 +1,28 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "InventoryComponent InventoryComp",
+        "Properties",
+        "InventoryItems",
+        "Device_LockPick_Gun_C Device_LockPick_Gun_C_2146953342",
+        "Components",
+        "SkeletalMeshComponent ItemMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -4.210000038146973,
+            "y": -4.739999771118164,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.6967066526412964,
+            "x": 0.0,
+            "y": 0.7173561453819275,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_ChemicalShotgun_C BP_ChemicalShotgun_C_2147462621",
+        "Properties",
+        "ChemicalShotgun"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.7316888570785522,
+            "x": -0.0,
+            "y": -0.681638777256012,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

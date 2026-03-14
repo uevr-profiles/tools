@@ -1,0 +1,18 @@
+{
+  "ID": "8539b960-d1b4-e867-1c90-56e19a0ed061",
+  "exeName": "UE4Game-Win64-Shipping",
+  "gameName": "EXTR",
+  "authorName": "king.ej.",
+  "createdDate": "2026-03-08T21:23:26Z",
+  "downloadDate": "2026-03-14T01:48:47Z",
+  "sourceName": "discord.gg/flat2vr",
+  "sourceUrl": "https://discord.com/channels/747967102895390741/1480314437456887990/1480315030661759167",
+  "zipHash": "EF769477A38EAAFE7D7421AE13A2FBEB",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f8539b960-d1b4-e867-1c90-56e19a0ed061&name=8539b960-d1b4-e867-1c90-56e19a0ed061",
+  "sourceDownloadUrl": "https://cdn.discordapp.com/attachments/1480314437456887990/1480315030279950508/UE4Game-Win64-Shipping.zip?ex=69b5290e&is=69b3d78e&hm=bb5a2914ea66c3cf3deb45cbb8d3ec7ee45b7f8e91c57eb8813612ac8e75728a&",
+  "description": "Dpad up or menu (left controller) toggle 1st\\3rd person,  shotgun on right controller walkieCB on...",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

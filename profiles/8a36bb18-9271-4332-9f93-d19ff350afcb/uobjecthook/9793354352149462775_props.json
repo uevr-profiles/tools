@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_FoamModulator_C BP_FoamModulator_C_2147273007",
+        "Components",
+        "SkeletalMeshComponent Mesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

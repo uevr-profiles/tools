@@ -1,0 +1,5 @@
+Renderer_r.HZBOcclusion=1
+Renderer_r.LightCulling.Quality=0
+Renderer_r.SSGI.Enable=1
+Renderer_r.SubsurfaceScattering=2
+Renderer_r.Upscale.Quality=5

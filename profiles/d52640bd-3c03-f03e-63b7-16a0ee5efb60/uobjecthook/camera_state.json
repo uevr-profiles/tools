@@ -1,0 +1,13 @@
+{
+    "offset": {
+        "x": 42.400001525878906,
+        "y": 23.700000762939453,
+        "z": 61.196998596191406
+    },
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SHCharacterPlayViewComponent View"
+    ],
+    "type": "camera"
+}

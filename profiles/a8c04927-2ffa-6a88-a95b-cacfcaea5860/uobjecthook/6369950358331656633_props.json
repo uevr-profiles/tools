@@ -1,0 +1,29 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Weapon_Wand_Epic_01_C BP_Weapon_Wand_Epic_01_C_2147357493",
+        "Components",
+        "BWStaticMeshComponent Mesh",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 4605651194776387584,
+            "name": "Z"
+        },
+        {
+            "data": 4605921411033202688,
+            "name": "Y"
+        },
+        {
+            "data": 4605561122869739520,
+            "name": "X"
+        }
+    ],
+    "type": "properties"
+}

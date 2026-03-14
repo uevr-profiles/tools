@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "Wep_Carbine_RedDot_C Wep_Carbine_RedDot_C_2147462374",
+        "Components",
+        "SkeletalMeshComponent Wep_Skeli"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 4.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.6801338791847229,
+            "x": -0.11325188726186752,
+            "y": 0.7144501805305481,
+            "z": -0.11896587163209915
+        }
+    },
+    "type": "motion_controller"
+}

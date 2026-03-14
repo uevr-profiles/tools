@@ -1,0 +1,3 @@
+Engine_r.AmbientOcclusionLevels=2
+Engine_r.DepthOfFieldQuality=1
+Engine_r.MotionBlurQuality=0

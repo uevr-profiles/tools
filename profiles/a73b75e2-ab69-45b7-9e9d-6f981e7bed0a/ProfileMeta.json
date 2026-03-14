@@ -1,0 +1,20 @@
+{
+  "ID": "a73b75e2-ab69-45b7-9e9d-6f981e7bed0a",
+  "exeName": "FSD-Win64-Shipping",
+  "gameName": "Deep Rock Galactic",
+  "authorName": "solidus_86",
+  "modifiedDate": "2024-08-06T22:00:00Z",
+  "createdDate": "2024-08-06T22:00:00Z",
+  "downloadDate": "2026-03-14T02:36:42Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/a73b75e2-ab69-45b7-9e9d-6f981e7bed0a",
+  "zipHash": "AB4D32E0C2BA9DBA3391D7D10D134707",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2fa73b75e2-ab69-45b7-9e9d-6f981e7bed0a&name=FSD-Win64-Shipping",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FFSD-Win64-Shipping.zip?alt=media",
+  "headerPictureUrl": "https://cdn.discordapp.com/attachments/1196662585978798190/1196662586247225344/2JSde8PFCF6B4nO2EECrcR1m.webp?ex=69b583a1&is=69b43221&hm=cc32690c14b92f7da02428f96b0b91be10d94b75e0195da4e39bc72dfd14000e&",
+  "description": "Turn off crosshairs but UI is fixed to view and 6DOF for gun. May require tweaks on the hooked ob...",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

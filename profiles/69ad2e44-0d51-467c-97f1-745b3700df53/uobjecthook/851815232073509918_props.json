@@ -1,0 +1,26 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "ChildActorComponent FPP_Player_Cosmetics_ChildActor",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 4609164002893758464,
+            "name": "Y"
+        },
+        {
+            "data": 4606822130636554240,
+            "name": "Z"
+        },
+        {
+            "data": 4606371771103313920,
+            "name": "X"
+        }
+    ],
+    "type": "properties"
+}

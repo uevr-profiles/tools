@@ -1,0 +1,29 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BPWeap_PS_VLA_C BPWeap_PS_VLA_C_0"
+    ],
+    "properties": [
+        {
+            "data": 1,
+            "name": "bShowCrosshair"
+        },
+        {
+            "data": 1,
+            "name": "bWeaponUsingCollision"
+        },
+        {
+            "data": 1,
+            "name": "bActorEnableCollision"
+        },
+        {
+            "data": 1065353216,
+            "name": "ViewModelFOV"
+        }
+    ],
+    "type": "properties"
+}

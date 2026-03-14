@@ -1,0 +1,3 @@
+Renderer_r.DefaultFeature.AntiAliasing=0
+Renderer_r.HZBOcclusion=1
+Renderer_r.Upscale.Quality=0

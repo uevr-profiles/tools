@@ -1,0 +1,17 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "Wep_SniperRifle__C Wep_SniperRifle__C_2147473368"
+    ],
+    "properties": [
+        {
+            "data": 3196395192,
+            "name": "Anim_Recoil_RecoveryTime"
+        }
+    ],
+    "type": "properties"
+}

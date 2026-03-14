@@ -1,0 +1,19 @@
+{
+  "ID": "092330b8-4039-4097-8cf6-7dfa5a600513",
+  "exeName": "FactoryGame-Win64-Shipping",
+  "gameName": "Satisfactory",
+  "authorName": "Dortamur",
+  "modifiedDate": "2024-01-01T23:00:00Z",
+  "createdDate": "2024-01-01T23:00:00Z",
+  "downloadDate": "2026-03-14T02:36:00Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/092330b8-4039-4097-8cf6-7dfa5a600513",
+  "zipHash": "32CEB5DD1E381CAEFF53352E42BD3F34",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f092330b8-4039-4097-8cf6-7dfa5a600513&name=FactoryGame-Win64-Shipping_1",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FFactoryGame-Win64-Shipping_1.zip?alt=media",
+  "description": "Basic \"Tourist\" profile for wandering around factories (or jetpacking through the mountaintops), ...",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

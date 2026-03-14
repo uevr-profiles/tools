@@ -1,0 +1,27 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "InventoryComponent",
+        "Properties",
+        "ActiveItem",
+        "Properties",
+        "RootComponent"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -8.967961311340332,
+            "y": 2.2682838439941406,
+            "z": -0.18590378761291504
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.7055069804191589,
+            "x": -0.011669449508190155,
+            "y": -0.7086067199707031,
+            "z": 0.0007749199867248535
+        }
+    },
+    "type": "motion_controller"
+}

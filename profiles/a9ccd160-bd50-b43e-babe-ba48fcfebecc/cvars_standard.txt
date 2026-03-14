@@ -1,0 +1,11 @@
+Core_r.ScreenPercentage=100.561996
+Renderer_r.DefaultFeature.AmbientOcclusion=1
+Renderer_r.DefaultFeature.AntiAliasing=0
+Renderer_r.HZBOcclusion=1
+Renderer_r.LightCulling.Quality=1
+Renderer_r.SSGI.Enable=0
+Renderer_r.SubsurfaceScattering=0
+Renderer_r.TemporalAA.Algorithm=0
+Renderer_r.TemporalAA.Upsampling=0
+Renderer_r.TranslucentLightingVolume=0
+Renderer_r.Upscale.Quality=4

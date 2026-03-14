@@ -1,0 +1,19 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_HeatBeam_C BP_HeatBeam_C_2147441106",
+        "Components",
+        "SkeletalMeshComponent WeaponMesh"
+    ],
+    "properties": [
+        {
+            "data": 1,
+            "name": "bAbsoluteScale"
+        }
+    ],
+    "type": "properties"
+}

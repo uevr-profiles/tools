@@ -1,0 +1,27 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Equipment",
+        "Properties",
+        "EquippedInstance",
+        "Components",
+        "SkeletalMeshComponent BowMesh"
+    ],
+    "state": {
+        "hand": 0,
+        "location_offset": {
+            "x": 0.0,
+            "y": -10.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.5353685021400452,
+            "x": 0.49874749779701233,
+            "y": -0.4987476170063019,
+            "z": 0.4646313786506653
+        }
+    },
+    "type": "motion_controller"
+}

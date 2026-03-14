@@ -1,0 +1,28 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "InventoryComponent InventoryComp",
+        "Properties",
+        "InventoryItems",
+        "BP_BallisticShield_C BP_BallisticShield_C_2146867727",
+        "Components",
+        "SkeletalMeshComponent ItemMesh"
+    ],
+    "state": {
+        "hand": 0,
+        "location_offset": {
+            "x": -0.4699999988079071,
+            "y": 3.1600000858306885,
+            "z": 4.940000057220459
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.14819274842739105,
+            "x": 0.04652092978358269,
+            "y": 0.9633287191390991,
+            "z": -0.21879787743091583
+        }
+    },
+    "type": "motion_controller"
+}

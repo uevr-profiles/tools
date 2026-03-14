@@ -1,0 +1,13 @@
+{
+    "offset": {
+        "x": 20.100000381469727,
+        "y": 0.0,
+        "z": 69.822998046875
+    },
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "StaticMeshComponent RondoSitting"
+    ],
+    "type": "camera"
+}

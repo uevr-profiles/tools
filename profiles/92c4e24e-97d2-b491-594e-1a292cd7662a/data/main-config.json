@@ -1,0 +1,23 @@
+{
+    "AutoHeal_c": false,
+    "DebugCollision_c": false,
+    "DefaultOffset_c": -21.93,
+    "DisableBButton_c": false,
+    "DisableDpad_c": false,
+    "DisableUnnecessaryBindings_c": false,
+    "GripIsReload_c": false,
+    "HapticFeedbackActive_c": true,
+    "HapticFeedback_c": true,
+    "HolstersActive_c": true,
+    "MeleePower_c": 1500,
+    "PhysicalLeaning_c": false,
+    "SprintingActivated_c": false,
+    "SwapCommandButtonWithX_c": false,
+    "VoiceCommands_c": true,
+    "WeaponInteractions_c": true,
+    "hide_arms_c": false,
+    "isLeftHandModeTriggerSwitchOnly_c": true,
+    "isRhand_c": true,
+    "isRoomscale_c": true,
+    "isUpRecoilActive_c": false
+}

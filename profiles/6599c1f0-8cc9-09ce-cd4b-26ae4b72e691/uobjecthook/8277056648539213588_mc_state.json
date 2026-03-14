@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Item_SpellCast_Acid_Thrower_C BP_Item_SpellCast_Acid_Thrower_C_2147441451",
+        "Components",
+        "SkeletalMeshComponent Hands"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 70.46185302734375,
+            "y": -19.983356475830078,
+            "z": 11.848945617675781
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.8054558038711548,
+            "x": 0.05703103542327881,
+            "y": -0.5898316502571106,
+            "z": 0.009332651272416115
+        }
+    },
+    "type": "motion_controller"
+}

@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_WP_RatTrap_C BP_WP_RatTrap_C_2146141393",
+        "Properties",
+        "RootComponent"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 2.440000057220459,
+            "y": 3.1500000953674316,
+            "z": 2.569999933242798
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.7169539928436279,
+            "x": 0.10614964365959167,
+            "y": 0.1765124499797821,
+            "z": 0.6659975051879883
+        }
+    },
+    "type": "motion_controller"
+}

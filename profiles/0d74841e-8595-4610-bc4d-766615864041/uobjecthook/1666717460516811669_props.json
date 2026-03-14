@@ -1,0 +1,18 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "FFSkeletalMeshComponent ArmsFPP",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 4612586738567610368,
+            "name": "Y"
+        }
+    ],
+    "type": "properties"
+}

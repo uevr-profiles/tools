@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Shield",
+        "Properties",
+        "BlueprintCreatedComponents",
+        "ChildActorComponent ShieldV4_BP"
+    ],
+    "state": {
+        "hand": 0,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.5,
+            "x": 0.5003982186317444,
+            "y": 0.499601811170578,
+            "z": -0.4999997615814209
+        }
+    },
+    "type": "motion_controller"
+}

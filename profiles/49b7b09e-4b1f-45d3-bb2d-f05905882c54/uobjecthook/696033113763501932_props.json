@@ -1,0 +1,18 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent BP_MW_Hammer-Shield_C_2147481293WepSecMesh",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 4601237667055665152,
+            "name": "Y"
+        }
+    ],
+    "type": "properties"
+}

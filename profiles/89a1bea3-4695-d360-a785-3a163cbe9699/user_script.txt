@@ -1,0 +1,2 @@
+r.StaticMeshLODDistanceScale = 0.1
+foliage.ForceLOD = 20

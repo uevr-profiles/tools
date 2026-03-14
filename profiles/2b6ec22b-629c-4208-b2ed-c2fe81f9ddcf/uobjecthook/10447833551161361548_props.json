@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "PalShooterComponent ShooterComponent",
+        "Properties",
+        "HasWeapon",
+        "Components",
+        "SkeletalMeshComponent weapon"
+    ],
+    "properties": [],
+    "type": "properties"
+}

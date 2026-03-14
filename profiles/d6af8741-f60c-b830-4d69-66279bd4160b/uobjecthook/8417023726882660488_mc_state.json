@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_SniperRifle_Medium_C BP_SniperRifle_Medium_C_2147408272",
+        "Components",
+        "SkeletalMeshComponent WeaponMesh1Pb"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.7002059817314148,
+            "x": 0.010503868572413921,
+            "y": 0.713783323764801,
+            "z": 0.010707559064030647
+        }
+    },
+    "type": "motion_controller"
+}

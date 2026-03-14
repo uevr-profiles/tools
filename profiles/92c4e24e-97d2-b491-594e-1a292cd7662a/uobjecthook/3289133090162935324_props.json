@@ -1,0 +1,15 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Inventory_Comp",
+        "Properties",
+        "BP_Belt",
+        "Properties",
+        "SK_Belt_A"
+    ],
+    "properties": [],
+    "type": "properties"
+}

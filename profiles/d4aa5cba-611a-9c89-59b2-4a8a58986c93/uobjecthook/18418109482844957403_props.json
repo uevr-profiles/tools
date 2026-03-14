@@ -1,0 +1,19 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_ThermiteCharger_C BP_ThermiteCharger_C_2147461626",
+        "Components",
+        "SkeletalMeshComponent WeaponMesh"
+    ],
+    "properties": [
+        {
+            "data": 1,
+            "name": "bAbsoluteScale"
+        }
+    ],
+    "type": "properties"
+}

@@ -1,0 +1,22 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "StaticMeshComponent Pistol",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 4602858962985943040,
+            "name": "Y"
+        },
+        {
+            "data": 4598715651522035712,
+            "name": "X"
+        }
+    ],
+    "type": "properties"
+}

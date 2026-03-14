@@ -1,0 +1,17 @@
+{
+  "ID": "799ae592-3383-ef5e-638b-3d264f25e986",
+  "exeName": "DragonQuestTreasures",
+  "gameName": "DRAGON QUEST TREASURES",
+  "authorName": "markmonvr",
+  "createdDate": "2024-01-20T05:28:16Z",
+  "downloadDate": "2026-03-14T01:48:36Z",
+  "sourceName": "discord.gg/flat2vr",
+  "sourceUrl": "https://discord.com/channels/747967102895390741/1186056088471212092/1198136897130725396",
+  "zipHash": "80FF115186765478E350C4754007DC75",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f799ae592-3383-ef5e-638b-3d264f25e986&name=799ae592-3383-ef5e-638b-3d264f25e986",
+  "sourceDownloadUrl": "https://cdn.discordapp.com/attachments/1186056088471212092/1198136896719695892/DragonQuestTreasures.zip?ex=69b59ab0&is=69b44930&hm=22b4eee5f9cf5300ebf80efd4c1ec13f0eea8f08870cfd384e495f2b48c5efb1&",
+  "description": "I flattened the zip so that it imports correctly using the UEVR import function. Otherwise it's t...",
+  "tags": [
+    "3DOF"
+  ]
+}

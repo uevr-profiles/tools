@@ -1,0 +1,3 @@
+Engine_r.AllowOcclusionQueries=1
+Engine_r.OneFrameThreadLag=1
+Renderer_r.Tonemapper.Sharpen=0.600000

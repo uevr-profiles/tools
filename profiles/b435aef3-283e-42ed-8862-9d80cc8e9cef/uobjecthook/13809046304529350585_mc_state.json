@@ -1,0 +1,29 @@
+{
+    "path": [
+        "Player Controller",
+        "Properties",
+        "Children",
+        "BP_WbPlayerCharacter_C BP_WbPlayerCharacter_C_2147478745",
+        "Properties",
+        "Children",
+        "BP_WbWaterpistol_C BP_WbWaterpistol_C_UAID_04421AEDE901DE1602_1974630821",
+        "Components",
+        "WbFluidSystemNozzle FluidSystemComponent"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

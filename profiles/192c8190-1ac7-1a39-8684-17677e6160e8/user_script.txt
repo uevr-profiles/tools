@@ -1,0 +1,6 @@
+r.NT.Lens.Distortion.Intensity 0
+r.postprocessing.disablematerials 1
+r.PostProcessAAQuality 4
+r.TemporalAA.Quality 1
+r.TemporalAASamples 4
+r.TemporalAACurrentFrameWeight 0.2

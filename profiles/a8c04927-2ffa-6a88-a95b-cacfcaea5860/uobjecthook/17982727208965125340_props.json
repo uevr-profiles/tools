@@ -1,0 +1,29 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Weapon_Broadsword_Epic_01_C BP_Weapon_Broadsword_Epic_01_C_2147337070",
+        "Components",
+        "BWStaticMeshComponent Mesh",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 4607092346893369344,
+            "name": "Z"
+        },
+        {
+            "data": 4604480258916220928,
+            "name": "Y"
+        },
+        {
+            "data": 4601778099032424448,
+            "name": "X"
+        }
+    ],
+    "type": "properties"
+}

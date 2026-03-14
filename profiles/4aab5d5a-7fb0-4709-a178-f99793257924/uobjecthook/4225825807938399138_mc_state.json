@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent CharacterMesh0",
+        "Properties",
+        "AttachChildren",
+        "StaticMeshComponent HandPizza"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -6.760000228881836,
+            "y": 10.029999732971191,
+            "z": 31.299999237060547
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.9999874830245972,
+            "x": 1.5097551030532341e-12,
+            "y": -0.004999979864805937,
+            "z": -3.0194846623032845e-10
+        }
+    },
+    "type": "motion_controller"
+}

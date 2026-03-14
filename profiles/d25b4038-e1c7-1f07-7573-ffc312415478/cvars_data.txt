@@ -1,0 +1,6 @@
+Engine_r.AmbientOcclusionLevels=1
+Engine_r.DepthOfFieldQuality=1
+Engine_r.MotionBlurQuality=3
+Engine_r.OneFrameThreadLag=1
+Engine_r.SceneColorFringeQuality=1
+Engine_r.VolumetricCloud=1

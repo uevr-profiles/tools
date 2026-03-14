@@ -1,0 +1,3 @@
+Engine_r.MotionBlurQuality=0
+Renderer_r.Tonemapper.Sharpen=1.587000
+Renderer_r.TonemapperGamma=1.875000

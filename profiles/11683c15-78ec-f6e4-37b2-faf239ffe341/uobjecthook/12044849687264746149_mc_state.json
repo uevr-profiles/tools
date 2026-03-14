@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent Shovel"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": -16.65999984741211,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": -0.018325280398130417,
+            "x": 0.036663979291915894,
+            "y": 0.4467059373855591,
+            "z": 0.8937414288520813
+        }
+    },
+    "type": "motion_controller"
+}

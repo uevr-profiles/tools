@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "CRDivineShotGun_BP_C CRDivineShotGun_BP_C_2147465965",
+        "Components",
+        "CRSkeletalMeshComponent Mesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -2.4413928985595703,
+            "y": -3.2078099250793457,
+            "z": -5.067035675048828
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.7489770650863647,
+            "x": -0.6363642811775208,
+            "y": 0.12878292798995972,
+            "z": -0.13224545121192932
+        }
+    },
+    "type": "motion_controller"
+}

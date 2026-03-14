@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Weapon_ShortBow_Common_01_C BP_Weapon_ShortBow_Common_01_C_2147470642",
+        "Components",
+        "BWSkeletalMeshComponent Mesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": -0.6448265314102173,
+            "x": 0.0,
+            "y": 0.7643289566040039,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

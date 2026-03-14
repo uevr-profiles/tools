@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent SawBlade"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": -0.6680001616477966,
+            "x": -0.18487456440925598,
+            "y": 0.6947157979011536,
+            "z": -0.19226819276809692
+        }
+    },
+    "type": "motion_controller"
+}

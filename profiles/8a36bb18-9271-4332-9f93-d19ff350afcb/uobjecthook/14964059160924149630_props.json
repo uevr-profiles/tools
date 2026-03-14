@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Echis_Partner_C BP_Echis_Partner_C_2147479329",
+        "Components",
+        "SkeletalMeshComponent Weapon Mesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

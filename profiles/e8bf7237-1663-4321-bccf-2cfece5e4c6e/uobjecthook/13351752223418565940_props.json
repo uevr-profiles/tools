@@ -1,0 +1,17 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "BP_Fireman_Gas_Mask",
+        "Properties",
+        "AttachChildren",
+        "SceneComponent SharedRoot",
+        "Properties",
+        "AttachChildren",
+        "StaticMeshComponent SM_Fireman_Gas_Mask_Glass_StaticMeshComponent0"
+    ],
+    "properties": [],
+    "type": "properties"
+}

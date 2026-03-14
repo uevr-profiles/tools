@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "M1911_C M1911_C_2147481998",
+        "Components",
+        "SkeletalMeshComponent SkeletalMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -4.050566673278809,
+            "y": 5.055662155151367,
+            "z": 0.5409011840820313
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.7031238079071045,
+            "x": -0.007677080575376749,
+            "y": -0.7063761353492737,
+            "z": 0.08118303120136261
+        }
+    },
+    "type": "motion_controller"
+}

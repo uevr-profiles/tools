@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_FireExtinguisher_C BP_FireExtinguisher_C_2147114977",
+        "Components",
+        "SkeletalMeshComponent FPMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.707379162311554,
+            "x": -0.0035369114484637976,
+            "y": -0.7068166136741638,
+            "z": -0.0035341260954737663
+        }
+    },
+    "type": "motion_controller"
+}

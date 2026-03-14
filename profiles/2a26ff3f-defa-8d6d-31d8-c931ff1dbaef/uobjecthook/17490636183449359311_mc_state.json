@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "StaticMeshComponent Pipe"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": -0.5952710509300232,
+            "x": -0.23775872588157654,
+            "y": 0.7127905488014221,
+            "z": -0.2846977114677429
+        }
+    },
+    "type": "motion_controller"
+}

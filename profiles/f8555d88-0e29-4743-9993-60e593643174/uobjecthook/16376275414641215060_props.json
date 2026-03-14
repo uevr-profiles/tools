@@ -1,0 +1,17 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "Wep_Carbine_RedDot_C Wep_Carbine_RedDot_C_2147462374"
+    ],
+    "properties": [
+        {
+            "data": 3195858321,
+            "name": "Anim_Recoil_RecoveryTime"
+        }
+    ],
+    "type": "properties"
+}

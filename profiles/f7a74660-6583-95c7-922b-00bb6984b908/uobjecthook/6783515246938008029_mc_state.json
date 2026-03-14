@@ -1,0 +1,27 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "WeaponController WeaponController",
+        "Properties",
+        "CurrentWeapon",
+        "Components",
+        "SkeletalMeshComponent WeaponMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.18228530883789063,
+            "y": 166.2379150390625,
+            "z": -70.33699035644531
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.9644434452056885,
+            "x": 0.1105697751045227,
+            "y": 0.22468142211437225,
+            "z": -0.08450811356306076
+        }
+    },
+    "type": "motion_controller"
+}

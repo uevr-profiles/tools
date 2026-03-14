@@ -1,0 +1,29 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Weapon_Magicsword_Epic_01_C BP_Weapon_Magicsword_Epic_01_C_2147284218",
+        "Components",
+        "BWStaticMeshComponent Mesh",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 4605921411033202688,
+            "name": "Z"
+        },
+        {
+            "data": 4605651194776387584,
+            "name": "Y"
+        },
+        {
+            "data": 4605471050963091456,
+            "name": "X"
+        }
+    ],
+    "type": "properties"
+}

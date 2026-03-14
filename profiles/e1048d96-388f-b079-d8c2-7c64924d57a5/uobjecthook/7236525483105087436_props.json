@@ -1,0 +1,11 @@
+{
+    "hide": true,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "StaticMeshComponent Drone_battery_phantom_4"
+    ],
+    "properties": [],
+    "type": "properties"
+}

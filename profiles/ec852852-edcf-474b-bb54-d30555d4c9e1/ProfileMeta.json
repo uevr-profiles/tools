@@ -1,0 +1,20 @@
+{
+  "ID": "ec852852-edcf-474b-bb54-d30555d4c9e1",
+  "exeName": "SquadGame",
+  "gameName": "Squad",
+  "authorName": "Martini",
+  "modifiedDate": "2024-03-25T23:00:00Z",
+  "createdDate": "2024-03-25T23:00:00Z",
+  "downloadDate": "2026-03-14T02:36:58Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/ec852852-edcf-474b-bb54-d30555d4c9e1",
+  "zipHash": "72F89433E75E0FE7C3C87154B4572E9F",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2fec852852-edcf-474b-bb54-d30555d4c9e1&name=SquadGame_1",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FSquadGame_1.zip?alt=media",
+  "headerPictureUrl": "https://cdn.discordapp.com/attachments/1098636000584011927/1098636001003458681/squad-file-90539b00b.jpeg?ex=69b58302&is=69b43182&hm=cc4289ab865593ba6fde4a7300b30938db7a2bad54f0706fb5b96efbb4322c64&",
+  "description": "6DOF. Profile camera for infantry, vehicles and only few mounted weapons like the dhska. When you...",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

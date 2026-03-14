@@ -1,0 +1,15 @@
+r.MotionBlur.Max 0
+r.MotionBlurQuality 0
+r.DefaultFeature.MotionBlur 0
+r.SceneColorFringe.Max 0
+r.SceneColorFringeQuality 0
+r.Tonemapper.GrainQuantization 0
+r.FilmGrain 0
+r.PostProcessAAQuality 5
+r.TemporalAA.Quality 3
+r.TemporalAASamples 6
+r.TemporalAACurrentFrameWeight 0.2
+r.LensFlareQuality 0
+r.FinishCurrentFrame 0
+
+

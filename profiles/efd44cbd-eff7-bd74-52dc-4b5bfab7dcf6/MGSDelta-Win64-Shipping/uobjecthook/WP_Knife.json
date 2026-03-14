@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_WP_Knife_C BP_WP_Knife_C_2147469011",
+        "Properties",
+        "RootComponent"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -6.260000228881836,
+            "y": -1.1100000143051147,
+            "z": -0.949999988079071
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.5403818488121033,
+            "x": 0.4478791654109955,
+            "y": 0.6664637327194214,
+            "z": 0.2514314651489258
+        }
+    },
+    "type": "motion_controller"
+}

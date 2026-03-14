@@ -1,0 +1,2 @@
+Renderer_r.Tonemapper.Sharpen=1.125000
+Renderer_r.TonemapperGamma=-5.000000

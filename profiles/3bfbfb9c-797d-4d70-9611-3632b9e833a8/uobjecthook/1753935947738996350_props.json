@@ -1,0 +1,14 @@
+{
+    "hide": true,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_NGPParasite_C BP_NGPParasite_C_2147480738",
+        "Components",
+        "StaticMeshComponent Sphere_Helper"
+    ],
+    "properties": [],
+    "type": "properties"
+}

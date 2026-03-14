@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_StunBaton_C BP_StunBaton_C_2147479985",
+        "Components",
+        "SkeletalMeshComponent Mesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

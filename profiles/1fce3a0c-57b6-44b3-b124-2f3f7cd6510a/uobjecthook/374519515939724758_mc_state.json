@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "CRDivineHarpoon_BP_C CRDivineHarpoon_BP_C_2147414534",
+        "Components",
+        "CRSkeletalMeshComponent Mesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 1.743246078491211,
+            "y": 5.197962284088135,
+            "z": 2.021895408630371
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.7584311962127686,
+            "x": -0.6298795938491821,
+            "y": 0.11080106347799301,
+            "z": -0.12552647292613983
+        }
+    },
+    "type": "motion_controller"
+}

@@ -1,0 +1,4 @@
+Renderer_r.HZBOcclusion=0
+Renderer_r.SSGI.Enable=0
+Renderer_r.TemporalAA.Upsampling=1
+Renderer_r.TranslucentLightingVolume=0

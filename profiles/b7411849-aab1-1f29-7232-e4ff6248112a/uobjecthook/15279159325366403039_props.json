@@ -1,0 +1,23 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "CurrentlyActiveItem",
+        "Properties",
+        "SkeletalMesh",
+        "Properties",
+        "OverrideMaterials",
+        "MaterialInstanceDynamic MaterialInstanceDynamic_12",
+        "Properties",
+        "ScalarParameterValues"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "ParameterValue"
+        }
+    ],
+    "type": "properties"
+}

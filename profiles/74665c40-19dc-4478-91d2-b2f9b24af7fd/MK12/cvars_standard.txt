@@ -1,0 +1,3 @@
+Core_r.ScreenPercentage=100.000000
+Renderer_r.DefaultFeature.AmbientOcclusion=0
+Renderer_r.DefaultFeature.AntiAliasing=2

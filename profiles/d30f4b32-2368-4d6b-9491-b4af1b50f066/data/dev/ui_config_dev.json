@@ -1,0 +1,41 @@
+{
+    "uevr_ui_autoAdjustUIWhenActive": 1,
+    "uevr_ui_autoAdjustUIWhenActivePriority": "0",
+    "uevr_ui_autoAdjustUIWhenInGameState": 1,
+    "uevr_ui_autoAdjustUIWhenInGameStatePriority": "0",
+    "uevr_ui_currentViewportWidgets": "WBP_Watermark_C\nWBP_Hurt_C\nWBP_Subtitles_C\nWBP_SaveScreen_C\nWBP_Microphone_C\nWBP_MainWidget_C\nWBP_InteractionCanvas_C\nWBP_PauseMenu_C\nWBP_AQP_LoadingScreen_C\nWBP_DisconnectedControllerPopup_C\n",
+    "uevr_ui_decouplePitchWhenActive": 1,
+    "uevr_ui_decouplePitchWhenActivePriority": "0",
+    "uevr_ui_decouplePitchWhenInGameState": 1,
+    "uevr_ui_decouplePitchWhenInGameStatePriority": "0",
+    "uevr_ui_gameStateList": 1,
+    "uevr_ui_handsWhenActive": 1,
+    "uevr_ui_handsWhenActivePriority": "0",
+    "uevr_ui_handsWhenInGameState": 3,
+    "uevr_ui_handsWhenInGameStatePriority": "0",
+    "uevr_ui_inputWhenActive": 1,
+    "uevr_ui_inputWhenActivePriority": "0",
+    "uevr_ui_inputWhenInGameState": 3,
+    "uevr_ui_inputWhenInGameStatePriority": "0",
+    "uevr_ui_knownViewportWidgetList": 1,
+    "uevr_ui_lockedUIWhenActive": 1,
+    "uevr_ui_lockedUIWhenActivePriority": "0",
+    "uevr_ui_lockedUIWhenInGameState": 1,
+    "uevr_ui_lockedUIWhenInGameStatePriority": "0",
+    "uevr_ui_remapWhenActive": 1,
+    "uevr_ui_remapWhenActivePriority": "0",
+    "uevr_ui_remapWhenInGameState": 1,
+    "uevr_ui_remapWhenInGameStatePriority": "0",
+    "uevr_ui_screen2DWhenActive": 2,
+    "uevr_ui_screen2DWhenActivePriority": "0",
+    "uevr_ui_screen2DWhenInGameState": 1,
+    "uevr_ui_screen2DWhenInGameStatePriority": "0",
+    "uevr_ui_widget_alignment_2d": [
+        0.0,
+        0.0
+    ],
+    "uevr_ui_widget_scale_2d": [
+        1.0,
+        1.0
+    ]
+}

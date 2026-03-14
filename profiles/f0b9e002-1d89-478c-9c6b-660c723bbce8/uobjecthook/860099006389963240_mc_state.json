@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "CRWDivinePistolNew_BP_C CRWDivinePistolNew_BP_C_2147473896",
+        "Components",
+        "CRSkeletalMeshComponent Mesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.904766321182251,
+            "y": 2.9797658920288086,
+            "z": -4.198257923126221
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.7355637550354004,
+            "x": -0.6540746092796326,
+            "y": 0.10537832975387573,
+            "z": -0.14151960611343384
+        }
+    },
+    "type": "motion_controller"
+}

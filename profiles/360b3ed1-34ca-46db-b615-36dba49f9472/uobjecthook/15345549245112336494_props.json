@@ -1,0 +1,31 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Controller",
+        "Properties",
+        "MyHUD",
+        "Properties",
+        "HUDWidgets",
+        "WBP_PlayerUI_C WBP_PlayerUI_C_2147478568",
+        "Properties",
+        "WBP_PalAim",
+        "Properties",
+        "Image_101",
+        "Properties",
+        "Brush",
+        "Properties",
+        "TintColor",
+        "Properties",
+        "SpecifiedColor"
+    ],
+    "properties": [
+        {
+            "data": 1065353216,
+            "name": "A"
+        }
+    ],
+    "type": "properties"
+}

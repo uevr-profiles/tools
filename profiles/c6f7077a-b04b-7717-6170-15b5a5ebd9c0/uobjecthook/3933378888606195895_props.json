@@ -1,0 +1,13 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "OwnedWeapon",
+        "Properties",
+        "RootComponent"
+    ],
+    "properties": [],
+    "type": "properties"
+}

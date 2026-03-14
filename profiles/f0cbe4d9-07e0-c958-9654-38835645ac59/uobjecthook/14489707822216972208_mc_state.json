@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "CapsuleComponent FrontLegPhysicCollider"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -0.20999999344348907,
+            "y": 0.30000001192092896,
+            "z": 0.7400000095367432
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.9057366847991943,
+            "x": -0.42088374495506287,
+            "y": 0.0453246645629406,
+            "z": 0.021061766892671585
+        }
+    },
+    "type": "motion_controller"
+}

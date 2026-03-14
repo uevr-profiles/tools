@@ -1,0 +1,22 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "CRWDivinePistolNew_BP_C CRWDivinePistolNew_BP_C_2147476165",
+        "Properties",
+        "BlueprintCreatedComponents",
+        "CR_StaticMeshComponent LiquidMag",
+        "Properties",
+        "RelativeLocation"
+    ],
+    "properties": [
+        {
+            "data": 13835125609212149760,
+            "name": "X"
+        }
+    ],
+    "type": "properties"
+}

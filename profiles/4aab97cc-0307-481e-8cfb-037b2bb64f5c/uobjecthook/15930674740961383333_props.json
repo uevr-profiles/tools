@@ -1,0 +1,14 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "GbxSkeletalMeshComponent CharacterMesh0",
+        "Properties",
+        "AttachChildren",
+        "SkeletalMeshComponent ShieldMesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

@@ -1,0 +1,20 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Camera"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "CloseCameraCharacterFadeSpeed"
+        },
+        {
+            "data": 0,
+            "name": "CloseCameraCharacterFadeDelay"
+        }
+    ],
+    "type": "properties"
+}

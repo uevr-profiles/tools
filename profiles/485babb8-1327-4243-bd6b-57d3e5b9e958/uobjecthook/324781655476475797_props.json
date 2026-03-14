@@ -1,0 +1,18 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Player Controller",
+        "Properties",
+        "MyHUD",
+        "Properties",
+        "VignetteWidgetClass"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "Visibility"
+        }
+    ],
+    "type": "properties"
+}

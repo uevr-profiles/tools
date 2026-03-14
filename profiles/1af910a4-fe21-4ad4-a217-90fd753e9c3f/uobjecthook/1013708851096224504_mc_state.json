@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_EnergyRail_C BP_EnergyRail_C_2147462576",
+        "Components",
+        "SkeletalMeshComponent ModMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 9.448114395141602,
+            "y": 9.399412155151367,
+            "z": -0.7173529863357544
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.7058573961257935,
+            "x": -0.045256588608026505,
+            "y": -0.7066962718963623,
+            "z": 0.017265811562538147
+        }
+    },
+    "type": "motion_controller"
+}

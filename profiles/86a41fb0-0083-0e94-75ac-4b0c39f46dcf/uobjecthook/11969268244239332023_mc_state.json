@@ -1,0 +1,25 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "CurrentHeldItem",
+        "Properties",
+        "FPRootCopy"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 10.471511840820313,
+            "y": 8.362061500549316,
+            "z": -0.10197067260742188
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.7088958024978638,
+            "x": -0.017838742583990097,
+            "y": 0.7048898339271545,
+            "z": 0.016699839383363724
+        }
+    },
+    "type": "motion_controller"
+}

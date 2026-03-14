@@ -1,0 +1,19 @@
+{
+  "ID": "8aeba8c7-b2f8-470f-85fb-d3dfe35b329f",
+  "exeName": "North_Sentinel_Island-Win64-Shipping",
+  "gameName": "North Sentinel Island",
+  "authorName": "KingEJ",
+  "modifiedDate": "2025-11-24T23:00:00Z",
+  "createdDate": "2025-11-24T23:00:00Z",
+  "downloadDate": "2026-03-14T02:36:36Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/8aeba8c7-b2f8-470f-85fb-d3dfe35b329f",
+  "zipHash": "92161143BE62F1039E93BF06A032CEFB",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f8aeba8c7-b2f8-470f-85fb-d3dfe35b329f&name=North_Sentinel_Island-Win64-Shipping",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FNorth_Sentinel_Island-Win64-Shipping.zip?alt=media",
+  "description": "WIP 6DOF with controller support  L3 = Sprint change Sprint to \"Z\" in game menu R3 = Melee A  = J...",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

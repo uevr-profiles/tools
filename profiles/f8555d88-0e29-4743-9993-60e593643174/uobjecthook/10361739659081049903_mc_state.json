@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "Wep_LightPistol_Suppressed_C Wep_LightPistol_Suppressed_C_2147456224",
+        "Components",
+        "SkeletalMeshComponent Wep_Skeli"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 2.0,
+            "y": -1.5099999904632568,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.6836977005004883,
+            "x": -0.11384519189596176,
+            "y": 0.7110405564308167,
+            "z": -0.11839808523654938
+        }
+    },
+    "type": "motion_controller"
+}

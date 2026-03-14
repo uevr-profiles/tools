@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "FirstPersonMeshComponent MeshFirstPerson",
+        "Properties",
+        "AttachChildren",
+        "ChildActorComponent ChildActorComponent_2147219916"
+    ],
+    "properties": [],
+    "type": "properties"
+}

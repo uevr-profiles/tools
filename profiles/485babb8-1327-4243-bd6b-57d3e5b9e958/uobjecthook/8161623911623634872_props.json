@@ -1,0 +1,19 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_ChemicalShotgun_C BP_ChemicalShotgun_C_2147462621",
+        "Properties",
+        "ChemicalShotgun"
+    ],
+    "properties": [
+        {
+            "data": 1,
+            "name": "bAbsoluteScale"
+        }
+    ],
+    "type": "properties"
+}

@@ -1,0 +1,17 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Mesh",
+        "Properties",
+        "AttachChildren",
+        "SkeletalMeshComponent SK_Mickey_Brush",
+        "Properties",
+        "AttachChildren",
+        "SkeletalMeshComponent Silhouette"
+    ],
+    "properties": [],
+    "type": "properties"
+}

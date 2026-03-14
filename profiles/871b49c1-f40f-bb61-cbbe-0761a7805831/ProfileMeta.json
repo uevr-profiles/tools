@@ -1,0 +1,18 @@
+{
+  "ID": "871b49c1-f40f-bb61-cbbe-0761a7805831",
+  "exeName": "UE4Game-Win64-Shipping",
+  "gameName": "EXTR",
+  "authorName": "king.ej.",
+  "createdDate": "2026-02-07T21:06:35Z",
+  "downloadDate": "2026-03-14T01:48:49Z",
+  "sourceName": "discord.gg/flat2vr",
+  "sourceUrl": "https://discord.com/channels/747967102895390741/1394025308054880357/1469801542944293188",
+  "zipHash": "25C1D840017981F1C9585701D122D407",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f871b49c1-f40f-bb61-cbbe-0761a7805831&name=871b49c1-f40f-bb61-cbbe-0761a7805831",
+  "sourceDownloadUrl": "https://cdn.discordapp.com/attachments/1394025308054880357/1469801542969462947/UE4Game-Win64-Shipping.zip?ex=69b5251b&is=69b3d39b&hm=2754faae2c9206ff0ab3a396d09864b89c8716c035aca299d48406dae87187f6&",
+  "description": "-L3 Sprint adjust speed in Script UI in UEVR menu  -Fire gun RT  -Flashlight RB gun and flashligh...",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

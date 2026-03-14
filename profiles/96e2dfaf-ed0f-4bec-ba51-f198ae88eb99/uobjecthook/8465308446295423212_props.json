@@ -1,0 +1,12 @@
+{
+    "hide": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "EyeOfTruthVisuals",
+        "Components",
+        "SkeletalMeshComponent EyeOfTruthUpgrade"
+    ],
+    "properties": [],
+    "type": "properties"
+}

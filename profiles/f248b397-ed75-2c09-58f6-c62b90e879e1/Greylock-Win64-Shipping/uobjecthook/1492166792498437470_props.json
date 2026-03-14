@@ -1,0 +1,19 @@
+{
+    "hide": true,
+    "path": [
+        "Player Controller",
+        "Properties",
+        "AcknowledgedPawn",
+        "Properties",
+        "HeldWeapon",
+        "Components",
+        "BP_LPSP_WEP_Body_C SMesh Weapon",
+        "Properties",
+        "AttachParent",
+        "Properties",
+        "AttachChildren",
+        "StaticMeshComponent StaticMesh1"
+    ],
+    "properties": [],
+    "type": "properties"
+}

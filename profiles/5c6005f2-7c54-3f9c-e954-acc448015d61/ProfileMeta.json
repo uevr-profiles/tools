@@ -1,0 +1,18 @@
+{
+  "ID": "5c6005f2-7c54-3f9c-e954-acc448015d61",
+  "exeName": "Gylt-Win64-Shipping",
+  "gameName": "GYLT",
+  "authorName": "eric.me",
+  "createdDate": "2024-01-04T15:34:43Z",
+  "downloadDate": "2026-03-14T01:48:18Z",
+  "sourceName": "discord.gg/flat2vr",
+  "sourceUrl": "https://discord.com/channels/747967102895390741/1165999445226311812/1192491307503976588",
+  "zipHash": "C2C23524DF476E1DE48A9EC87829C472",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f5c6005f2-7c54-3f9c-e954-acc448015d61&name=5c6005f2-7c54-3f9c-e954-acc448015d61",
+  "sourceDownloadUrl": "https://cdn.discordapp.com/attachments/1165999445226311812/1192491307185221673/Gylt-Win64-Shipping.zip?ex=69b58013&is=69b42e93&hm=923b7a6083e0b693d6145d7b8f9a8caf04da527a332cc8281981a46b44d9c35f&",
+  "description": "persistent 6dof profile, just write me if sth is missing/does not work",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

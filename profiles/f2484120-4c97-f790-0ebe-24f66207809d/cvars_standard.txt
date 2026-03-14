@@ -1,0 +1,1 @@
+Renderer_r.TranslucentLightingVolume=0

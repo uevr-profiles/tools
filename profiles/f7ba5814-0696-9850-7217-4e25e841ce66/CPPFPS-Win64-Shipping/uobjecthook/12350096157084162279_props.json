@@ -1,0 +1,18 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "CurrentWeapon",
+        "Properties",
+        "OverrideProjectileSpawnRot"
+    ],
+    "properties": [
+        {
+            "data": 1057971241,
+            "name": "Pitch"
+        }
+    ],
+    "type": "properties"
+}

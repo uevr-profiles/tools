@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "Eqp_GravityGun_C Eqp_GravityGun_C_2147479625",
+        "Components",
+        "SkeletalMeshComponent Wep_Skeli"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.6961495876312256,
+            "x": 0.027860945090651512,
+            "y": 0.7167820930480957,
+            "z": 0.028686488047242165
+        }
+    },
+    "type": "motion_controller"
+}

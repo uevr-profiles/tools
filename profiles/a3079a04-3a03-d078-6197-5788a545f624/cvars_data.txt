@@ -1,0 +1,12 @@
+Engine_r.AmbientOcclusionLevels=0
+Engine_r.DepthOfFieldQuality=2
+Engine_r.MotionBlur.Max=-1.000000
+Engine_r.MotionBlurQuality=0
+Engine_r.SceneColorFringe.Max=-1.000000
+Engine_r.SceneColorFringeQuality=0
+Engine_r.VolumetricCloud=1
+Renderer_r.Color.Max=1.006000
+Renderer_r.Color.Mid=0.500000
+Renderer_r.Color.Min=0.000000
+Renderer_r.Tonemapper.Sharpen=1.500000
+Renderer_r.TonemapperGamma=1.345000

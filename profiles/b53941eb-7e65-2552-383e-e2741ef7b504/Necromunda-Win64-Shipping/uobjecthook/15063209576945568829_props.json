@@ -1,0 +1,11 @@
+{
+    "hide": true,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent ArmsMesh1P"
+    ],
+    "properties": [],
+    "type": "properties"
+}

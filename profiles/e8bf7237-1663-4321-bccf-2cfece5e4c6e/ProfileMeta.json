@@ -1,0 +1,19 @@
+{
+  "ID": "e8bf7237-1663-4321-bccf-2cfece5e4c6e",
+  "exeName": "AQuietPlace-Win64-Shipping",
+  "gameName": "A Quiet Place: The Road Ahead",
+  "authorName": "Angelus",
+  "modifiedDate": "2024-10-22T22:00:00Z",
+  "createdDate": "2024-10-22T22:00:00Z",
+  "downloadDate": "2026-03-14T02:36:57Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/e8bf7237-1663-4321-bccf-2cfece5e4c6e",
+  "zipHash": "B1C0B1279E244DA51421C5C80D89F6A7",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2fe8bf7237-1663-4321-bccf-2cfece5e4c6e&name=AQuietPlace-Win64-Shipping",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FAQuietPlace-Win64-Shipping.zip?alt=media",
+  "description": "6DOF Profile  Notes: Flashlight, Self-generating flashlight and Sound level meter are attached to...",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

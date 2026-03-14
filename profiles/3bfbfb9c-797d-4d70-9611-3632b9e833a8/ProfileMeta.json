@@ -1,0 +1,19 @@
+{
+  "ID": "3bfbfb9c-797d-4d70-9611-3632b9e833a8",
+  "exeName": "Returnal-Win64-Shipping",
+  "gameName": "Returnal™",
+  "authorName": "SpanielGarrison",
+  "modifiedDate": "2024-04-02T22:00:00Z",
+  "createdDate": "2024-04-02T22:00:00Z",
+  "downloadDate": "2026-03-14T02:36:13Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/3bfbfb9c-797d-4d70-9611-3632b9e833a8",
+  "zipHash": "9E81FCC77FD9EA77B270D25E57AAAC3F",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f3bfbfb9c-797d-4d70-9611-3632b9e833a8&name=Returnal-Win64-Shipping_2",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FReturnal-Win64-Shipping_2.zip?alt=media",
+  "description": "Here's a profile with dash swapped to the right controller. D-Pad is set to head gestures (hold r...",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

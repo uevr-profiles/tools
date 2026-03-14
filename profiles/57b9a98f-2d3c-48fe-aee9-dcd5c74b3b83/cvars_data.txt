@@ -1,0 +1,5 @@
+Engine_r.AllowOcclusionQueries=1090287856
+Engine_r.MotionBlurQuality=0
+Engine_r.OneFrameThreadLag=0
+Engine_r.SceneColorFringeQuality=0
+Engine_r.VolumetricCloud=0

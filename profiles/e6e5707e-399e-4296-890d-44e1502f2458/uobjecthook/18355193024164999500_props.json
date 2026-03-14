@@ -1,0 +1,13 @@
+{
+    "hide": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent CharacterMesh0",
+        "Properties",
+        "AttachChildren",
+        "ChildActorComponent Watch"
+    ],
+    "properties": [],
+    "type": "properties"
+}

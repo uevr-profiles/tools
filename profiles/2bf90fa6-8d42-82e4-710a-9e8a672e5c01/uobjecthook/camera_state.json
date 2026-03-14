@@ -1,0 +1,13 @@
+{
+    "offset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 82.69999694824219
+    },
+    "path": [
+        "Player Controller",
+        "Properties",
+        "PlayerCharacter"
+    ],
+    "type": "camera"
+}

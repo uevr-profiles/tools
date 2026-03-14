@@ -1,0 +1,10 @@
+r.FinishCurrentFrame 0
+r.MotionBlur.Max 0
+r.MotionBlurQuality 0
+r.DefaultFeature.MotionBlur 0
+r.SceneColorFringe.Max 0
+r.SceneColorFringeQuality 0
+r.Tonemapper.GrainQuantization 0
+r.FilmGrain 0
+r.DetailMode 0 
+r.Shadow.Virtual.Enable 1

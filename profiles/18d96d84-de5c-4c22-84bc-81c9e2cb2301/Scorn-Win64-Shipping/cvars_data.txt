@@ -1,0 +1,2 @@
+Renderer_r.Color.Min=-0.006000
+Renderer_r.TonemapperGamma=2.117000

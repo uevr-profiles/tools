@@ -1,0 +1,10 @@
+{
+    "hide": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "StaticMeshComponent SM_Player_Visor_Left"
+    ],
+    "properties": [],
+    "type": "properties"
+}

@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Controller",
+        "Properties",
+        "MyHUD",
+        "Components",
+        "SceneComponent DefaultSceneRoot"
+    ],
+    "properties": [],
+    "type": "properties"
+}

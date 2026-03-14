@@ -1,0 +1,5 @@
+Renderer_r.DefaultFeature.AmbientOcclusion=1
+Renderer_r.DefaultFeature.AntiAliasing=2
+Renderer_r.LightCulling.Quality=2
+Renderer_r.TranslucentLightingVolume=1
+Renderer_r.Upscale.Quality=3

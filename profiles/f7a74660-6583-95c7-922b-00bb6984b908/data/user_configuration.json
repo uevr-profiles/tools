@@ -1,0 +1,22 @@
+{
+    "1st_person_for_cinematic_cameras": true,
+    "enhancement_movement_left_stick_a": false,
+    "enhancement_movement_left_stick_b": false,
+    "enhancement_movement_left_stick_lb": false,
+    "enhancement_movement_left_stick_lt": false,
+    "enhancement_movement_left_stick_rb": false,
+    "enhancement_movement_left_stick_rt": false,
+    "enhancement_movement_left_stick_x": false,
+    "enhancement_movement_left_stick_y": false,
+    "game_hold_button_to_run": 1,
+    "maintain_improved_controls_for_fixed_cameras_mode": true,
+    "move_back_speed": 3,
+    "movement_system": 1,
+    "revert_fixed_cameras_button": 6,
+    "run_speed_multiplier": 2,
+    "strafe_and_back_collision_detection": false,
+    "strafe_and_back_compatibility_mode": 1,
+    "strafe_speed": 3,
+    "turn_speed": 0.1,
+    "walk_speed": 750
+}

@@ -1,0 +1,26 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent FP_Arms",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 1075251773,
+            "name": "X"
+        },
+        {
+            "data": 1073993482,
+            "name": "Y"
+        },
+        {
+            "data": 1073406280,
+            "name": "Z"
+        }
+    ],
+    "type": "properties"
+}

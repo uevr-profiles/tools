@@ -1,0 +1,4 @@
+sg.EffectsQuality 0
+r.RTXGI.DDGI 0
+r.NRSTiledDeferredShading 0
+

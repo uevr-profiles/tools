@@ -1,0 +1,14 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BPClass_Spell_C BPClass_Spell_C_2",
+        "Components",
+        "SkeletalMeshComponent Mesh3P"
+    ],
+    "properties": [],
+    "type": "properties"
+}

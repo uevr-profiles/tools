@@ -1,0 +1,16 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "HolsteredKnife"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "bVisible"
+        }
+    ],
+    "type": "properties"
+}

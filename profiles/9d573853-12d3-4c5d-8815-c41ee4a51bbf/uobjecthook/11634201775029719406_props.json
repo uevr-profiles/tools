@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent Hands",
+        "Properties",
+        "AttachChildren",
+        "StaticMeshComponent ALS_lantern_1"
+    ],
+    "properties": [],
+    "type": "properties"
+}

@@ -1,0 +1,18 @@
+{
+  "ID": "e1048d96-388f-b079-d8c2-7c64924d57a5",
+  "exeName": "ETBDB-Win64-Shipping",
+  "gameName": "ENTITY: THE BLACK DAY",
+  "authorName": "king.ej.",
+  "createdDate": "2026-01-19T21:03:44Z",
+  "downloadDate": "2026-03-14T01:49:59Z",
+  "sourceName": "discord.gg/flat2vr",
+  "sourceUrl": "https://discord.com/channels/747967102895390741/1411955839241162893/1462915457743978691",
+  "zipHash": "F528487345C4D26D3553C3F190E87155",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2fe1048d96-388f-b079-d8c2-7c64924d57a5&name=e1048d96-388f-b079-d8c2-7c64924d57a5",
+  "sourceDownloadUrl": "https://cdn.discordapp.com/attachments/1411955839241162893/1462915457349845144/ETBDB-Win64-Shipping.zip?ex=69b52470&is=69b3d2f0&hm=497d443aef4726bdd020b108b63f97f3247551cb11e518517603c6d39da7d9d0&",
+  "description": "6Dof WIP  -Swing Left controller to Melee -R3 to reload -LB to Dodge -RB to Aim -Back to Toggle 1...",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

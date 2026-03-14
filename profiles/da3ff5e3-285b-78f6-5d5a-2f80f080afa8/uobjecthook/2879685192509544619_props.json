@@ -1,0 +1,14 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent FP_Arm",
+        "Properties",
+        "AttachChildren",
+        "StaticMeshComponent FPLeftStaticTool"
+    ],
+    "properties": [],
+    "type": "properties"
+}

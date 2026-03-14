@@ -1,0 +1,3 @@
+r.NT.Lens.Distortion.Intensity 0
+r.SSFS 0
+

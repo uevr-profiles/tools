@@ -1,0 +1,19 @@
+{
+  "ID": "4af328e1-c314-42e8-b630-91387e292018",
+  "exeName": "HighOnLife2-WinGDK-Shipping",
+  "gameName": "High On Life 2",
+  "authorName": "JShodanVR",
+  "modifiedDate": "2026-02-12T23:00:00Z",
+  "createdDate": "2026-02-12T23:00:00Z",
+  "downloadDate": "2026-03-14T02:36:20Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/4af328e1-c314-42e8-b630-91387e292018",
+  "zipHash": "6945CDBFE872FF36D89E210AE103D60B",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f4af328e1-c314-42e8-b630-91387e292018&name=HighOnLife2-WinGDK-Shipping",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FHighOnLife2-WinGDK-Shipping.zip?alt=media",
+  "description": "Left and Right arm are hidden Fix for Native Stereo",
+  "profileName": "HighOnLife2-WinGDK-Shipping",
+  "tags": [
+    "3DOF"
+  ]
+}

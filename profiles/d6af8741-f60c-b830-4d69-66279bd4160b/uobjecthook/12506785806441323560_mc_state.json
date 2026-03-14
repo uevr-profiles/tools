@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_StakeGun_Medium_C BP_StakeGun_Medium_C_2147481839",
+        "Components",
+        "SkeletalMeshComponent WeaponMesh1Pb"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.7001447081565857,
+            "x": 0.014004756696522236,
+            "y": 0.7137208580970764,
+            "z": 0.014276323840022087
+        }
+    },
+    "type": "motion_controller"
+}

@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent SK_SMG"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": -0.6967066526412964,
+            "x": 0.0,
+            "y": 0.7173561453819275,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

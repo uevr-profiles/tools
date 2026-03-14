@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_WP_CigarPistol_C BP_WP_CigarPistol_C_2147168000",
+        "Components",
+        "StaticMeshComponent CigarMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.3100000023841858,
+            "y": -3.3380000591278076,
+            "z": 3.6740000247955322
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.4219829738140106,
+            "x": 0.41826292872428894,
+            "y": -0.5568394660949707,
+            "z": 0.5804449319839478
+        }
+    },
+    "type": "motion_controller"
+}

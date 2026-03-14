@@ -1,0 +1,22 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Player Controller",
+        "Properties",
+        "MyHUD",
+        "Properties",
+        "VignetteWidget",
+        "Properties",
+        "ImgVignette",
+        "Properties",
+        "Brush"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "DrawAs"
+        }
+    ],
+    "type": "properties"
+}

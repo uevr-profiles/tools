@@ -1,0 +1,16 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "FixedSight"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "bRenderWithCustomFOV"
+        }
+    ],
+    "type": "properties"
+}

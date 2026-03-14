@@ -1,0 +1,16 @@
+r.MotionBlur.Max 0
+r.MotionBlurQuality 0
+r.DefaultFeature.MotionBlur 0
+r.DepthOfFieldQuality 0
+r.PostProcessAAQuality 1
+r.DefaultFeature.AntiAliasing 1
+r.SceneColorFringe.Max 0
+r.SceneColorFringeQuality 0
+r.Tonemapper.GrainQuantization 0
+r.Tonemapper.Quality 0
+r.LensFlareQuality 0
+r.DefaultFeature.LensFlare 0
+r.DefaultFeature.Bloom 0
+r.BloomQuality 0
+r.Shadow.MaxResolution 704
+r.postprocessing.disablematerials 1

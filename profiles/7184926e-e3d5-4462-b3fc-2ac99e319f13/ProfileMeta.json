@@ -1,0 +1,19 @@
+{
+  "ID": "7184926e-e3d5-4462-b3fc-2ac99e319f13",
+  "exeName": "Returnal-Win64-Shipping",
+  "gameName": "Returnal™",
+  "authorName": "flippy",
+  "modifiedDate": "2025-11-26T23:00:00Z",
+  "createdDate": "2025-11-26T23:00:00Z",
+  "downloadDate": "2026-03-14T02:36:28Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/7184926e-e3d5-4462-b3fc-2ac99e319f13",
+  "zipHash": "552DB50BEDEC73E1FF19587BE399DFED",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f7184926e-e3d5-4462-b3fc-2ac99e319f13&name=Returnal-Win64-Shipping_4",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FReturnal-Win64-Shipping_4.zip?alt=media",
+  "description": "Updated profile based on markmon's.  This profile removes the Visor as well as the floating Sword...",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

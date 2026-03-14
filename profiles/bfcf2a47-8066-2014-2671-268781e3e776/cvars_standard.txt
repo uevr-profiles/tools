@@ -1,0 +1,2 @@
+Renderer_r.TemporalAA.Upsampling=0
+Renderer_r.Upscale.Quality=0

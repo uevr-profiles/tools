@@ -1,0 +1,12 @@
+{
+    "hide": true,
+    "path": [
+        "Camera Manager",
+        "Properties",
+        "Character",
+        "Components",
+        "SkeletalMeshComponent CharacterMesh0"
+    ],
+    "properties": [],
+    "type": "properties"
+}

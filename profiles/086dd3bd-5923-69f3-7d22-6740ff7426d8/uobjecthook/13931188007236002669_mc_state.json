@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_GarrettRevolver_C BP_GarrettRevolver_C_2146951252",
+        "Components",
+        "SkeletalMeshComponent FPMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": -0.6821444630622864,
+            "x": 0.010232935659587383,
+            "y": 0.7310636043548584,
+            "z": 0.01096678152680397
+        }
+    },
+    "type": "motion_controller"
+}

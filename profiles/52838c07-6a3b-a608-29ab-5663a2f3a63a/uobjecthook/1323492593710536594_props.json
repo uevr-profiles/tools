@@ -1,0 +1,15 @@
+{
+    "hide": true,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "JetPackFlameVFXBehaviour_C JetPackFlameVFXBehaviour",
+        "Properties",
+        "jetpack_front_UR",
+        "Properties",
+        "Niagara"
+    ],
+    "properties": [],
+    "type": "properties"
+}

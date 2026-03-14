@@ -1,0 +1,29 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Weapon_CrossBow_Rare_01_C BP_Weapon_CrossBow_Rare_01_C_2147403730",
+        "Components",
+        "BWStaticMeshComponent Mesh",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 4605020690892980224,
+            "name": "Z"
+        },
+        {
+            "data": 4604930618986332160,
+            "name": "Y"
+        },
+        {
+            "data": 4604750475173036032,
+            "name": "X"
+        }
+    ],
+    "type": "properties"
+}

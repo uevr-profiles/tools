@@ -1,0 +1,25 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "CurrentWeapon",
+        "Properties",
+        "Mesh1P"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 26.607999801635742,
+            "y": -17.332000732421875,
+            "z": 6.75600004196167
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.7073881030082703,
+            "x": -0.015201480127871037,
+            "y": -0.7066617608070374,
+            "z": 0.0003596072783693671
+        }
+    },
+    "type": "motion_controller"
+}

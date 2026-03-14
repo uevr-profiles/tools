@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_HandCannon_Medium_C BP_HandCannon_Medium_C_2147392902",
+        "Components",
+        "SkeletalMeshComponent WeaponMesh1Pb"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.7038099765777588,
+            "x": 0.0070383367128670216,
+            "y": 0.7103179097175598,
+            "z": 0.007103412877768278
+        }
+    },
+    "type": "motion_controller"
+}

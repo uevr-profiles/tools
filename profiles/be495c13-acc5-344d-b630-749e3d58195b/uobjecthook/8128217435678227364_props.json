@@ -1,0 +1,18 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SpotLightComponent FlashLatarka2",
+        "Properties",
+        "AttachParent"
+    ],
+    "properties": [
+        {
+            "data": 1112014848,
+            "name": "CameraRotationLagSpeed"
+        }
+    ],
+    "type": "properties"
+}

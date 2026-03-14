@@ -1,0 +1,26 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Arms1P",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 1067198710,
+            "name": "Y"
+        },
+        {
+            "data": 1065688760,
+            "name": "X"
+        },
+        {
+            "data": 1064346583,
+            "name": "Z"
+        }
+    ],
+    "type": "properties"
+}

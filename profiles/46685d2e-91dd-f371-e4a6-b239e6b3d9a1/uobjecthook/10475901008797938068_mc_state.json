@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "FP_Arms"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 21.438369750976563,
+            "y": 117.70745086669922,
+            "z": 6.89457893371582
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.6941783428192139,
+            "x": 0.011528270319104195,
+            "y": -0.7163679599761963,
+            "z": 0.06928951293230057
+        }
+    },
+    "type": "motion_controller"
+}

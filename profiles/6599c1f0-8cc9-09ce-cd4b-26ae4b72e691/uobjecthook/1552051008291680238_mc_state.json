@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Item_QuadBarrel_C BP_Item_QuadBarrel_C_2147454643",
+        "Components",
+        "SkeletalMeshComponent QuadBarrel"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 13.0,
+            "y": -13.0,
+            "z": 11.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": -0.6967066526412964,
+            "x": 0.0,
+            "y": 0.7173561453819275,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

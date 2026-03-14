@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent CharacterMesh0"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 37.081275939941406,
+            "y": 149.6892547607422,
+            "z": 16.232162475585938
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.7179378271102905,
+            "x": 0.015684068202972412,
+            "y": 0.694325864315033,
+            "z": -0.04723170027136803
+        }
+    },
+    "type": "motion_controller"
+}

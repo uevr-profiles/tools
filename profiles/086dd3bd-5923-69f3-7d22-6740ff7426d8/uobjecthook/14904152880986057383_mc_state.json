@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_SawnOffShotgun_C BP_SawnOffShotgun_C_2147477092",
+        "Components",
+        "SkeletalMeshComponent FPMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.7560606598854065,
+            "x": -0.12757566571235657,
+            "y": -0.4691317081451416,
+            "z": 0.43819189071655273
+        }
+    },
+    "type": "motion_controller"
+}

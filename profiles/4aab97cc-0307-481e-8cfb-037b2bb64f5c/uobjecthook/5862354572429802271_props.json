@@ -1,0 +1,21 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BPWeap_SM_Dahl_C BPWeap_SM_Dahl_C_1",
+        "Components",
+        "SkeletalMeshComponent Mesh3P",
+        "Properties",
+        "SkeletalMesh"
+    ],
+    "properties": [
+        {
+            "data": 1,
+            "name": "bEnablePerPolyCollision"
+        }
+    ],
+    "type": "properties"
+}

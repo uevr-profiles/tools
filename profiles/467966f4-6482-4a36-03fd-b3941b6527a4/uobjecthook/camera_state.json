@@ -1,0 +1,14 @@
+{
+    "offset": {
+        "x": 11.800000190734863,
+        "y": -3.5,
+        "z": 27.73200035095215
+    },
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_StakeGun_C BP_StakeGun_C_2147470874"
+    ],
+    "type": "camera"
+}

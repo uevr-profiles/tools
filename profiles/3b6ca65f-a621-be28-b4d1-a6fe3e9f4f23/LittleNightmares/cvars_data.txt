@@ -1,0 +1,5 @@
+Engine_r.DepthOfFieldQuality=0
+Renderer_r.Color.Mid=0.500000
+Renderer_r.Color.Min=0.000000
+Renderer_r.Tonemapper.Sharpen=1.500000
+Renderer_r.TonemapperGamma=-0.000000

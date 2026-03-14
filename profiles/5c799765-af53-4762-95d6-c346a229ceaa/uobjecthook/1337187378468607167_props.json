@@ -1,0 +1,15 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "CharacterDriverComp",
+        "Properties",
+        "CarDriver",
+        "Properties",
+        "DriverMesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

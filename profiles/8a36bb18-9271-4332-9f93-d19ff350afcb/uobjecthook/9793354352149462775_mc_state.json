@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_FoamModulator_C BP_FoamModulator_C_2147273007",
+        "Components",
+        "SkeletalMeshComponent Mesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.7002847790718079,
+            "x": 0.0,
+            "y": 0.7138636112213135,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

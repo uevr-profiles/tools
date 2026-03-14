@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "FirstPersonStaticMeshComponent BuildToolMeshFP_2147471763"
+    ],
+    "state": {
+        "hand": 0,
+        "location_offset": {
+            "x": 2.7645187377929688,
+            "y": 0.040789127349853516,
+            "z": -16.46454620361328
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.9442175030708313,
+            "x": 0.040144048631191254,
+            "y": -0.008379016071557999,
+            "z": 0.3267590403556824
+        }
+    },
+    "type": "motion_controller"
+}

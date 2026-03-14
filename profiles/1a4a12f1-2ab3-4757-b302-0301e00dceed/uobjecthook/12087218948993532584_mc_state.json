@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "RightArm"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 12.81711483001709,
+            "y": -12.451258659362793,
+            "z": -25.273231506347656
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.988709568977356,
+            "x": 0.09742805361747742,
+            "y": 0.058278560638427734,
+            "z": 0.09780177474021912
+        }
+    },
+    "type": "motion_controller"
+}

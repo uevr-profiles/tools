@@ -1,0 +1,2 @@
+r.PostProcessing.PropagateAlpha 1
+r.Fog 0

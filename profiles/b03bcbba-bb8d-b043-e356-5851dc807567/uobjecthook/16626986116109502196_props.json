@@ -1,0 +1,18 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Camera",
+        "Properties",
+        "PointOfInterestWithAnchorBehavior"
+    ],
+    "properties": [
+        {
+            "data": 1063507722,
+            "name": "DefaultBlendTime"
+        }
+    ],
+    "type": "properties"
+}

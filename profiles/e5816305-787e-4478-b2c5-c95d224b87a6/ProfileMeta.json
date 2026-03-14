@@ -1,0 +1,19 @@
+{
+  "ID": "e5816305-787e-4478-b2c5-c95d224b87a6",
+  "exeName": "AbzuGame-Win64-Shipping",
+  "gameName": "ABZÛ",
+  "authorName": "Racc",
+  "modifiedDate": "2024-01-02T23:00:00Z",
+  "createdDate": "2024-01-02T23:00:00Z",
+  "downloadDate": "2026-03-14T02:36:56Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/e5816305-787e-4478-b2c5-c95d224b87a6",
+  "zipHash": "F3FEB1013EC0C6CD4C1786049C885B28",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2fe5816305-787e-4478-b2c5-c95d224b87a6&name=AbzuGame-Win64-Shipping",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FAbzuGame-Win64-Shipping.zip?alt=media",
+  "headerPictureUrl": "https://cdn.discordapp.com/attachments/1084883562832080926/1084883563213758525/iAOF4vD8lAolY19hDcCHjSAkjtPAmowb.webp?ex=69b5940d&is=69b4428d&hm=d57b496cb4014d646872fa9cf6c9393a18ed9d2b117ab14ee7694332d71db34b&",
+  "description": "Enter the \" r.WaterSurfaceReflections 0\" command in the console to prevent graphical glitches.",
+  "tags": [
+    "3DOF"
+  ]
+}

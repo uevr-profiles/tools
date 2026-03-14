@@ -1,0 +1,4 @@
+Engine_r.DepthOfFieldQuality=0
+Engine_r.MotionBlurQuality=0
+Renderer_r.Color.Min=-0.006000
+Renderer_r.Tonemapper.Sharpen=2.219000

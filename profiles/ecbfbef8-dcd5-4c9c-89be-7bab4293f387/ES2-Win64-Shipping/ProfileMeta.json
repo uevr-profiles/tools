@@ -1,0 +1,19 @@
+{
+  "ID": "ecbfbef8-dcd5-4c9c-89be-7bab4293f387",
+  "exeName": "ES2-Win64-Shipping",
+  "gameName": "EVERSPACE™ 2",
+  "authorName": "atak2",
+  "modifiedDate": "2024-05-02T22:00:00Z",
+  "createdDate": "2024-05-02T22:00:00Z",
+  "downloadDate": "2026-03-14T02:36:58Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/ecbfbef8-dcd5-4c9c-89be-7bab4293f387",
+  "zipHash": "DEC48342A610C250927DB2726C8AC569",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2fecbfbef8-dcd5-4c9c-89be-7bab4293f387&name=ES2-Win64-Shipping_2",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FES2-Win64-Shipping_2.zip?alt=media",
+  "description": "Needs to be played in DX 11 (DX12 crashes). PGUP: Camera 0 (Cockpit view). It shifts the cockpit ...",
+  "profileName": "ES2-Win64-Shipping",
+  "tags": [
+    "3DOF"
+  ]
+}

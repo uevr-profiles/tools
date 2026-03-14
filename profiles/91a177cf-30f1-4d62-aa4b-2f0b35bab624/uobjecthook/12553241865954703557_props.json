@@ -1,0 +1,12 @@
+{
+    "hide": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "HookShotVisuals",
+        "Components",
+        "SkeletalMeshComponent SkeletalMesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

@@ -1,0 +1,25 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "m_pFlashlightGadget",
+        "Components",
+        "PoseableMeshComponent LightCone"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 9.702999114990234,
+            "y": -1.850550651550293,
+            "z": 1.7223329544067383
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.6377274990081787,
+            "x": -0.2893446683883667,
+            "y": -0.6664333343505859,
+            "z": 0.2558319866657257
+        }
+    },
+    "type": "motion_controller"
+}

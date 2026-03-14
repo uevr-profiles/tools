@@ -1,0 +1,17 @@
+r.MotionBlurQuality 0
+r.SceneColorFringeQuality 0
+r.Tonemapper.GrainQuantization 0
+r.Tonemapper.Quality 0
+r.NT.Lens.Distortion.Intensity 0
+r.NT.Lens.Softness.Intensity 0
+r.NT.Lens.Softness.RadiusSampleCount 0
+r.NT.Lens.Distortion.Stretch 0
+r.NT.Lens.ChromaticAberration.Intensity 0
+r.NT.DOF.RotationalBokeh 0
+r.NT.DOF.NTBokehTransform 0
+r.FilmGrain 0
+r.NT.AllowAspectRatioHorizontalExtension 0
+r.NT.EnableConstrainAspectRatio 0
+r.SSFS 0
+
+

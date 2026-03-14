@@ -1,0 +1,29 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Weapon_Pistol_Common_01_C BP_Weapon_Pistol_Common_01_C_2147222036",
+        "Components",
+        "BWStaticMeshComponent Mesh",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 4603849755032813568,
+            "name": "Z"
+        },
+        {
+            "data": 4603849755032813568,
+            "name": "Y"
+        },
+        {
+            "data": 4604660403266387968,
+            "name": "X"
+        }
+    ],
+    "type": "properties"
+}

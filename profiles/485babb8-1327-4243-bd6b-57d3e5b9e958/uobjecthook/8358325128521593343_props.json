@@ -1,0 +1,22 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Player Controller",
+        "Properties",
+        "MyHUD",
+        "Properties",
+        "PlayerDebuffsWidget",
+        "Properties",
+        "PoisonScreen",
+        "Properties",
+        "ActiveBrush"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "DrawAs"
+        }
+    ],
+    "type": "properties"
+}

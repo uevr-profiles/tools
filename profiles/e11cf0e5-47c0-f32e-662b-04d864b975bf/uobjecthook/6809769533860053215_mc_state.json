@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Weapons",
+        "BP_WeaponChild_Pistol_C BP_WeaponChild_Pistol_C_2147482318",
+        "Components",
+        "SkeletalMeshComponent SkeletalMesh"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 1.2932186126708984,
+            "y": 5.004157066345215,
+            "z": -0.11224627494812012
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.7060109376907349,
+            "x": 0.04100519046187401,
+            "y": -0.7067922353744507,
+            "z": -0.01766648143529892
+        }
+    },
+    "type": "motion_controller"
+}

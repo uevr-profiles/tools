@@ -1,0 +1,14 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "HolsteredGearSlot HolsteredGearSlot_0",
+        "Components",
+        "SkeletalMeshComponent Default__SkeletalMeshComponent"
+    ],
+    "properties": [],
+    "type": "properties"
+}

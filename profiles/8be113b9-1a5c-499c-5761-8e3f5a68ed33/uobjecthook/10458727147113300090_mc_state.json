@@ -1,0 +1,27 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "TesInventory Inventory",
+        "Properties",
+        "ActiveWeapon",
+        "Components",
+        "BoxComponent RootCollision"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -0.04500000178813934,
+            "y": -5.265999794006348,
+            "z": -1.0329999923706055
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.9895058870315552,
+            "x": 0.14449243247509003,
+            "y": 0.0,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

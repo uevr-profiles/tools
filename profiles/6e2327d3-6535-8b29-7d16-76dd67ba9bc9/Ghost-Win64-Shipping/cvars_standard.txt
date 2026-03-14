@@ -1,0 +1,3 @@
+Core_r.ScreenPercentage=0.000000
+Renderer_r.DefaultFeature.AmbientOcclusion=0
+Renderer_r.LightCulling.Quality=0

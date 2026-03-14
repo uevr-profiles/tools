@@ -1,0 +1,13 @@
+{
+    "hide": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent Body",
+        "Properties",
+        "AttachChildren",
+        "SkeletalMeshComponent head"
+    ],
+    "properties": [],
+    "type": "properties"
+}

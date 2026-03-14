@@ -1,0 +1,19 @@
+{
+  "ID": "8e439f81-f663-48c5-bfbf-78f84527eadf",
+  "exeName": "HighOnLife2-Win64-Shipping",
+  "gameName": "High On Life 2",
+  "authorName": "LunchAndVR",
+  "modifiedDate": "2026-02-13T23:00:00Z",
+  "createdDate": "2026-02-13T23:00:00Z",
+  "downloadDate": "2026-03-14T02:36:36Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/8e439f81-f663-48c5-bfbf-78f84527eadf",
+  "zipHash": "E3A6ACAC619D08907AAA86E6E9E1D365",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f8e439f81-f663-48c5-bfbf-78f84527eadf&name=HighOnLife2-Win64-Shipping_1",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FHighOnLife2-Win64-Shipping_1.zip?alt=media",
+  "description": "6DOF Motion Control Profile with No Arms.",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

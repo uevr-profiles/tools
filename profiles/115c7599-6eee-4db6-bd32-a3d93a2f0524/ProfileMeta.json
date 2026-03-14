@@ -1,0 +1,20 @@
+{
+  "ID": "115c7599-6eee-4db6-bd32-a3d93a2f0524",
+  "exeName": "SquadGame",
+  "gameName": "Squad",
+  "authorName": "Keyser-Soze",
+  "modifiedDate": "2024-04-24T22:00:00Z",
+  "createdDate": "2024-04-24T22:00:00Z",
+  "downloadDate": "2026-03-14T02:36:02Z",
+  "sourceName": "uevr-profiles.com",
+  "sourceUrl": "https://uevr-profiles.com/game/115c7599-6eee-4db6-bd32-a3d93a2f0524",
+  "zipHash": "21621004F6BB0D438C85521C5F1BCCC9",
+  "downloadUrl": "https://gitfolderdownloader.github.io/?url=https%3a%2f%2fgithub.com%2fuevr-profiles%2frepo%2ftree%2fmain%2fprofiles%2f115c7599-6eee-4db6-bd32-a3d93a2f0524&name=SquadGame_4",
+  "sourceDownloadUrl": "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/profiles%2FSquadGame_4.zip?alt=media",
+  "headerPictureUrl": "https://cdn.discordapp.com/attachments/1098636000584011927/1098636001003458681/squad-file-90539b00b.jpeg?ex=69b58302&is=69b43182&hm=cc4289ab865593ba6fde4a7300b30938db7a2bad54f0706fb5b96efbb4322c64&",
+  "description": "6DOF No hands Snap-turning only",
+  "tags": [
+    "6DOF",
+    "Motion Controls"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+    "hide": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "Clothes_Comp_C Clothes_Comp_C_2147482064"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "bIsActive"
+        }
+    ],
+    "type": "properties"
+}

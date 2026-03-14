@@ -1,0 +1,11 @@
+{
+    "GripIsReload_C": false,
+    "HeadBasedMovement_C": true,
+    "MotionMovementStrength_C": 30,
+    "MotionMovement_C": false,
+    "NaloHWt_C": 4,
+    "NaloLhWt_C": 1,
+    "NaloMin_C": 0.01,
+    "NaloRhWt_C": 1,
+    "NaloSprintTreshhold_C": 1.2
+}

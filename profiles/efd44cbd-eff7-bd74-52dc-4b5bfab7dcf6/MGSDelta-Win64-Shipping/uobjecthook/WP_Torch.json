@@ -1,0 +1,31 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_WP_Torch_C BP_WP_Torch_C_2147383787",
+        "Properties",
+        "RootComponent"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -22.100000381469727,
+            "y": 1.340000033378601,
+            "z": -1.159999966621399
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.5874375104904175,
+            "x": -0.3580945134162903,
+            "y": 0.1281004101037979,
+            "z": 0.7143359184265137
+        },
+		"right_hand_rotation_offset": {
+			"Pitch": 68.591,
+            "Yaw": 171.592,
+            "Roll": -139.368
+		}
+    },
+    "type": "motion_controller"
+}

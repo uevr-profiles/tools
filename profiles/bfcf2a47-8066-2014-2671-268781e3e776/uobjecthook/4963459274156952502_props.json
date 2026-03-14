@@ -1,0 +1,29 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_MedToolActor_C BP_MedToolActor_C_2147473440",
+        "Properties",
+        "RootComponent",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 4607767886730100736,
+            "name": "X"
+        },
+        {
+            "data": 4607227454753341440,
+            "name": "Y"
+        },
+        {
+            "data": 4607542706963480576,
+            "name": "Z"
+        }
+    ],
+    "type": "properties"
+}

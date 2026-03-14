@@ -1,0 +1,16 @@
+{
+    "hide": false,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "PlayerArmsInitLoc"
+    ],
+    "properties": [
+        {
+            "data": 13862396312395186176,
+            "name": "Z"
+        }
+    ],
+    "type": "properties"
+}

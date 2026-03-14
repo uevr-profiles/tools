@@ -1,0 +1,29 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Weapon_Mace_Epic_01_C BP_Weapon_Mace_Epic_01_C_2147306043",
+        "Components",
+        "BWStaticMeshComponent Mesh",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 4605290907149795328,
+            "name": "X"
+        },
+        {
+            "data": 4604300115102924800,
+            "name": "Y"
+        },
+        {
+            "data": 4603489466869350400,
+            "name": "Z"
+        }
+    ],
+    "type": "properties"
+}

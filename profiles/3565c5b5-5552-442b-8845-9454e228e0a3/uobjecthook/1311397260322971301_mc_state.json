@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Mesh",
+        "Properties",
+        "AttachChildren",
+        "SkeletalMeshComponent SK_Mickey_Brush"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 25.191940307617188,
+            "y": 37.765899658203125,
+            "z": 47.48360061645508
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.43058332800865173,
+            "x": 0.1566174179315567,
+            "y": 0.7076008319854736,
+            "z": -0.5379312634468079
+        }
+    },
+    "type": "motion_controller"
+}

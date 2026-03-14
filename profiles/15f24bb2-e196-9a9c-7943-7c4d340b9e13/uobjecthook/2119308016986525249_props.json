@@ -1,0 +1,13 @@
+{
+    "hide": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BPLiveSamplerTool_C BPLiveSamplerTool_C_0",
+        "Components",
+        "SkeletalMeshComponent Mesh1P"
+    ],
+    "properties": [],
+    "type": "properties"
+}

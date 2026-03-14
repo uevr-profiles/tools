@@ -1,0 +1,28 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "RightWeaponActor",
+        "Properties",
+        "RootComponent",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 1061830001,
+            "name": "X"
+        },
+        {
+            "data": 1065604874,
+            "name": "Y"
+        },
+        {
+            "data": 1061662228,
+            "name": "Z"
+        }
+    ],
+    "type": "properties"
+}

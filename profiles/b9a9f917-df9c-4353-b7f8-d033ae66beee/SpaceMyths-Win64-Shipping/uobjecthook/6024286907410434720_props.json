@@ -1,0 +1,13 @@
+{
+    "hide": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent PawnMesh1P",
+        "Properties",
+        "AttachChildren",
+        "SpotLightComponent FPPFlashlight"
+    ],
+    "properties": [],
+    "type": "properties"
+}

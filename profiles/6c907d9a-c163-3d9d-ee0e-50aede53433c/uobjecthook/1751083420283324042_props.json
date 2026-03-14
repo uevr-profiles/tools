@@ -1,0 +1,26 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SkeletalMeshComponent CharacterMesh0",
+        "Properties",
+        "RelativeLocation"
+    ],
+    "properties": [
+        {
+            "data": 3247439872,
+            "name": "X"
+        },
+        {
+            "data": 3240099840,
+            "name": "Y"
+        },
+        {
+            "data": 3267624960,
+            "name": "Z"
+        }
+    ],
+    "type": "properties"
+}

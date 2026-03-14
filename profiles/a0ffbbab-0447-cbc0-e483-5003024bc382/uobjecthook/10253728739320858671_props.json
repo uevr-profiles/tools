@@ -1,0 +1,20 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Camera Manager",
+        "Properties",
+        "CachedCameraShakeMod"
+    ],
+    "properties": [
+        {
+            "data": 0,
+            "name": "Alpha"
+        },
+        {
+            "data": 1287568416,
+            "name": "AlphaInTime"
+        }
+    ],
+    "type": "properties"
+}

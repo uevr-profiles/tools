@@ -1,0 +1,12 @@
+{
+    "hide": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "CurrentGun",
+        "Components",
+        "StaticMeshComponent sm_kineticRifle_holograms"
+    ],
+    "properties": [],
+    "type": "properties"
+}

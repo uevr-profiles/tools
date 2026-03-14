@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "Eqp_Detector_C Eqp_Detector_C_2147476373",
+        "Components",
+        "SkeletalMeshComponent Wep_Skeli"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.6894984245300293,
+            "x": 0.0,
+            "y": 0.724287211894989,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

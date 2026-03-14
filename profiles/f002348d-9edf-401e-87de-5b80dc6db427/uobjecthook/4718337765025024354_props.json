@@ -1,0 +1,10 @@
+{
+    "hide": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "VGFacialMeshComponent FaceMesh"
+    ],
+    "properties": [],
+    "type": "properties"
+}

@@ -1,0 +1,11 @@
+{
+    "offset": {
+        "x": 5.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "path": [
+        "Acknowledged Pawn"
+    ],
+    "type": "camera"
+}

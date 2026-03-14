@@ -1,0 +1,17 @@
+{
+    "hide": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "PalShooterComponent ShooterComponent",
+        "Properties",
+        "HasWeapon",
+        "Components",
+        "NiagaraComponent NS_TorchFire",
+        "Properties",
+        "AttachChildren",
+        "PalAkComponent PalAkComponent_2147333730"
+    ],
+    "properties": [],
+    "type": "properties"
+}

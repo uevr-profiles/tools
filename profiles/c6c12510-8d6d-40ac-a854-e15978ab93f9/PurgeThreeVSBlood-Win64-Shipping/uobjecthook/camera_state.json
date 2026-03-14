@@ -1,0 +1,13 @@
+{
+    "offset": {
+        "x": -25.600000381469727,
+        "y": 2.200000047683716,
+        "z": -18.878000259399414
+    },
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "CameraComponent FP_Camera"
+    ],
+    "type": "camera"
+}

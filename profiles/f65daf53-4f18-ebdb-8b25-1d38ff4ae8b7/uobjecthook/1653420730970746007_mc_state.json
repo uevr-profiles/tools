@@ -1,0 +1,25 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SKG_SceneCaptureComponent2D BodyCam_SKG_SceneCaptureComponent2D",
+        "Properties",
+        "AttachParent"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 45.39287567138672,
+            "y": 143.13702392578125,
+            "z": 18.857421875
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.716791033744812,
+            "x": -0.018741607666015625,
+            "y": -0.6970056891441345,
+            "z": 0.0065137161873281
+        }
+    },
+    "type": "motion_controller"
+}

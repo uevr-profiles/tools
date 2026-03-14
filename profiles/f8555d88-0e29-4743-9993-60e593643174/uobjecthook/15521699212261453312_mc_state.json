@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "Wep_ShotGun_01_C Wep_ShotGun_01_C_2147456924",
+        "Components",
+        "SkeletalMeshComponent Wep_Skeli"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": -0.6801339387893677,
+            "x": -0.1132517158985138,
+            "y": 0.7144501805305481,
+            "z": -0.11896567791700363
+        }
+    },
+    "type": "motion_controller"
+}

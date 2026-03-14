@@ -1,0 +1,26 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Pistol_C BP_Pistol_C_2147463482",
+        "Components",
+        "SkeletalMeshComponent MeshFPP"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": -0.7038453221321106,
+            "x": 0.0,
+            "y": 0.7103532552719116,
+            "z": 0.0
+        }
+    },
+    "type": "motion_controller"
+}

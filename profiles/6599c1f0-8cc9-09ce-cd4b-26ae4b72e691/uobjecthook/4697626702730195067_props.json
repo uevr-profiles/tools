@@ -1,0 +1,29 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "BP_Item_Pistol_C BP_Item_Pistol_C_2147464231",
+        "Properties",
+        "DefaultPistol",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 4602678819172646912,
+            "name": "X"
+        },
+        {
+            "data": 4601057523242369024,
+            "name": "Y"
+        },
+        {
+            "data": 4602678819172646912,
+            "name": "Z"
+        }
+    ],
+    "type": "properties"
+}

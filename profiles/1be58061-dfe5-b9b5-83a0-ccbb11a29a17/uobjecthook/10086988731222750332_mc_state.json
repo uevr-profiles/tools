@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "SpotLightComponent Flashlight"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.6706231236457825,
+            "x": -0.004183449782431126,
+            "y": -0.10558603703975677,
+            "z": 0.7342334389686584
+        }
+    },
+    "type": "motion_controller"
+}

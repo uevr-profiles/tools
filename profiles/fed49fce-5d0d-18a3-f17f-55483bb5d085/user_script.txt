@@ -1,0 +1,14 @@
+r.DetailMode 0
+r.ViewDistanceScale 0.2
+r.Bloom,Quality 0
+r.Bloom 0
+r.VolumetricCloud 0
+r.Shadow.Virtual.Enable 1
+r.Shadow.Virtual.ContactShadowLength 1
+r.DistanceFieldShadowing 0
+r.VolumetricFog 0
+r.Fog 0
+r.postprocessing.disablematerials 1
+r.SSFS 0
+r.Lumen.Reflections.Temporal 0
+r.Lumen.ScreenProbeGather.Temporal.MaxFramesAccumulated 32

@@ -1,0 +1,11 @@
+{
+    "hide": true,
+    "hide_legacy": true,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "FGMergeSkeletalMeshComponent FP_Book"
+    ],
+    "properties": [],
+    "type": "properties"
+}

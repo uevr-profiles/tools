@@ -1,0 +1,25 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "m_pFlashlightGadget",
+        "Components",
+        "StaticMeshComponent FlashUpgrade"
+    ],
+    "state": {
+        "hand": 1,
+        "location_offset": {
+            "x": -13.056549072265625,
+            "y": 6.9352030754089355,
+            "z": -0.02870655059814453
+        },
+        "permanent": true,
+        "rotation_offset": {
+            "w": 0.5111766457557678,
+            "x": -0.48388075828552246,
+            "y": 0.5233451724052429,
+            "z": 0.480278879404068
+        }
+    },
+    "type": "motion_controller"
+}

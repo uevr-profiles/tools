@@ -1,0 +1,92 @@
+{
+    "animation_data": null,
+    "animation_finger": 1,
+    "animation_finger_bone_pitch": 1.0603807534726337e-14,
+    "animation_finger_bone_pitch_mirror": true,
+    "animation_finger_bone_roll": 5.040299004238895e-14,
+    "animation_finger_bone_roll_mirror": false,
+    "animation_finger_bone_yaw": -43.10499954223633,
+    "animation_finger_bone_yaw_mirror": false,
+    "animation_hand": 1,
+    "animation_hands_profile_mesh_list": 1,
+    "animation_joint": 3,
+    "animation_name": "Shared",
+    "animation_state": 2,
+    "animation_test_active_weapon_mode": false,
+    "animation_test_left_handed_mode": false,
+    "animation_type": 4,
+    "animations_list": 2,
+    "attachments_list": 14,
+    "character_mesh": 24,
+    "code_text": "local uevrUtils = require('libs/uevr_utils')\nlocal hands = require('libs/hands')\nlocal controllers = require('libs/controllers')\n\nfunction on_level_change(level)\n\tcontrollers.createController(0)\n\tcontrollers.createController(1)\n\thands.reset()\n\n\tlocal paramsFile = 'hands_parameters' -- found in the [game profile]/data directory\n\tlocal configName = 'Main' -- the name you gave your config\n\tlocal animationName = '' -- the name you gave your animation\n\thands.createFromConfig(paramsFile, configName, animationName)\nend",
+    "code_text_2": "local uevrUtils = require('libs/uevr_utils')\nlocal hands = require('libs/hands')\nlocal controllers = require('libs/controllers')\n\nfunction on_level_change(level)\n\tcontrollers.createController(0)\n\tcontrollers.createController(1)\n\thands.reset()\n\n\tlocal paramsFile = 'hands_parameters' -- found in the [game profile]/data directory\n\tlocal configName = 'Main' -- the name you gave your config\n\tlocal animationName = 'Shared' -- the name you gave your animation\n\thands.createFromConfig(paramsFile, configName, animationName)\nend\n\nfunction on_xinput_get_state(retval, user_index, state)\n\tif hands.exists() then\n\t\tlocal isHoldingWeapon = false\n\t\tlocal hand = Handed.Right\n\t\thands.handleInput(state, isHoldingWeapon, hand)\n\tend\nend",
+    "cutoff_children_bone_picker": 1,
+    "cutoff_children_hand_picker": 1,
+    "cutoff_children_location": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "cutoff_children_rotation": [
+        3.218081474187784e-06,
+        -89.99999237060547,
+        0.06140049546957016
+    ],
+    "fov_param_name": "",
+    "hands_profile_list": 2,
+    "hands_profile_mesh_list": 2,
+    "hands_profile_mesh_name": "Arms",
+    "hands_profile_name": "Main",
+    "include_children_in_mesh_search": false,
+    "knuckle_bone_search_pattern": "",
+    "left_cutoff_bone": 400,
+    "left_hand_location": [
+        10.0,
+        -31.0,
+        10.0
+    ],
+    "left_hand_rotation": [
+        -20.0,
+        100.0,
+        -90.0
+    ],
+    "left_hand_scale": [
+        1.0,
+        1.0,
+        1.0
+    ],
+    "left_index_knuckle": 407,
+    "left_middle_knuckle": 427,
+    "left_pinky_knuckle": 453,
+    "left_ring_knuckle": 440,
+    "left_thumb_knuckle": 420,
+    "mesh_rotation": [
+        0.0,
+        -90.0,
+        0.0
+    ],
+    "new_attachment_name": "",
+    "right_cutoff_bone": 494,
+    "right_cutoff_bone_name": "",
+    "right_hand_location": [
+        -10.0,
+        -31.0,
+        10.0
+    ],
+    "right_hand_rotation": [
+        20.0,
+        -100.0,
+        90.0
+    ],
+    "right_hand_scale": [
+        1.0,
+        1.0,
+        1.0
+    ],
+    "right_index_knuckle": 496,
+    "right_middle_knuckle": 516,
+    "right_pinky_knuckle": 542,
+    "right_ring_knuckle": 529,
+    "right_thumb_knuckle": 509,
+    "use_default_pose": true
+}

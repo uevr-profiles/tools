@@ -1,0 +1,23 @@
+{
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "StaticMeshComponent Droid_place_light"
+    ],
+    "state": {
+        "hand": 0,
+        "location_offset": {
+            "x": -0.3199999928474426,
+            "y": -3.450000047683716,
+            "z": -16.18000030517578
+        },
+        "permanent": false,
+        "rotation_offset": {
+            "w": 0.5614022612571716,
+            "x": 0.41460445523262024,
+            "y": 0.581121563911438,
+            "z": 0.4186028838157654
+        }
+    },
+    "type": "motion_controller"
+}

@@ -1,0 +1,12 @@
+Renderer_r.DefaultFeature.AmbientOcclusion=2
+Renderer_r.DefaultFeature.AntiAliasing=2
+Renderer_r.ReflectionEnvironment=1
+Renderer_r.SSGI.Enable=0
+Renderer_r.SSR.Quality=2
+Renderer_r.TemporalAA.Algorithm=1
+Renderer_r.TemporalAA.Upsampling=1
+Renderer_r.TemporalAACurrentFrameWeight=0.2
+Renderer_r.TemporalAAFilterSize=0.5
+Renderer_r.TemporalAASamples=8
+Renderer_r.Upscale.Quality=5
+Renderer_r.Upscale.Softness=0.000000

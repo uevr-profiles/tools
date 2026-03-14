@@ -1,0 +1,13 @@
+{
+    "hide": true,
+    "hide_legacy": false,
+    "path": [
+        "Player Controller",
+        "Properties",
+        "Character",
+        "Components",
+        "SkeletalMeshComponent GameplayHands"
+    ],
+    "properties": [],
+    "type": "properties"
+}

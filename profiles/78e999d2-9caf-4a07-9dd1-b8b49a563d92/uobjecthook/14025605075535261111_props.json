@@ -1,0 +1,29 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Properties",
+        "Children",
+        "Pistol_Main_C Pistol_Main_C_2147472787",
+        "Components",
+        "FFAttribute3DWidgetComponent Ammo Counter Widget_Duplicate",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 4588087156337016832,
+            "name": "X"
+        },
+        {
+            "data": 4582862980919590912,
+            "name": "Y"
+        },
+        {
+            "data": 4590068740430757888,
+            "name": "Z"
+        }
+    ],
+    "type": "properties"
+}

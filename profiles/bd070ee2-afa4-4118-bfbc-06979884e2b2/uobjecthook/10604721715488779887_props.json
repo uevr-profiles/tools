@@ -1,0 +1,29 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "GbxSkeletalMeshComponent CharacterMesh0",
+        "Properties",
+        "AttachChildren",
+        "SkeletalMeshComponent Mesh3rd",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 1056964608,
+            "name": "X"
+        },
+        {
+            "data": 1056964608,
+            "name": "Y"
+        },
+        {
+            "data": 1056964608,
+            "name": "Z"
+        }
+    ],
+    "type": "properties"
+}

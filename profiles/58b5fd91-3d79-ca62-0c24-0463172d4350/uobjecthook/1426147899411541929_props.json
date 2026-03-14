@@ -1,0 +1,26 @@
+{
+    "hide": false,
+    "hide_legacy": false,
+    "path": [
+        "Acknowledged Pawn",
+        "Components",
+        "ChildActorComponent MeleeWeapon",
+        "Properties",
+        "RelativeScale3D"
+    ],
+    "properties": [
+        {
+            "data": 4604390187009572864,
+            "name": "X"
+        },
+        {
+            "data": 4604029898846109696,
+            "name": "Y"
+        },
+        {
+            "data": 4603939826939461632,
+            "name": "Z"
+        }
+    ],
+    "type": "properties"
+}
