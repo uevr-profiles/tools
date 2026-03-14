@@ -1,2 +1,0 @@
-Renderer_r.SubsurfaceScattering=0
-Renderer_r.TranslucentLightingVolume=0

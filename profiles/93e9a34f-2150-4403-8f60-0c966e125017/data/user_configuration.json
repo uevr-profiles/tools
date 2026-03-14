@@ -1,7 +1,0 @@
-{
-    "disable_6dof": false,
-    "enable_autosave_for_non_assisted_difficulties": 1,
-    "enable_lock_on": true,
-    "enable_prononocued_interaction_widget": true,
-    "maintain_original_aim_distance_values": false
-}

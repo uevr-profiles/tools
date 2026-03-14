@@ -1,8 +1,0 @@
-{
-    "move_back_speed": 5,
-    "run_speed_multiplier": 2,
-    "show_laser": true,
-    "strafe_speed": 5,
-    "turn_speed": 0.10000000149011612,
-    "walk_speed": 750
-}

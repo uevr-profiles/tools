@@ -1,6 +1,0 @@
-Renderer_r.DefaultFeature.AmbientOcclusion=0
-Renderer_r.LightCulling.Quality=0
-Renderer_r.SubsurfaceScattering=0
-Renderer_r.TemporalAA.Upsampling=0
-Renderer_r.Upscale.Quality=3
-Renderer_r.Upscale.Softness=1.000000

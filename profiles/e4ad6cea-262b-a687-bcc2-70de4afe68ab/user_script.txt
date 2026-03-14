@@ -1,2 +1,0 @@
-r.Postprocessing.DisableMaterials 1
-r.PostProcessing.PropagateAlpha 1

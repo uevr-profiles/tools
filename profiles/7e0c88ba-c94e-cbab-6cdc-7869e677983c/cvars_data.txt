@@ -1,5 +1,0 @@
-Engine_r.AllowOcclusionQueries=0
-Engine_r.DepthOfFieldQuality=0
-Engine_r.MotionBlurQuality=0
-Engine_r.SceneColorFringeQuality=0
-Renderer_r.Tonemapper.Sharpen=3.125000

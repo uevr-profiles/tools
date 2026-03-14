@@ -1,8 +1,0 @@
-WorldScale_VR=0.93
-WorldScale_2D=0.01
-FirstPersonModeHeadPos=65
-FirstPersonModeHeadPos_Crouch=25
-bAutoDecideDecoupledPitch=true
-bHideUI_FPMode=true
-bUseHMDOrientation_FPMode=true
-RenderingMode=0

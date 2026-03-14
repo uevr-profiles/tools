@@ -1,3 +1,0 @@
-Engine_r.AllowOcclusionQueries=1
-Engine_r.MotionBlurQuality=0
-Engine_r.OneFrameThreadLag=1

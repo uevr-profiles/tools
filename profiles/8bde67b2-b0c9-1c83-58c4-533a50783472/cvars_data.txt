@@ -1,2 +1,0 @@
-Engine_r.DepthOfFieldQuality=2
-Renderer_r.Tonemapper.Sharpen=5.125000

@@ -1,1 +1,0 @@
-Renderer_r.Tonemapper.Sharpen=2.969000

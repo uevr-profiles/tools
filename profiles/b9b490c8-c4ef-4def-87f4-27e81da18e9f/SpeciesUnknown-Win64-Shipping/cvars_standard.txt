@@ -1,3 +1,0 @@
-Renderer_r.LightCulling.Quality=1
-Renderer_r.TemporalAA.Upsampling=0
-Renderer_r.TranslucentLightingVolume=1

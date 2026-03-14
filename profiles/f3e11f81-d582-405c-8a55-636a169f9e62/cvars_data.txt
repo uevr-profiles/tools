@@ -1,5 +1,0 @@
-Engine_r.AllowOcclusionQueries=481348400
-Engine_r.AmbientOcclusionLevels=2
-Engine_r.VolumetricCloud=1
-Renderer_r.Tonemapper.Sharpen=1.200000
-Renderer_r.TonemapperGamma=-0.000000

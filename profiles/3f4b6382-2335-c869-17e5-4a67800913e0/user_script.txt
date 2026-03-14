@@ -1,5 +1,0 @@
-r.Fog 0
-r.NGX.DLSS.Sharpness 0.5
-grass.DisableDynamicShadows 1
-r.ShadowQuality 0
-r.DFShadowQuality 0

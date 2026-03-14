@@ -1,8 +1,0 @@
-{
-    "enable_prononocued_interaction_widget": true,
-    "move_back_speed": 3,
-    "run_speed_multiplier": 2,
-    "strafe_speed": 3,
-    "turn_speed": 0.17,
-    "walk_speed": 115
-}

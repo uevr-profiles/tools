@@ -1,4 +1,0 @@
-Engine_r.AmbientOcclusionLevels=1
-Engine_r.DepthOfFieldQuality=1
-Engine_r.MotionBlurQuality=0
-Renderer_r.Tonemapper.Sharpen=1.013000

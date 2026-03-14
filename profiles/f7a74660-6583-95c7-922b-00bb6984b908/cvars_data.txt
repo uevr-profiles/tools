@@ -1,3 +1,0 @@
-Engine_r.DepthOfFieldQuality=0
-Renderer_r.Color.Min=-0.003000
-Renderer_r.Tonemapper.Sharpen=3.500000

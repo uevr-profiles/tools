@@ -1,5 +1,0 @@
-Engine_r.DepthOfFieldQuality=0
-Engine_r.MotionBlurQuality=0
-Engine_r.SceneColorFringeQuality=1
-Engine_r.VolumetricCloud=0
-Renderer_r.Tonemapper.Sharpen=1.500000

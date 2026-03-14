@@ -1,2 +1,0 @@
-Engine_r.AmbientOcclusionLevels=1
-Renderer_r.Tonemapper.Sharpen=0.000000

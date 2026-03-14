@@ -1,7 +1,0 @@
-Engine_r.AllowOcclusionQueries=1
-Engine_r.AmbientOcclusionLevels=2
-Engine_r.DepthOfFieldQuality=2
-Engine_r.MotionBlurQuality=1
-Engine_r.OneFrameThreadLag=1
-Engine_r.SceneColorFringeQuality=0
-Renderer_r.TonemapperGamma=-0.031000

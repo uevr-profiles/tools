@@ -1,2 +1,0 @@
-Engine_r.VolumetricCloud=0
-Renderer_r.Color.Max=1.000000

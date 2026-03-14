@@ -1,6 +1,0 @@
-r.MotionBlur.Max 0
-r.MotionBlurQuality 0
-r.DefaultFeature.MotionBlur 0
-r.DepthOfFieldQuality 0
-r.PostProcessAAQuality 1
-r.postprocessing.disablematerials 1

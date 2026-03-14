@@ -1,3 +1,0 @@
-Engine_r.OneFrameThreadLag=0
-Renderer_r.Tonemapper.Sharpen=8.000000
-Renderer_r.TonemapperGamma=1.844000

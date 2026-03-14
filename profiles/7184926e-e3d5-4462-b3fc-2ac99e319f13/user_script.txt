@@ -1,2 +1,0 @@
-r.Shadow.CSM.MaxCascades 0
-r.LightShaftQuality 0

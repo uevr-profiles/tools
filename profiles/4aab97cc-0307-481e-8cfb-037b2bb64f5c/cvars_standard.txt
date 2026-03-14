@@ -1,5 +1,0 @@
-Core_r.ScreenPercentage=90.000003
-Renderer_r.DefaultFeature.AmbientOcclusion=0
-Renderer_r.DefaultFeature.AntiAliasing=0
-Renderer_r.HZBOcclusion=0
-Renderer_r.TemporalAA.Upsampling=0

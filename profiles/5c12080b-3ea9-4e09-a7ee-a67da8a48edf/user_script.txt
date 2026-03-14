@@ -1,9 +1,0 @@
-r.DepthOfFieldQuality 0
-r.NT.Lens.Distortion.Intensity 0
-r.NT.Lens.Distortion.Stretch 0
-r.NT.Lens.ChromaticAberration.Intensity 0
-r.NT.DOF.RotationalBokeh 0
-r.NT.DOF.NTBokehTransform 0
-r.FilmGrain 0
-r.NT.AllowAspectRatioHorizontalExtension 0
-r.NT.EnableConstrainAspectRatio 0

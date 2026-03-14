@@ -1,3 +1,0 @@
-r.Lumen.DiffuseIndirect.Allow 0
-r.Lumen.Reflections.Allow 0
-r.DynamicGlobalIlluminationMethod 0

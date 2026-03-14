@@ -1,3 +1,0 @@
-r.fog 0
-r.VolumetricFog 0
-r.atmosphere 0

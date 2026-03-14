@@ -1,2 +1,0 @@
-r.BloomQuality 0
-r.ContactShadows 0

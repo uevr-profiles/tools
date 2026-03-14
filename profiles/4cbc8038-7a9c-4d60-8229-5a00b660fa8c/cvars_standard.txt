@@ -1,2 +1,0 @@
-Renderer_r.LightCulling.Quality=0
-Renderer_r.SubsurfaceScattering=1

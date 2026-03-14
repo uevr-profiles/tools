@@ -1,4 +1,0 @@
-r.Lumen.DiffuseIndirect.Allow 0
-r.Lumen.Reflections.Allow 0
-r.Postprocessing.DisableMaterials 1
-r.PostProcessing.PropagateAlpha 1

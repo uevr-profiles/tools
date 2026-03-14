@@ -1,1 +1,0 @@
-Renderer_r.Upscale.Quality=5

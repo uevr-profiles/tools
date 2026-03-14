@@ -1,1 +1,0 @@
-r.ShadowQuality 0

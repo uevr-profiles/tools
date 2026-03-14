@@ -1,9 +1,0 @@
-{
-    "profiles": {
-        "Main": {
-            "Arms": {
-                "Mesh": "Pawn.Mesh"
-            }
-        }
-    }
-}

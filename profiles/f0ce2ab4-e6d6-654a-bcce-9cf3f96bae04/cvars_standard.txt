@@ -1,2 +1,0 @@
-Renderer_r.DefaultFeature.AmbientOcclusion=0
-Renderer_r.TranslucentLightingVolume=0

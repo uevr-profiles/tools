@@ -1,1 +1,0 @@
-r.setNearClipPlane=0

@@ -1,4 +1,0 @@
-r_FilmGrain=0
-r_Materials=1
-r_PropagateAlpha=0
-r_ShadowQuality=3

@@ -1,2 +1,0 @@
-Renderer_r.DefaultFeature.AmbientOcclusion=1
-Renderer_r.TemporalAA.Upsampling=0

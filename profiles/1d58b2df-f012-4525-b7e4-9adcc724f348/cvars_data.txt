@@ -1,3 +1,0 @@
-Engine_r.AmbientOcclusionLevels=4
-Engine_r.SceneColorFringeQuality=0
-Renderer_r.Tonemapper.Sharpen=0.375000

@@ -1,3 +1,0 @@
-Renderer_r.HZBOcclusion=0
-Renderer_r.Shadow.Virtual.Enable=0
-Renderer_r.TranslucentLightingVolume=0

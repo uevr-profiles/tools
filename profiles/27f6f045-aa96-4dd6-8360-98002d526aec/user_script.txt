@@ -1,2 +1,0 @@
-r.NT.Lens.Distortion.Intensity 0
-r.postprocessing.disablematerials 1

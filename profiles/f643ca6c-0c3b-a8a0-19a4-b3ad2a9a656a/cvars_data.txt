@@ -1,2 +1,0 @@
-Engine_r.OneFrameThreadLag=1
-Engine_r.VolumetricCloud=1

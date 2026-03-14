@@ -1,5 +1,0 @@
-r.MaxAnisotropy 16
-r.MotionBlurQuality 0
-r.SetRes 3840x2160
-sg.ResolutionQuality 100
-r.oneframethreadlag 0

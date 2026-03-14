@@ -1,9 +1,0 @@
-Renderer_r.DefaultFeature.AmbientOcclusion=0
-Renderer_r.DefaultFeature.AntiAliasing=2
-Renderer_r.HZBOcclusion=1
-Renderer_r.LightCulling.Quality=1
-Renderer_r.SubsurfaceScattering=1
-Renderer_r.TemporalAA.Algorithm=0
-Renderer_r.TemporalAA.Upsampling=1
-Renderer_r.Upscale.Quality=0
-Renderer_r.Upscale.Softness=1.000000

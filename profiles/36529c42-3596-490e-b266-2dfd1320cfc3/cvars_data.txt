@@ -1,3 +1,0 @@
-Engine_r.SceneColorFringeQuality=1
-Renderer_r.Tonemapper.Sharpen=0.000000
-Renderer_r.TonemapperGamma=1.406000

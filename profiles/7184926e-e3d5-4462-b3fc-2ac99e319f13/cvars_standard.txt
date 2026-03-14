@@ -1,3 +1,0 @@
-Renderer_r.DefaultFeature.AntiAliasing=0
-Renderer_r.SubsurfaceScattering=1
-Renderer_r.Upscale.Quality=0

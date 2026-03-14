@@ -1,2 +1,0 @@
-Engine_r.MotionBlurQuality=0
-Engine_r.VolumetricCloud=0

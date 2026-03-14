@@ -1,3 +1,0 @@
-Renderer_r.DefaultFeature.AmbientOcclusion=1
-Renderer_r.DefaultFeature.AntiAliasing=2
-Renderer_r.Upscale.Quality=3

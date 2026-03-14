@@ -1,3 +1,0 @@
-Engine_r.AmbientOcclusionLevels=1
-Engine_r.MotionBlurQuality=0
-Engine_r.VolumetricCloud=0

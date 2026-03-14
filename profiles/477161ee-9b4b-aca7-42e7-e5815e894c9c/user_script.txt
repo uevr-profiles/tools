@@ -1,3 +1,0 @@
-r.StaticMeshLODDistanceScale = 0.1
-foliage.ForceLOD = 20
-r.VolumetricFog.UsesLightFunctionAtlas = 0

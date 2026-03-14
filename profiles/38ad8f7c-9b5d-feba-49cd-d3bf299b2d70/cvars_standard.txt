@@ -1,4 +1,0 @@
-Renderer_r.DefaultFeature.AmbientOcclusion=1
-Renderer_r.LightCulling.Quality=1
-Renderer_r.TranslucentLightingVolume=0
-Renderer_r.Upscale.Softness=1.000000

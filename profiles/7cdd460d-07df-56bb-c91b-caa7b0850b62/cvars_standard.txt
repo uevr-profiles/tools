@@ -1,4 +1,0 @@
-Core_r.ScreenPercentage=100.125999
-Renderer_r.TemporalAA.Algorithm=0
-Renderer_r.TemporalAA.Upsampling=1
-Renderer_r.Upscale.Quality=4
