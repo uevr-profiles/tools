@@ -518,44 +518,47 @@ $Global:ActiveProxyPool = @()
 $Global:DeadProxies     = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
 
 function Get-PreparedProxyPool($requestedProxies) {
-    if ($requestedProxies) {
-        $list = @()
-        if ($requestedProxies -is [array]) { $list = $requestedProxies }
-        else { $list = $requestedProxies -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ } }
+    if ([string]::IsNullOrWhiteSpace($requestedProxies)) { return @($null) }
+    
+    $rawList = @()
+    if ($requestedProxies -is [array]) { $rawList = $requestedProxies }
+    else { $rawList = $requestedProxies -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ } }
+
+    $finalPool = @()
+    $seen = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+
+    foreach ($p in $rawList) {
+        if ($p -ieq "DIRECT") {
+            if ($seen.Add("DIRECT_MARKER")) { $finalPool += $null }
+            continue
+        }
         
-        # Merge new proxies into our global pool if they aren't marked dead
-        foreach ($p in $list) {
-            if (-not $Global:DeadProxies.Contains($p) -and $Global:ActiveProxyPool -notcontains $p) {
-                $Global:ActiveProxyPool += $p
-            }
+        # Track new proxies in global pool
+        if (-not $Global:DeadProxies.Contains($p) -and $Global:ActiveProxyPool -notcontains $p) {
+            $Global:ActiveProxyPool += $p
+        }
+
+        # Add to current pool if healthy
+        if (-not $Global:DeadProxies.Contains($p)) {
+            if ($seen.Add($p)) { $finalPool += $p }
         }
     }
-    return $Global:ActiveProxyPool | Where-Object { -not $Global:DeadProxies.Contains($_) }
+
+    return $finalPool
 }
 
-function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 3, $Silent = $false, $Proxies = $null) {
+function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 3, $Silent = $false, $Proxies = $null, $TimeoutSec = 15) {
     $userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     if ($headers["User-Agent"]) { $userAgent = $headers["User-Agent"]; $headers.Remove("User-Agent") }
     
-    # Prepare the pool: Start with active proxies, then always add Direct ($null) at the end
-    $proxyPool = Get-PreparedProxyPool $Proxies
-    $workingPool = @()
-    if ($proxyPool) { $workingPool += $proxyPool }
-    $workingPool += $null # Add Direct connection as fallback
-    
-    # Ensure uniqueness but keep order (Proxies first, then Direct)
-    $finalPool = @()
-    $seen = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
-    foreach ($p in $workingPool) {
-        $pKey = $p ? $p : "DIRECT_FALLBACK"
-        if ($seen.Add($pKey)) { $finalPool += $p }
-    }
+    # Prepare the pool: Respect the user's order and handle the 'DIRECT' keyword
+    $finalPool = Get-PreparedProxyPool $Proxies
 
     $lastErr = "No connection attempted"
     
     foreach ($p in $finalPool) {
         $proxyLabel = $p ? $p : "Direct"
-        Debug-Log "[common.ps1] Trying $url via $proxyLabel"
+        Debug-Log "[common.ps1] Trying $url via $proxyLabel for $($TimeoutSec)s"
 
         for ($i = 1; $i -le $retries; $i++) {
             $requestParams = @{
@@ -564,7 +567,7 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
                 UserAgent = $userAgent
                 SkipCertificateCheck = $true
                 ErrorAction = "Stop"
-                TimeoutSec = 15
+                TimeoutSec = $TimeoutSec
             }
             if ($targetFile) { $requestParams["OutFile"] = $targetFile }
             if ($p) { $requestParams["Proxy"] = $p }
