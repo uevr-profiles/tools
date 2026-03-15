@@ -1,6 +1,6 @@
 #region Network Utilities
 
-function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 2, $Silent = $false, $Proxies = $null, $TimeoutSec = 10) {
+function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 3, $Silent = $false, $Proxies = $null, $TimeoutSec = 10) {
     # Ensure modern SSL/TLS protocols are enabled and ignore certificate errors for this request
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls13
     [Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
@@ -34,6 +34,7 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
             
             $hardFail = $false
             for ($i = 1; $i -le $retries; $i++) {
+                Start-Sleep -Seconds 1 # Global delay between all network requests
                 try {
                     Debug-Log "[Network.ps1] Attempt $i/$retries via $p"
                     $params = @{
@@ -63,7 +64,7 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
                     $Global:DeadProxies.Add($p) | Out-Null
                 }
             }
-            Start-Sleep -Milliseconds 100 # Delay between proxy attempts to prevent hangs
+            # Start-Sleep handled globally inside the retry loop
         }
     }
 
@@ -74,6 +75,7 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
             if (Set-TailscaleExitNode $node) {
                 $hardFail = $false
                 for ($i = 1; $i -le $retries; $i++) {
+                    Start-Sleep -Seconds 1 # Global delay between all network requests
                     try {
                         Debug-Log "[Network.ps1] Trying $url via Tailscale: $($node.Hostname) (Attempt $i/$retries)"
                         $params = @{
@@ -110,6 +112,7 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
     # 3. Direct Tier (Always last resort or if others disabled)
     Debug-Log "[Network.ps1] Trying $url via Direct"
     for ($i = 1; $i -le $retries; $i++) {
+        Start-Sleep -Seconds 1 # Global delay between all network requests
         try {
             $params = @{
                 Uri = $url; Headers = $headers; UserAgent = $userAgent; 
@@ -120,7 +123,53 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
             return # SUCCESS!
         } catch {
             $lastErr = $_.Exception.Message
+            if ($_.Exception.InnerException) { $lastErr = $_.Exception.InnerException.Message }
             Write-Host "  [!] Direct attempt $i failed: $lastErr" -ForegroundColor Gray
+            
+            # Fallback 1: WebClient for tricky SSL/CDN issues (like Discord)
+            if ($lastErr -match "(SSL|transport connection|forcibly closed)") {
+                Debug-Log "[Network.ps1] Attempting WebClient fallback for direct connection..."
+                try {
+                    # For WebClient, we must explicitly ensure the global callback is active right before the call
+                    [Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
+                    $wc = New-Object System.Net.WebClient
+                    $wc.Headers.Add("User-Agent", $userAgent)
+                    foreach ($key in $headers.Keys) { $wc.Headers.Add($key, $headers[$key]) }
+                    if ($targetFile) {
+                        $wc.DownloadFile($url, $targetFile)
+                    } else {
+                        $wc.DownloadString($url) | Out-Null
+                    }
+                    Debug-Log "[Network.ps1] WebClient fallback succeeded."
+                    return # SUCCESS!
+                } catch {
+                    $lastErr = "WebClient fallback failed: $($_.Exception.Message)"
+                    Debug-Log "[Network.ps1] $lastErr"
+                    
+                    # Fallback 2: Native curl.exe (Bypasses .NET SSL stack entirely)
+                    Debug-Log "[Network.ps1] Attempting native curl.exe fallback..."
+                    try {
+                        $curlArgs = @("-s", "-L", "-k") # Silent, follow redirects, insecure (skip cert check)
+                        if ($targetFile) {
+                            $curlArgs += @("-o", $targetFile)
+                        }
+                        $curlArgs += @($url)
+                        $curlArgs += @("-H", "User-Agent: $userAgent")
+                        foreach ($key in $headers.Keys) { $curlArgs += @("-H", "${key}: $($headers[$key])") }
+                        
+                        & curl.exe @curlArgs
+                        if ($LASTEXITCODE -eq 0 -and (-not $targetFile -or (Test-Path $targetFile))) {
+                            Debug-Log "[Network.ps1] curl.exe fallback succeeded."
+                            return # SUCCESS!
+                        } else {
+                            throw "curl.exe exited with code $LASTEXITCODE"
+                        }
+                    } catch {
+                        $lastErr = "curl.exe fallback failed: $($_.Exception.Message)"
+                        Debug-Log "[Network.ps1] $lastErr"
+                    }
+                }
+            }
         }
     }
 
