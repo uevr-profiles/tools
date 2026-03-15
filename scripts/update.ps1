@@ -27,8 +27,8 @@ try {
     .\scripts\Update-FromUEVRProfiles.ps1 -Fetch -Download -Extract -CleanCache -CleanDownloads -Debug -UseProxies:$true
     
     .\scripts\Find-Issues.ps1 -Fix -Debug
-    .\scripts\Process-Whitelist.ps1 -Delete -Debug
-    # .\scripts\Process-Blacklist.ps1 -Delete -Debug
+    .\scripts\Process-Whitelist.ps1 -Archive -Delete -Debug
+    # .\scripts\Process-Blacklist.ps1 -Archive -Delete -Debug
     .\scripts\Deduplicate-Profiles.ps1 -Delete -Debug
     .\scripts\Build-UEVRRepo.ps1 -Debug
 } finally {

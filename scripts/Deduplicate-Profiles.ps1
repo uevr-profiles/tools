@@ -42,13 +42,8 @@ function Get-RawProfileHash($profilePath) {
 
         if (-not $sourceFiles) { return "EMPTY_PROFILE" }
 
-        $zip = [System.IO.Compression.ZipFile]::Open($tempZip, "Create")
-        foreach ($file in $sourceFiles) {
-            $relPath = $file.FullName.Substring($profilePath.Length).TrimStart('\')
-            [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $file.FullName, $relPath) | Out-Null
-        }
-        $zip.Dispose()
-
+        Compress-Files -FilePaths $sourceFiles.FullName -TargetArchive $tempZip -CompressionLevel 1
+        
         $hashVal = Get-FileHashMD5 $tempZip
         if ($null -eq $hashVal) { return "HASH_FAILED" }
         # Debug-Log "[Deduplicate-Profiles.ps1] RawHash for ${profilePath}: $hashVal"
