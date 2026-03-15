@@ -1,5 +1,6 @@
 param(
     [switch]$UseProxies,
+    [switch]$UseTailscale,
     [switch]$Clean = $true,
     [switch]$Silent,
     [switch]$Debug,
@@ -20,6 +21,8 @@ if ($Fast) {
 
 #region Variables
 $Global:Debug = $Debug
+$Global:UseProxies = $UseProxies
+$Global:UseTailscale = $UseTailscale
 $UpdateScripts = @(
     "Update-FromUEVRProfiles.ps1", 
     "Update-FromUEVRDeluxe.ps1",
@@ -54,7 +57,7 @@ try {
             if (Test-Path $scriptPath) {
                 Write-Host "`n>>> Testing $s (Download) <<<" -ForegroundColor Cyan
                 try {
-                    & $scriptPath -Fetch -Download -ProfileLimit $ProfileLimit -Silent:$Silent -Debug:$Debug -UseProxies:$UseProxies
+                    & $scriptPath -Fetch -Download -ProfileLimit $ProfileLimit -Silent:$Silent -Debug:$Debug -UseProxies:$UseProxies -UseTailscale:$UseTailscale
                 } catch {
                     Write-Host "    [!] Download test failed for ${s}: $($_.Exception.Message)" -ForegroundColor Red
                 }

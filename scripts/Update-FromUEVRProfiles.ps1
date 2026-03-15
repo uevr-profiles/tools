@@ -10,7 +10,8 @@ param(
     [switch]$Debug,
     [switch]$CleanCache,
     [switch]$CleanDownloads,
-    [switch]$UseProxies
+    [switch]$UseProxies,
+    [switch]$UseTailscale
 )
 #endregion
 
@@ -27,7 +28,11 @@ $MetadataJson  = Join-Path $SourceTempDir "cache.json"
 $FirestoreUrl = "https://firestore.googleapis.com/v1/projects/uevrprofiles/databases/(default)/documents/games?pageSize=500"
 $DownloadFuncUrl = "https://us-central1-uevrprofiles.cloudfunctions.net/downloadFile"
 
-$ExpectedCount = ($ProfileLimit -ne [int]::MaxValue) ? $ProfileLimit : [int]::MaxValue
+if ($ProfileLimit -ne [int]::MaxValue) {
+    $ExpectedCount = $ProfileLimit
+} else {
+    $ExpectedCount = [int]::MaxValue
+}
 #endregion
 
 #region Functions
@@ -71,7 +76,11 @@ function Fetch-UEVRProfilesMetadata {
                     }
                 } catch {}
 
-                $profileExe = $vf.exeName.stringValue ? $vf.exeName.stringValue : ""
+                if ($vf.exeName.stringValue) {
+                    $profileExe = $vf.exeName.stringValue
+                } else {
+                    $profileExe = ""
+                }
                 $encodedArchive = [uri]::EscapeDataString("profiles/$archiveFile")
                 $dlUrl = "https://firebasestorage.googleapis.com/v0/b/uevrprofiles.appspot.com/o/$($encodedArchive)?alt=media"
 
@@ -107,7 +116,12 @@ function Download-UEVRProfiles {
         $targetFile = Join-Path $DownloadDir "$uuid.zip"
         $sidecar    = $targetFile + ".json"
         
-        $safeExe = Get-SafeExeName ($p.exeName ? $p.exeName : $p.gameName)
+        if ($p.exeName) {
+            $exeForSafeName = $p.exeName
+        } else {
+            $exeForSafeName = $p.gameName
+        }
+        $safeExe = Get-SafeExeName $exeForSafeName
         
         if (-not (Test-Path $targetFile)) {
             $msg = "[$index/$total] Downloading: $($p.gameName)"
@@ -146,7 +160,13 @@ function Download-UEVRProfiles {
 #region Main Logic
 Debug-Log "[Update-FromUEVRProfiles.ps1] Main Logic Start"
 $Global:Debug = $Debug
-$Proxies = $UseProxies ? $Global:Proxies : $null
+$Global:UseProxies = $UseProxies
+$Global:UseTailscale = $UseTailscale
+if ($UseProxies) {
+    $Proxies = $Global:ProxyPool
+} else {
+    $Proxies = $null
+}
 
 # Handle cleanup logic
 Debug-Log "[Update-FromUEVRProfiles.ps1] Checking cleanup flags"

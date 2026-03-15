@@ -10,7 +10,8 @@ param(
     [switch]$Debug,
     [switch]$CleanCache,
     [switch]$CleanDownloads,
-    [switch]$UseProxies
+    [switch]$UseProxies,
+    [switch]$UseTailscale
 )
 #endregion
 
@@ -28,7 +29,11 @@ $MetadataJson  = Join-Path $SourceTempDir "cache.json"
 $ProfilesCsv   = Join-Path $SourceTempDir "discord_profiles.csv"
 $BotStateJson  = Join-Path $SourceTempDir "bot_state.json"
 
-$ExpectedCount = ($ProfileLimit -ne [int]::MaxValue) ? $ProfileLimit : [int]::MaxValue
+if ($ProfileLimit -ne [int]::MaxValue) {
+    $ExpectedCount = $ProfileLimit
+} else {
+    $ExpectedCount = [int]::MaxValue
+}
 #endregion
 
 #region Functions
@@ -124,7 +129,12 @@ function Download-DiscordProfiles {
                     $tagSet.Add($category) | Out-Null
                 }
                 
-                $finalExe = Get-SafeExeName ($p.exeName ? $p.exeName : ($p.archive -replace '\.zip$', ''))
+                if ($p.exeName) {
+                    $exeForSafeDisc = $p.exeName
+                } else {
+                    $exeForSafeDisc = ($p.archive -replace '\.zip$', '')
+                }
+                $finalExe = Get-SafeExeName $exeForSafeDisc
                 Debug-Log "[Update-FromDiscord.ps1] FinalExe: $finalExe"
 
                 Debug-Log "[Update-FromDiscord.ps1] Calling Get-ProfileDownloadUrl"
@@ -169,7 +179,13 @@ function Download-DiscordProfiles {
 #region Main Logic
 Debug-Log "[Update-FromDiscord.ps1] Main Logic Start"
 $Global:Debug = $Debug
-$Proxies = $UseProxies ? $Global:Proxies : $null
+$Global:UseProxies = $UseProxies
+$Global:UseTailscale = $UseTailscale
+if ($UseProxies) {
+    $Proxies = $Global:ProxyPool
+} else {
+    $Proxies = $null
+}
 
 # Handle cleanup logic
 Debug-Log "[Update-FromDiscord.ps1] Checking cleanup flags"

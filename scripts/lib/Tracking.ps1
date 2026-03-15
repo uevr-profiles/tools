@@ -6,7 +6,11 @@ function Update-GlobalFilesList($relPaths) {
 
 function Update-GlobalPropsJson($archivePath, $profile, $metaObj) {
     if ($null -eq $metaObj) { return }
-    $occId = ($profile -and $profile -ne "[Root]") ? "$archivePath | $profile" : "$archivePath"
+    if ($profile -and $profile -ne "[Root]") {
+        $occId = "$archivePath | $profile"
+    } else {
+        $occId = "$archivePath"
+    }
     $occKey = "$occId | $([DateTimeOffset]::Now.ToUnixTimeMilliseconds())_$(Get-Random)"
     foreach ($name in $metaObj.PSObject.Properties.Name) {
         if (-not $Global:TrackingProps.PSObject.Properties[$name]) {
@@ -20,7 +24,11 @@ function Finalize-GlobalTracking {
     if (-not (Test-Path $BaseTempDir)) { New-Item -ItemType Directory -Path $BaseTempDir -Force | Out-Null }
     if ($Global:TrackingFiles.Count -gt 0) {
         Write-Host "Flushing tracked files to disk ($($Global:TrackingFiles.Count))..." -ForegroundColor Cyan
-        $existing = (Test-Path $GlobalFilesList) ? (Get-Content $GlobalFilesList -ErrorAction SilentlyContinue) : @()
+        if (Test-Path $GlobalFilesList) {
+            $existing = Get-Content $GlobalFilesList -ErrorAction SilentlyContinue
+        } else {
+            $existing = @()
+        }
         foreach ($e in $existing) { $Global:TrackingFiles.Add($e) | Out-Null }
         $Global:TrackingFiles | Sort-Object | Set-Content $GlobalFilesList -Encoding utf8
     }

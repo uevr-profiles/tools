@@ -103,9 +103,17 @@ class ProfileMetadata {
     static [ProfileMetadata] FromObject($obj) {
         $meta = [ProfileMetadata]::new()
         if ($null -eq $obj) { return $meta }
-        $props = ($obj -is [System.Collections.IDictionary]) ? $obj.Keys : $obj.PSObject.Properties.Name
+        if ($obj -is [System.Collections.IDictionary]) {
+            $props = $obj.Keys
+        } else {
+            $props = $obj.PSObject.Properties.Name
+        }
         foreach ($p in $props) {
-            $val = ($obj -is [System.Collections.IDictionary]) ? $obj[$p] : $obj.$p
+            if ($obj -is [System.Collections.IDictionary]) {
+                $val = $obj[$p]
+            } else {
+                $val = $obj.$p
+            }
             if ($null -ne $val -and "$val" -ne "") {
                 try { 
                     if ($p -ieq "ID") { $meta.ID = [string]$val }
@@ -156,8 +164,20 @@ class ProfileMetadata {
     [void] Finalize([string]$targetDir, [string]$profile) {
         $readmeFile = Join-Path $targetDir "README.md"
         if ($profile -and $profile -ne "[Root]") { $this.profileName = $profile }
-        $readmeText = (Test-Path $readmeFile) ? (Get-Content $readmeFile -Raw) : ""
-        $masterDesc = $readmeText ? [ProfileReadme]::ExtractDescription($readmeText) : ($this.description ? $this.description : "")
+        if (Test-Path $readmeFile) {
+            $readmeText = Get-Content $readmeFile -Raw
+        } else {
+            $readmeText = ""
+        }
+        if ($readmeText) {
+            $masterDesc = [ProfileReadme]::ExtractDescription($readmeText)
+        } else {
+            if ($this.description) {
+                $masterDesc = $this.description
+            } else {
+                $masterDesc = ""
+            }
+        }
         if ($masterDesc) {
             $readme = [ProfileReadme]::new($this, $masterDesc)
             $readme.Save($readmeFile)

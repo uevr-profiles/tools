@@ -34,7 +34,11 @@ function Extract-And-Discover-Profiles($archivePath) {
             $dirPath = (Get-Item $dir.FullName).FullName
             $rel = [IO.Path]::GetRelativePath($tempBase, $dirPath)
             if ($rel -eq ".") { $rel = "" }
-            $relName = $rel ? $rel : "[Root]"
+            if ($rel) {
+                $relName = $rel
+            } else {
+                $relName = "[Root]"
+            }
             $discovered += [PSCustomObject]@{ Path = $dirPath; Profile = $relName; ProfileName = $dir.Name }
         }
     } catch {

@@ -10,7 +10,8 @@ param(
     [switch]$Debug,
     [switch]$CleanCache,
     [switch]$CleanDownloads,
-    [switch]$UseProxies
+    [switch]$UseProxies,
+    [switch]$UseTailscale
 )
 #endregion
 
@@ -27,33 +28,27 @@ $MetadataJson  = Join-Path $SourceTempDir "cache.json"
 $ProfilesUrlBase = "https://uevrdeluxefunc.azurewebsites.net/api/profiles"
 $AllProfilesUrl  = "https://uevrdeluxefunc.azurewebsites.net/api/allprofiles"
 
-$ExpectedCount = ($ProfileLimit -ne [int]::MaxValue) ? $ProfileLimit : [int]::MaxValue
+if ($ProfileLimit -ne [int]::MaxValue) {
+    $ExpectedCount = $ProfileLimit
+} else {
+    $ExpectedCount = [int]::MaxValue
+}
 #endregion
 
 #region Functions
 function Invoke-DeluxeRequest($url, $Proxies = $null) {
-    $headers = @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" }
-    
-    $proxyList = Get-PreparedProxyPool $Proxies $url
-
-    $retries = [Math]::Max(1, $proxyList.Count)
-    $lastErr = $null
-
-    for ($i = 0; $i -lt $retries; $i++) {
-        $params = @{ Uri = $url; Headers = $headers; ErrorAction = "Stop" }
-        if ($proxyList.Count -gt 0) {
-            $params["Proxy"] = $proxyList[$i]
+    $tempFile = Join-Path $env:TEMP "$([guid]::NewGuid()).json"
+    try {
+        Invoke-WebRequestWithRetry -url $url -targetFile $tempFile -headers @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" } -Silent:$Silent -Proxies:$Proxies
+        if (Test-Path $tempFile) {
+            $json = Get-Content $tempFile -Raw | ConvertFrom-Json
+            Remove-Item $tempFile -Force -ErrorAction SilentlyContinue
+            return $json
         }
-        try {
-            return Invoke-RestMethod @params
-        } catch {
-            $lastErr = $_
-            if ($_.Exception.Message -match "500" -and $proxyList.Count -le 1) {
-                throw "Fatal: Deluxe API returned 500 Internal Server Error. You might be IP blocked."
-            }
-        }
+    } catch {
+        if (Test-Path $tempFile) { Remove-Item $tempFile -Force -ErrorAction SilentlyContinue }
+        if (-not $Silent) { throw $_ }
     }
-    throw $lastErr
 }
 
 function Fetch-UEVRDeluxeMetadata {
@@ -94,8 +89,25 @@ function Download-UEVRDeluxeProfiles {
                 Invoke-WebRequestWithRetry -url $url -targetFile $targetFile -headers @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" } -Silent $Silent -Proxies $Proxies
                 
                 # Use centralized date formatting
-                $modDate = $p.modifiedDate ? $p.modifiedDate : ($p.updatedAt ? $p.updatedAt : $null)
-                $creDate = $p.createdDate ? $p.createdDate : ($p.createdAt ? $p.createdAt : $modDate)
+                if ($p.modifiedDate) {
+                    $modDate = $p.modifiedDate
+                } else {
+                    if ($p.updatedAt) {
+                        $modDate = $p.updatedAt
+                    } else {
+                        $modDate = $null
+                    }
+                }
+                
+                if ($p.createdDate) {
+                    $creDate = $p.createdDate
+                } else {
+                    if ($p.createdAt) {
+                        $creDate = $p.createdAt
+                    } else {
+                        $creDate = $modDate
+                    }
+                }
 
                 Debug-Log "[Update-FromUEVRDeluxe.ps1] Creating sidecar with author: $($p.authorName)"
                 $sidecarObj = [ordered]@{
@@ -127,7 +139,13 @@ function Download-UEVRDeluxeProfiles {
 #region Main Logic
 Debug-Log "[Update-FromUEVRDeluxe.ps1] Main Logic Start"
 $Global:Debug = $Debug
-$Proxies = $UseProxies ? $Global:Proxies : $null
+$Global:UseProxies = $UseProxies
+$Global:UseTailscale = $UseTailscale
+if ($UseProxies) {
+    $Proxies = $Global:ProxyPool
+} else {
+    $Proxies = $null
+}
 
 # Handle cleanup logic
 Debug-Log "[Update-FromUEVRDeluxe.ps1] Checking cleanup flags"

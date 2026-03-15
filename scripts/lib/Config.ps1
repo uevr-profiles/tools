@@ -11,15 +11,19 @@ if (Test-Path $SchemaFile) {
     $Global:SchemaContent = Get-Content $SchemaFile -Raw
 }
 
-function Load-ProxiesFromFile($path) {
-    if (Test-Path $path) {
-        try { return Get-Content $path -Raw | ConvertFrom-Json } catch { }
-    }
-    return @("DIRECT")
-}
+# Network Flags
+if ($null -eq $Global:UseProxies)   { $Global:UseProxies = $false }
+if ($null -eq $Global:UseTailscale) { $Global:UseTailscale = $false }
+$Global:ProxyPool = @()
+$Global:TailscaleNodeCache = @()
 
-$ProxiesFile = Join-Path $ScriptsDir "proxies.json"
-$Global:Proxies = Load-ProxiesFromFile $ProxiesFile
+# Failover Limits
+if ($null -eq $Global:ProxyLimit)     { $Global:ProxyLimit = 50 }
+if ($null -eq $Global:TailscaleLimit) { $Global:TailscaleLimit = 5 }
+
+# Global dead connection tracking
+$Global:DeadProxies = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+$Global:DeadTailscaleNodes = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
 
 # Progress preference to avoid terminal spam during bulk file operations
 $ProgressPreference = 'SilentlyContinue'
