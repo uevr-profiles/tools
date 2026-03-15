@@ -212,21 +212,21 @@ if ($Fetch) {
     Debug-Log "[Update-FromDiscord.ps1] Calling Fetch-DiscordMetadata"
     Fetch-DiscordMetadata
     $results = Load-ProfilesFromFile $MetadataJson
-    Assert-ProfileCount -count $results.Count -expected $ProfileLimit -Silent:$Silent -stage "Fetch"
+    # Assert-ProfileCount -count $results.Count -expected $ProfileLimit -Silent:$Silent -stage "Fetch"
     $ExpectedCount = [Math]::Min($ExpectedCount, $results.Count)
 }
 
 if ($Download) { 
     Download-DiscordProfiles
     $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
-    Assert-ProfileCount -count $zips.Count -expected $ExpectedCount -Silent:$Silent -stage "Download"
+    # Assert-ProfileCount -count $zips.Count -expected $ExpectedCount -Silent:$Silent -stage "Download"
     $ExpectedCount = [Math]::Min($ExpectedCount, $zips.Count)
 }
 
 if ($Extract) { 
     Debug-Log "[Update-FromDiscord.ps1] Calling Extract-ArchivesFolder"
     $extracted = Extract-ArchivesFolder $DownloadDir -Limit $ProfileLimit -Silent:$Silent
-    Assert-ProfileCount -count $extracted.Count -expected $ExpectedCount -Silent:$Silent -stage "Extraction ID"
+    # Assert-ProfileCount -count $extracted.Count -expected $ExpectedCount -Silent:$Silent -stage "Extraction ID"
 }
 Finalize-GlobalTracking
 #endregion

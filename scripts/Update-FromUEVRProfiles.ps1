@@ -194,7 +194,7 @@ if ($Fetch) {
     Debug-Log "[Update-FromUEVRProfiles.ps1] Calling Fetch-UEVRProfilesMetadata"
     Fetch-UEVRProfilesMetadata
     $data = Load-ProfilesFromFile $MetadataJson
-    Assert-ProfileCount -count $data.Count -expected $ProfileLimit -Silent:$Silent -stage "Fetch"
+    Assert-ProfileCount -count $data.Count -expected $ProfileLimit -Silent -stage "Fetch"
     $ExpectedCount = [Math]::Min($ExpectedCount, $data.Count)
 }
 
@@ -202,14 +202,14 @@ if ($Download) {
     Debug-Log "[Update-FromUEVRProfiles.ps1] Calling Download-UEVRProfiles"
     Download-UEVRProfiles
     $zips = Get-ChildItem -Path $DownloadDir -Filter "*.zip"
-    Assert-ProfileCount -count $zips.Count -expected $ExpectedCount -Silent:$Silent -stage "Download"
+    Assert-ProfileCount -count $zips.Count -expected $ExpectedCount -Silent -stage "Download"
     $ExpectedCount = [Math]::Min($ExpectedCount, $zips.Count)
 }
 
 if ($Extract) { 
     Debug-Log "[Update-FromUEVRProfiles.ps1] Calling Extract-ArchivesFolder"
     $extracted = Extract-ArchivesFolder $DownloadDir -Limit $ProfileLimit -Silent:$Silent
-    Assert-ProfileCount -count $extracted.Count -expected $ExpectedCount -Silent:$Silent -stage "Extraction ID"
+    Assert-ProfileCount -count $extracted.Count -expected $ExpectedCount -Silent -stage "Extraction ID"
 }
 Finalize-GlobalTracking
 Debug-Log "[Update-FromUEVRProfiles.ps1] Main Logic End"

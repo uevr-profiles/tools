@@ -22,7 +22,7 @@ try {
             Get-ChildItem -Path $ProfilesDir -Directory | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue 2>$null
         }
     }
-    .\scripts\Update-FromDiscord.ps1 -Download -Extract -CleanDownloads -Debug
+    .\scripts\Update-FromDiscord.ps1 -Extract -Debug
     .\scripts\Update-FromUEVRDeluxe.ps1 -Fetch -Download -Extract -CleanCache -CleanDownloads -Debug -UseProxies -UseTailscale
     .\scripts\Update-FromUEVRProfiles.ps1 -Fetch -Download -Extract -CleanCache -CleanDownloads -Debug -UseProxies -UseTailscale
     
