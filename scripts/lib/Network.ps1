@@ -34,6 +34,7 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
             
             $hardFail = $false
             for ($i = 1; $i -le $retries; $i++) {
+                Debug-Log "Waiting 1s..."
                 Start-Sleep -Seconds 1 # Global delay between all network requests
                 try {
                     Debug-Log "[Network.ps1] Attempt $i/$retries via $p"
@@ -75,6 +76,7 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
             if (Set-TailscaleExitNode $node) {
                 $hardFail = $false
                 for ($i = 1; $i -le $retries; $i++) {
+                    Debug-Log "Waiting 1s..."
                     Start-Sleep -Seconds 1 # Global delay between all network requests
                     try {
                         Debug-Log "[Network.ps1] Trying $url via Tailscale: $($node.Hostname) (Attempt $i/$retries)"
@@ -112,8 +114,13 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
     # 3. Direct Tier (Always last resort or if others disabled)
     Debug-Log "[Network.ps1] Trying $url via Direct"
     for ($i = 1; $i -le $retries; $i++) {
+        Debug-Log "Waiting 1s..."
         Start-Sleep -Seconds 1 # Global delay between all network requests
         try {
+            Debug-Log "[Network.ps1] Direct Attempt $i/$retries"
+            if (-not $Silent) { 
+                Write-Host "  [~] Downloading (Direct Attempt $i/$retries)... please wait." -ForegroundColor Cyan 
+            }
             $params = @{
                 Uri = $url; Headers = $headers; UserAgent = $userAgent; 
                 SkipCertificateCheck = $true; ErrorAction = "Stop"; TimeoutSec = $TimeoutSec;

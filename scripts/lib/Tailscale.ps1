@@ -39,6 +39,7 @@ function Set-TailscaleExitNode($node) {
     $maxAttempts = 5
     for ($i = 1; $i -le $maxAttempts; $i++) {
         Debug-Log "[Tailscale.ps1] Waiting for VPN establishment (Attempt $i/$maxAttempts)..."
+        Debug-Log "Waiting 2s..."
         Start-Sleep -Seconds 2
         
         $status = & tailscale status --json | ConvertFrom-Json
