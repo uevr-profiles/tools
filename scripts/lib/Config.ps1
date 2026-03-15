@@ -1,4 +1,8 @@
 #region Variables & Configuration
+# Ensure modern SSL/TLS protocols are enabled and ignore certificate errors
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls13
+[Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
+
 # Relative to scripts/lib/Config.ps1
 $LibDir         = $PSScriptRoot
 $ScriptsDir     = Split-Path $LibDir -Parent

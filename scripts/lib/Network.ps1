@@ -1,6 +1,9 @@
 #region Network Utilities
 
 function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries = 2, $Silent = $false, $Proxies = $null, $TimeoutSec = 10) {
+    # Ensure modern SSL/TLS protocols are enabled for this request
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls13
+    
     $userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     if ($headers["User-Agent"]) { $userAgent = $headers["User-Agent"]; $headers.Remove("User-Agent") }
     
