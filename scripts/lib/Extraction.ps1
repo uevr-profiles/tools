@@ -90,8 +90,8 @@ function Extract-Archives($archivePaths, [switch]$Silent) {
                 if ($sidecar) { foreach ($prop in $sidecar.PSObject.Properties) { $merged[$prop.Name] = $prop.Value } }
                 
                 Debug-Log "[common.ps1] Generating metadata"
-                if (-not $merged.ID) { $merged.ID = Get-OrCreateUUID $merged }
                 if (-not $merged.zipHash) { $merged.zipHash = Get-FileHashMD5 $archive.FullName }
+                if (-not $merged.ID) { $merged.ID = Get-ExtractionUUID $merged.zipHash }
                 if (-not $merged.downloadDate) { $merged.downloadDate = Get-ISO8601Now }
 
                 $finalMeta = [ProfileMetadata]::FromObject($merged)

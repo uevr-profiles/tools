@@ -71,10 +71,37 @@ function Download-UEVRDeluxeProfiles {
         if ($count -ge $ProfileLimit) { break }
         if ($failCount -ge 5) { Write-Error "Too many consecutive failures in $SourceName. Stopping."; break }
         
-        $uuid = Get-OrCreateUUID $p
-        $uuidClean = ([guid]$uuid).ToString("n")
         $rawExe  = $p.exeName
         $safeExe = Get-SafeExeName $rawExe
+        if ($p.ID) {
+            $uuidClean = $p.ID.Replace("-", "")
+        } else {
+            $uuidClean = ([guid]::NewGuid().ToString("n"))
+        }
+        $downloadUrl = "$ProfilesUrlBase/$([uri]::EscapeDataString($rawExe))/$uuidClean"
+        $uuid = Get-DownloadUUID $downloadUrl
+        
+        $sidecarPath = $targetFile + ".json"
+        if (Test-Path $sidecarPath) {
+            try {
+                $sidecarData = Get-Content $sidecarPath -Raw | ConvertFrom-Json
+                if ($sidecarData.ID -and $sidecarData.sourceDownloadUrl) {
+                    $uuid = $sidecarData.ID
+                    $downloadUrl = $sidecarData.sourceDownloadUrl
+                    Debug-Log "[Update-FromUEVRDeluxe.ps1] Loaded UUID and URL from existing sidecar: $uuid"
+                } else {
+                    $uuid = Get-DownloadUUID $downloadUrl
+                    Debug-Log "[Update-FromUEVRDeluxe.ps1] Generated new UUID from URL: $uuid"
+                }
+            } catch {
+                $uuid = Get-DownloadUUID $downloadUrl
+                Debug-Log "[Update-FromUEVRDeluxe.ps1] Sidecar unreadable, generated new UUID: $uuid"
+            }
+        } else {
+            $uuid = Get-DownloadUUID $downloadUrl
+            Debug-Log "[Update-FromUEVRDeluxe.ps1] No sidecar, generated new UUID: $uuid"
+        }
+        
         $targetFile = Join-Path $DownloadDir "$uuid.zip"
         $sidecar    = $targetFile + ".json"
         
@@ -86,7 +113,7 @@ function Download-UEVRDeluxeProfiles {
 
             try {
                 Debug-Log "[Update-FromUEVRDeluxe.ps1] Calling Invoke-WebRequestWithRetry: $url"
-                Invoke-WebRequestWithRetry -url $url -targetFile $targetFile -headers @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" } -Silent $Silent -Proxies $Proxies
+                Invoke-WebRequestWithRetry -url $url -targetFile $targetFile -headers @{ "User-Agent" = "UEVRDeluxe"; "Accept" = "application/json" } -Silent $Silent -Proxies $Proxies -TimeoutSec 10
                 
                 # Use centralized date formatting
                 if ($p.modifiedDate) {

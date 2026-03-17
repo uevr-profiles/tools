@@ -6,10 +6,15 @@ function Get-MullvadExitNodes {
     try {
         $out = & tailscale exit-node list | Out-String
         # Pattern: 100.x.x.x  hostname.mullvad.ts.net  Country  City
-        # Fixed regex to allow leading whitespace
-        $matches = [regex]::Matches($out, '(?m)^\s*(\d{1,3}(?:\.\d{1,3}){3})\s+([^\s]+mullvad\.ts\.net)')
-        $nodes = foreach ($m in $matches) {
-            [PSCustomObject]@{ IP = $m.Groups[1].Value; Hostname = $m.Groups[2].Value }
+        # Fixed regex to allow leading whitespace and capture country/city correctly
+        $nodeMatches = [regex]::Matches($out, '(?m)^\s*(\d{1,3}(?:\.\d{1,3}){3})\s+([^\s]+mullvad\.ts\.net)\s+(\S+)\s+([^\s-]+(?:\s+[^\s-]+)*)')
+        $nodes = foreach ($m in $nodeMatches) {
+            [PSCustomObject]@{ 
+                IP = $m.Groups[1].Value; 
+                Hostname = $m.Groups[2].Value;
+                Country = $m.Groups[3].Value;
+                City = $m.Groups[4].Value
+            }
         }
         $Global:TailscaleNodeCache = $nodes
         Debug-Log "[Tailscale.ps1] Found $($nodes.Count) Mullvad exit nodes."
@@ -32,7 +37,17 @@ function Set-TailscaleExitNode($node) {
     } else {
         $identifier = $node.IP
     }
-    Write-Host "Setting Tailscale exit node to $identifier..." -ForegroundColor Cyan
+    
+    $locationInfo = ""
+    if ($node.Country) {
+        $locationInfo = " ($($node.Country)"
+        if ($node.City) {
+            $locationInfo += ", $($node.City)"
+        }
+        $locationInfo += ")"
+    }
+    
+    Write-Host "Setting Tailscale exit node to $identifier$locationInfo..." -ForegroundColor Cyan
     & tailscale set --exit-node="$identifier" | Out-Null
 
     # User Request: Sufficient delay and double check

@@ -112,9 +112,28 @@ function Download-UEVRProfiles {
         $index++
         if ($count -ge $ProfileLimit) { break }
         if ($failCount -ge 5) { Write-Error "Too many consecutive failures in $SourceName. Stopping."; break }
-        $uuid = Get-OrCreateUUID $p
+        $uuid = Get-DownloadUUID $p.sourceDownloadUrl
         $targetFile = Join-Path $DownloadDir "$uuid.zip"
         $sidecar    = $targetFile + ".json"
+        
+        # Check if sidecar exists with UUID and sourceDownloadUrl
+        if (Test-Path $sidecar) {
+            try {
+                $sidecarData = Get-Content $sidecar -Raw | ConvertFrom-Json
+                if ($sidecarData.ID -and $sidecarData.sourceDownloadUrl) {
+                    $uuid = $sidecarData.ID
+                    Debug-Log "[Update-FromUEVRProfiles.ps1] Loaded UUID from existing sidecar: $uuid"
+                } else {
+                    $uuid = Get-DownloadUUID $p.sourceDownloadUrl
+                    Debug-Log "[Update-FromUEVRProfiles.ps1] Generated new UUID from sourceDownloadUrl: $uuid"
+                }
+            } catch {
+                $uuid = Get-DownloadUUID $p.sourceDownloadUrl
+                Debug-Log "[Update-FromUEVRProfiles.ps1] Sidecar unreadable, generated new UUID: $uuid"
+            }
+        } else {
+            Debug-Log "[Update-FromUEVRProfiles.ps1] No sidecar, generated new UUID: $uuid"
+        }
         
         if ($p.exeName) {
             $exeForSafeName = $p.exeName
@@ -129,7 +148,7 @@ function Download-UEVRProfiles {
             Write-Host "$msg..." -ForegroundColor Gray
 
             try {
-                Invoke-WebRequestWithRetry -url $p.downloadUrl -targetFile $targetFile -Silent $Silent -Debug:$Debug -Proxies $Proxies
+                Invoke-WebRequestWithRetry -url $p.downloadUrl -targetFile $targetFile -Silent $Silent -Debug:$Debug -Proxies $Proxies -TimeoutSec 10
                 
                 $sidecarObj = [ordered]@{
                     "ID"                = $uuid

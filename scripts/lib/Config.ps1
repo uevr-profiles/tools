@@ -29,6 +29,10 @@ if ($null -eq $Global:TailscaleLimit) { $Global:TailscaleLimit = 5 }
 $Global:DeadProxies = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
 $Global:DeadTailscaleNodes = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
 
+# Global working connection tracking
+$Global:CurrentWorkingProxy = $null
+$Global:CurrentWorkingTailscaleNode = $null
+
 # Progress preference to avoid terminal spam during bulk file operations
 $ProgressPreference = 'SilentlyContinue'
 

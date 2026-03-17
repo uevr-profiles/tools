@@ -102,18 +102,37 @@ function Download-DiscordProfiles {
             break 
         }
 
-        Debug-Log "[Update-FromDiscord.ps1] Calling Get-OrCreateUUID"
-        $uuid = Get-OrCreateUUID $p
+        Debug-Log "[Update-FromDiscord.ps1] Calling Get-DownloadUUID"
+        $uuid = Get-DownloadUUID $p.sourceDownloadUrl
         Debug-Log "[Update-FromDiscord.ps1] UUID: $uuid"
         $targetFile = Join-Path $DownloadDir "$uuid.zip"
         $sidecar    = $targetFile + ".json"
+        
+        # Check if sidecar exists with UUID and sourceDownloadUrl
+        if (Test-Path $sidecar) {
+            try {
+                $sidecarData = Get-Content $sidecar -Raw | ConvertFrom-Json
+                if ($sidecarData.ID -and $sidecarData.sourceDownloadUrl) {
+                    $uuid = $sidecarData.ID
+                    Debug-Log "[Update-FromDiscord.ps1] Loaded UUID from existing sidecar: $uuid"
+                } else {
+                    $uuid = Get-DownloadUUID $p.sourceDownloadUrl
+                    Debug-Log "[Update-FromDiscord.ps1] Generated new UUID from sourceDownloadUrl: $uuid"
+                }
+            } catch {
+                $uuid = Get-DownloadUUID $p.sourceDownloadUrl
+                Debug-Log "[Update-FromDiscord.ps1] Sidecar unreadable, generated new UUID: $uuid"
+            }
+        } else {
+            Debug-Log "[Update-FromDiscord.ps1] No sidecar, generated new UUID: $uuid"
+        }
 
         Debug-Log "[Update-FromDiscord.ps1] Checking targetFile: $targetFile"
         if (-not (Test-Path $targetFile)) {
             Write-Host "[$index/$total] Downloading: $($p.gameName) ($($p.zipName))..." -ForegroundColor Gray
             try {
                 Debug-Log "[Update-FromDiscord.ps1] Calling Invoke-WebRequestWithRetry"
-                Invoke-WebRequestWithRetry -url $p.sourceDownloadUrl -targetFile $targetFile -Silent $Silent -Proxies $Proxies -TimeoutSec 60
+                Invoke-WebRequestWithRetry -url $p.sourceDownloadUrl -targetFile $targetFile -Silent $Silent -Proxies $Proxies -TimeoutSec 10
                 
                 Debug-Log "[Update-FromDiscord.ps1] Download OK, creating HashSet"
                 $tagSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)

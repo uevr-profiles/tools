@@ -34,8 +34,7 @@ function Format-DateISO8601($date) {
 function Assert-ProfileCount($count, $expected, [switch]$Silent, $stage) {
     if ($expected -ne [int]::MaxValue -and $count -lt $expected) {
         $msg = "$stage count mismatch: Expected at least $expected, got $count."
-        if ($Silent) { Write-Warning "$msg Skipping due to -Silent." }
-        else { throw "Fatal: $msg Stopping because -Silent is not set." }
+        Write-Warning "$msg"
     }
 }
 

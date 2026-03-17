@@ -23,6 +23,14 @@ function Get-FileHashMD5($path) {
     return (Get-FileHash -Path $path -Algorithm MD5).Hash.ToUpper()
 }
 
+function Get-UrlHashMD5($url) {
+    if ([string]::IsNullOrWhiteSpace($url)) { return $null }
+    $hasher = [System.Security.Cryptography.MD5]::Create()
+    $hashBytes = $hasher.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($url))
+    $hashString = ($hashBytes | ForEach-Object { '{0:x2}' -f $_ }) -join ''
+    return $hashString.ToUpper()
+}
+
 function Get-SafeExeName($name) {
     if ([string]::IsNullOrWhiteSpace($name)) { return "" }
     # Remove .exe suffix (case-insensitive)
@@ -36,6 +44,31 @@ function Get-DeterministicGuid($seed) {
     $hasher = [System.Security.Cryptography.MD5]::Create()
     $hash = $hasher.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($seed))
     return ([guid]$hash).ToString()
+}
+
+function Get-DownloadUUID($sourceDownloadUrl) {
+    Debug-Log "[common.ps1] Entering Get-DownloadUUID"
+    if ([string]::IsNullOrWhiteSpace($sourceDownloadUrl)) {
+        throw "sourceDownloadUrl is required for download UUID generation"
+    }
+    
+    Debug-Log "[common.ps1] Using sourceDownloadUrl for UUID generation: $sourceDownloadUrl"
+    $urlHash = Get-UrlHashMD5 $sourceDownloadUrl
+    $finalUuid = Get-DeterministicGuid $urlHash
+    Debug-Log "[common.ps1] Generated download UUID: $finalUuid"
+    return $finalUuid
+}
+
+function Get-ExtractionUUID($zipHash) {
+    Debug-Log "[common.ps1] Entering Get-ExtractionUUID"
+    if ([string]::IsNullOrWhiteSpace($zipHash)) {
+        throw "zipHash is required for extraction UUID generation"
+    }
+    
+    Debug-Log "[common.ps1] Using zipHash for UUID generation: $zipHash"
+    $finalUuid = Get-DeterministicGuid $zipHash
+    Debug-Log "[common.ps1] Generated extraction UUID: $finalUuid"
+    return $finalUuid
 }
 
 function Get-OrCreateUUID($p) {

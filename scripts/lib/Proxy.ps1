@@ -20,7 +20,7 @@ function Get-FreshProxyList {
         Debug-Log "[Proxy.ps1] Fetching proxies from $source"
         try {
             # Use basic Invoke-WebRequest here to avoid recursion with Network.ps1's wrapper
-            $response = Invoke-WebRequest -Uri $source -TimeoutSec 10 -ErrorAction Stop
+            $response = Invoke-WebRequest -Uri $source -TimeoutSec 2 -ErrorAction Stop
             $lines = $response.Content -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ -match '^\d{1,3}(\.\d{1,3}){3}:\d+$' }
             foreach ($line in $lines) { $proxies.Add($line) | Out-Null }
         } catch {
