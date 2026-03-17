@@ -3,6 +3,7 @@ const { Client, GatewayIntentBits, ChannelType, PermissionsBitField, Events } = 
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
+const crypto = require('crypto');
 
 const client = new Client({
     intents: [
@@ -33,6 +34,13 @@ const getDiscordUrl = (guildId = "@me", channelId = "", messageId = "") => {
     if (messageId) url += `/${messageId}`;
     return url;
 };
+
+const getDownloadUUID = (url) => {
+    const urlHash = crypto.createHash('md5').update(url).digest('hex').toUpperCase();
+    const guidHash = crypto.createHash('md5').update(urlHash).digest('hex');
+    return `${guidHash.slice(0, 8)}-${guidHash.slice(8, 12)}-${guidHash.slice(12, 16)}-${guidHash.slice(16, 20)}-${guidHash.slice(20)}`;
+};
+
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
 async function askToContinue(message) {
@@ -204,7 +212,8 @@ client.once(Events.ClientReady, async () => {
                         if (existingIds.has(uniqueId)) continue;
 
                         const msgUrl = getDiscordUrl(thread.guildId, thread.id, msg.id);
-                        console.log(`    [${newFoundTotal + 1}] Found ${zip.name} by ${msg.author.username} -> ${uniqueId}`);
+                        const expectedUuid = getDownloadUUID(zip.url);
+                        console.log(`    [${newFoundTotal + 1}] Found ${zip.name} by ${msg.author.username} -> ${expectedUuid}`);
 
                         results.push({
                             id: uniqueId,
