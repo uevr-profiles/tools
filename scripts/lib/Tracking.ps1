@@ -72,4 +72,34 @@ function Load-ProfilesFromFile($path) {
         return @()
     }
 }
+function Load-ConnectionState {
+    if (-not (Test-Path $Global:ConnectionStateFile)) { return }
+    try {
+        $state = Get-Content $Global:ConnectionStateFile -Raw | ConvertFrom-Json
+        if ($state.CurrentWorkingProxy) {
+            $Global:CurrentWorkingProxy = $state.CurrentWorkingProxy
+            Debug-Log "[Tracking.ps1] Loaded persistent proxy: $($Global:CurrentWorkingProxy)"
+        }
+        if ($state.CurrentWorkingTailscaleNode) {
+            $Global:CurrentWorkingTailscaleNode = $state.CurrentWorkingTailscaleNode
+            Debug-Log "[Tracking.ps1] Loaded persistent Tailscale node: $($Global:CurrentWorkingTailscaleNode.Hostname)"
+        }
+    } catch {
+        Debug-Log "[Tracking.ps1] Failed to load connection state: $($_.Exception.Message)"
+    }
+}
+
+function Save-ConnectionState {
+    try {
+        $state = [ordered]@{
+            "CurrentWorkingProxy"         = $Global:CurrentWorkingProxy
+            "CurrentWorkingTailscaleNode" = $Global:CurrentWorkingTailscaleNode
+            "Timestamp"                   = [DateTimeOffset]::Now.ToUnixTimeSeconds()
+        }
+        $state | ConvertTo-Json | Set-Content $Global:ConnectionStateFile -Encoding utf8
+        Debug-Log "[Tracking.ps1] Saved connection state to disk."
+    } catch {
+        Debug-Log "[Tracking.ps1] Failed to save connection state: $($_.Exception.Message)"
+    }
+}
 #endregion

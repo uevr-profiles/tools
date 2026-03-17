@@ -12,3 +12,5 @@ $LibPath = Join-Path $PSScriptRoot "lib"
 . "$LibPath\Heuristics.ps1" # Depends on IO/Config
 . "$LibPath\Profile.ps1"    # Depends on Classes/Heuristics/IO/Config
 . "$LibPath\Extraction.ps1" # Depends on Profile/Classes/IO/Config
+
+Load-ConnectionState

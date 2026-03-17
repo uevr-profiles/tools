@@ -91,14 +91,14 @@ function Extract-Archives($archivePaths, [switch]$Silent) {
                 
                 Debug-Log "[common.ps1] Generating metadata"
                 if (-not $merged.zipHash) { $merged.zipHash = Get-FileHashMD5 $archive.FullName }
-                if (-not $merged.ID) { $merged.ID = Get-ExtractionUUID $merged.zipHash }
+                
+                # Force ID to be content-based for repository organization
+                $merged.ID = Get-ExtractionUUID $merged.zipHash $p.Profile
+                
                 if (-not $merged.downloadDate) { $merged.downloadDate = Get-ISO8601Now }
 
                 $finalMeta = [ProfileMetadata]::FromObject($merged)
                 $targetDir = Join-Path $ProfilesDir $finalMeta.ID
-                if ($p.Profile -and $p.Profile -ne "[Root]") { 
-                    $targetDir = Join-Path $targetDir ($p.Profile -replace ' / ', '\') 
-                }
                 
                 Debug-Log "[common.ps1] Moving profile to target: $targetDir"
                 Move-Item-Smart $p.Path $targetDir

@@ -29,10 +29,6 @@ if ($null -eq $Global:TailscaleLimit) { $Global:TailscaleLimit = 5 }
 $Global:DeadProxies = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
 $Global:DeadTailscaleNodes = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
 
-# Global working connection tracking
-$Global:CurrentWorkingProxy = $null
-$Global:CurrentWorkingTailscaleNode = $null
-
 # Progress preference to avoid terminal spam during bulk file operations
 $ProgressPreference = 'SilentlyContinue'
 
@@ -53,6 +49,11 @@ $Global:TempFolders   = @()
 $BaseTempDir     = Join-Path $env:TEMP "uevr_profiles"
 if (-not (Test-Path $BaseTempDir)) { New-Item -ItemType Directory -Path $BaseTempDir -Force | Out-Null }
 $BaseTempDir     = (Get-Item $BaseTempDir).FullName
+
+$Global:ConnectionStateFile = Join-Path $BaseTempDir "connection_state.json"
+$Global:CurrentWorkingProxy = $null
+$Global:CurrentWorkingTailscaleNode = $null
+
 $GlobalFilesList = Join-Path $BaseTempDir "files.txt"
 $GlobalPropsJson = Join-Path $BaseTempDir "props.json"
 # Ensure essential directories exist

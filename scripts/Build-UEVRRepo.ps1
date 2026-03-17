@@ -17,7 +17,7 @@ $Global:Debug = $Debug
 # Defaults if not provided via param
 if (-not $ProfilesDir) { $ProfilesDir = $Global:ProfilesDir }
 if (-not $SchemaFile)  { $SchemaFile  = $Global:SchemaFile }
-if (-not $OutputFile)  { $OutputFile  = Join-Path $RepoRoot "repo.json" }
+if (-not $OutputFile)  { $OutputFile  = Join-Path $ProfilesDir "repo.json" }
 
 # Resolve to absolute paths
 $ProfilesDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($ProfilesDir)

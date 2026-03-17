@@ -112,7 +112,7 @@ function Download-UEVRProfiles {
         $index++
         if ($count -ge $ProfileLimit) { break }
         if ($failCount -ge 5) { Write-Error "Too many consecutive failures in $SourceName. Stopping."; break }
-        $uuid = Get-DownloadUUID $p.sourceDownloadUrl
+        $uuid = Get-DownloadUUID $p.downloadUrl
         $targetFile = Join-Path $DownloadDir "$uuid.zip"
         $sidecar    = $targetFile + ".json"
         

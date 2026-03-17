@@ -59,14 +59,19 @@ function Get-DownloadUUID($sourceDownloadUrl) {
     return $finalUuid
 }
 
-function Get-ExtractionUUID($zipHash) {
+function Get-ExtractionUUID($zipHash, $variant) {
     Debug-Log "[common.ps1] Entering Get-ExtractionUUID"
     if ([string]::IsNullOrWhiteSpace($zipHash)) {
         throw "zipHash is required for extraction UUID generation"
     }
     
-    Debug-Log "[common.ps1] Using zipHash for UUID generation: $zipHash"
-    $finalUuid = Get-DeterministicGuid $zipHash
+    $seed = $zipHash
+    if (-not [string]::IsNullOrWhiteSpace($variant) -and $variant -ne "[Root]") {
+        $seed += "|$variant"
+    }
+
+    Debug-Log "[common.ps1] Using seed for UUID generation: $seed"
+    $finalUuid = Get-DeterministicGuid $seed
     Debug-Log "[common.ps1] Generated extraction UUID: $finalUuid"
     return $finalUuid
 }
@@ -87,10 +92,16 @@ function Get-OrCreateUUID($p) {
     
     Debug-Log "[common.ps1] Generating UUID from details"
     $seedParts = @()
-    if ($p.sourceUrl) { $seedParts += $p.sourceUrl }
-    if ($p.sourceDownloadUrl) { $seedParts += $p.sourceDownloadUrl }
-    if ($p.gameName) { $seedParts += $p.gameName }
-    if ($p.exeName) { $seedParts += $p.exeName }
+    if ($p.zipHash) { $seedParts += $p.zipHash }
+    if ($p.profileName) { $seedParts += $p.profileName }
+    
+    # Fallback to source details if hash isn't available
+    if ($seedParts.Count -eq 0) {
+        if ($p.sourceUrl) { $seedParts += $p.sourceUrl }
+        if ($p.sourceDownloadUrl) { $seedParts += $p.sourceDownloadUrl }
+        if ($p.gameName) { $seedParts += $p.gameName }
+        if ($p.exeName) { $seedParts += $p.exeName }
+    }
     
     $seed = $seedParts -join "|"
     Debug-Log "[common.ps1] Seed: $seed"

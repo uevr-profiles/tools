@@ -48,7 +48,7 @@ function Print-ProfileInfo($meta, $archiveroot, $profile) {
     Write-Host "    - URL:        $($meta.sourceDownloadUrl)" -ForegroundColor Gray
     
     if ($profile -and $profile -ne "[Root]") {
-        Write-Host "    - Profile:    $profile" -ForegroundColor Gray
+        Write-Host "    - Variant:    $profile" -ForegroundColor Gray
     }
     if ($archiveroot -and (Test-Path $archiveroot)) {
         Write-Host "  - ZIP Content List:" -ForegroundColor Cyan

@@ -13,6 +13,14 @@ param(
 . "$PSScriptRoot\common.ps1"
 #endregion
 
+if ($UseProxies) {
+    Write-Warning "Free Proxies are highly unreliable (usually timing out on all endpoints). Use with caution."
+}
+
+if ($UseTailscale) {
+    Write-Warning "Tailscale VPN test will alter your entire PC's network traffic during the test."
+}
+
 if ($Fast) {
     $ProfileLimit = 1
     $SkipFetch = $true
@@ -100,6 +108,66 @@ try {
         } catch {
             Write-Host "    [!] Build test failed: $($_.Exception.Message)" -ForegroundColor Red
         }
+    }
+
+    # 5. Test UUID Verification
+    Write-Host "`n>>> Testing UUID Verification <<<" -ForegroundColor Cyan
+    $downloadErrors = 0
+    $extractionErrors = 0
+    $downloadChecks = 0
+    $extractionChecks = 0
+
+    if (-not $SkipFetch) {
+        Write-Host "  - Verifying Download UUIDs (sourceDownloadUrl -> filename)" -ForegroundColor Gray
+        $sidecars = Get-ChildItem -Path $BaseTempDir -Filter "*.zip.json" -Recurse -ErrorAction SilentlyContinue
+        foreach ($sc in $sidecars) {
+            try {
+                $meta = Get-Content $sc.FullName -Raw | ConvertFrom-Json
+                $url = if ($meta.sourceDownloadUrl) { $meta.sourceDownloadUrl } else { $meta.downloadUrl }
+                if ($url) {
+                    $expectedUuid = Get-DownloadUUID $url
+                    $actualUuid = ($sc.Name -replace "\.zip\.json$", "").ToLower()
+                    if ($expectedUuid.ToLower() -ne $actualUuid) {
+                        Write-Host "    [!] Download UUID Mismatch: Expected $expectedUuid, Got $actualUuid for URL: $url" -ForegroundColor Red
+                        $downloadErrors++
+                    }
+                    $downloadChecks++
+                }
+            } catch {
+                Write-Host "    [!] Failed to verify $($sc.Name): $($_.Exception.Message)" -ForegroundColor Red
+            }
+        }
+        if ($downloadErrors -eq 0 -and $downloadChecks -gt 0) {
+            Write-Host "  [OK] All $downloadChecks download UUIDs verified successfully." -ForegroundColor Green
+        }
+    }
+
+    Write-Host "  - Verifying Extraction UUIDs (zipHash+variant -> folder name)" -ForegroundColor Gray
+    $repoFolders = Get-ChildItem -Path $ProfilesDir -Directory -ErrorAction SilentlyContinue
+    foreach ($folder in $repoFolders) {
+        $metaPath = Join-Path $folder.FullName "ProfileMeta.json"
+        if (Test-Path $metaPath) {
+            try {
+                $meta = Get-Content $metaPath -Raw | ConvertFrom-Json
+                $variant = if ($meta.profileName -and $meta.profileName -ne "[Root]") { $meta.profileName } else { "" }
+                $expectedUuid = Get-ExtractionUUID $meta.zipHash $variant
+                $actualUuid = $folder.Name.ToLower()
+                if ($expectedUuid.ToLower() -ne $actualUuid) {
+                    Write-Host "    [!] Extraction UUID Mismatch in $($actualUuid): Expected $expectedUuid (zipHash: $($meta.zipHash), variant: $variant)" -ForegroundColor Red
+                    $extractionErrors++
+                }
+                $extractionChecks++
+            } catch {
+                Write-Host "    [!] Failed to verify extraction $($folder.Name): $($_.Exception.Message)" -ForegroundColor Red
+            }
+        }
+    }
+    if ($extractionErrors -eq 0 -and $extractionChecks -gt 0) {
+        Write-Host "  [OK] All $extractionChecks extraction UUIDs verified successfully." -ForegroundColor Green
+    }
+    
+    if ($downloadErrors -gt 0 -or $extractionErrors -gt 0) {
+        throw "UUID Verification failed with $downloadErrors download errors and $extractionErrors extraction errors."
     }
 
     Write-Host "`nTest run complete." -ForegroundColor Green

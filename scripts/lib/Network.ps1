@@ -40,6 +40,7 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
                     if ($targetFile) { $params["OutFile"] = $targetFile }
                     
                     Invoke-WebRequest @params | Out-Null
+                    Save-ConnectionState
                     return # SUCCESS!
                 } catch {
                     $lastErr = $_.Exception.Message
@@ -91,6 +92,7 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
                     
                     Invoke-WebRequest @params | Out-Null
                     $Global:CurrentWorkingProxy = $p # Set as current working proxy
+                    Save-ConnectionState
                     return # SUCCESS!
                 } catch {
                     $lastErr = $_.Exception.Message
@@ -135,6 +137,7 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
                         if ($targetFile) { $params["OutFile"] = $targetFile }
 
                         Invoke-WebRequest @params | Out-Null
+                        Save-ConnectionState
                         return # SUCCESS!
                     } catch {
                         $lastErr = $_.Exception.Message
@@ -175,7 +178,7 @@ function Invoke-WebRequestWithRetry($url, $targetFile, $headers = @{}, $retries 
 
                         Invoke-WebRequest @params | Out-Null
                         $Global:CurrentWorkingTailscaleNode = $node # Set as current working node
-                        Reset-TailscaleExitNode
+                        Save-ConnectionState
                         return # SUCCESS!
                     } catch {
                         $lastErr = $_.Exception.Message
