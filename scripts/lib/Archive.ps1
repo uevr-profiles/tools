@@ -8,18 +8,20 @@ function Compress-Files($FilePaths, $TargetArchive, $CompressionLevel = 9, $Base
 
     # If BaseDir is provided, convert all paths to relative to avoid duplicate filename errors in 7z
     $finalPaths = $FilePaths
-    if ($null -ne $BaseDir) {
-        $BaseDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($BaseDir)
-        $oldLocation = Get-Location
-        Set-Location $BaseDir
-        $finalPaths = $FilePaths | ForEach-Object { [IO.Path]::GetRelativePath($BaseDir, $_) }
-    }
-
+    $listFile = Join-Path $env:TEMP "7z_list_$([Guid]::NewGuid().Guid).txt"
     try {
+        if ($null -ne $BaseDir) {
+            $BaseDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($BaseDir)
+            $oldLocation = Get-Location
+            Set-Location $BaseDir
+            $finalPaths = $FilePaths | ForEach-Object { [IO.Path]::GetRelativePath($BaseDir, $_) }
+        }
+
         if (Get-Command 7z -ErrorAction SilentlyContinue) {
-            # Using 7z 'a' to add files. -mx sets compression level (0-9).
-            $args = @("a", "-mx$CompressionLevel", "-y", "`"$TargetArchive`"")
-            foreach ($f in $finalPaths) { $args += "`"$f`"" }
+            # Use a list file to avoid 'The filename or extension is too long' (Windows CLI limit)
+            $finalPaths | Out-File -FilePath $listFile -Encoding utf8 -Force
+            # Using 7z 'a' with @listfile. -mx sets compression level (0-9).
+            $args = @("a", "-mx$CompressionLevel", "-y", "`"$TargetArchive`"", "`"@$listFile`"")
             $process = Start-Process -FilePath "7z" -ArgumentList $args -PassThru -NoNewWindow -Wait
             if ($process.ExitCode -ne 0) { throw "7z failed to compress files into $TargetArchive (ExitCode: $($process.ExitCode))" }
         } else {
@@ -30,6 +32,7 @@ function Compress-Files($FilePaths, $TargetArchive, $CompressionLevel = 9, $Base
         }
     } finally {
         if ($null -ne $BaseDir) { Set-Location $oldLocation }
+        if (Test-Path $listFile) { Remove-Item $listFile -Force -ErrorAction SilentlyContinue }
     }
 }
 
