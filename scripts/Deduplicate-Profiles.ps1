@@ -42,7 +42,7 @@ function Get-RawProfileHash($profilePath) {
 
         if (-not $sourceFiles) { return "EMPTY_PROFILE" }
 
-        Compress-Files -FilePaths $sourceFiles.FullName -TargetArchive $tempZip -CompressionLevel 1
+        Compress-Files -FilePaths $sourceFiles.FullName -TargetArchive $tempZip -CompressionLevel 1 -BaseDir $profilePath
         
         $hashVal = Get-FileHashMD5 $tempZip
         if ($null -eq $hashVal) { return "HASH_FAILED" }

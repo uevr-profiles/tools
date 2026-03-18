@@ -53,7 +53,7 @@ foreach ($profileFolder in $profileFolders) {
     if ($Archive) {
         $archivePath = Join-Path $profileFolder.FullName "_EXTRAS.zip"
         Write-Host "    [ARCHIVE] Adding to _EXTRAS.zip..." -ForegroundColor Gray
-        Compress-Files -FilePaths $flaggedFiles.FullName -TargetArchive $archivePath -CompressionLevel 9
+        Compress-Files -FilePaths $flaggedFiles.FullName -TargetArchive $archivePath -CompressionLevel 9 -BaseDir $profileFolder.FullName
     }
 
     if ($Folder) {
