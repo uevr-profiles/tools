@@ -29,6 +29,7 @@ function Set-TailscaleExitNode($node) {
     if ($null -eq $node) {
         Debug-Log "[Tailscale.ps1] Resetting exit node"
         & tailscale set --exit-node= | Out-Null
+        $Global:ActiveTailscaleNodeIdentifier = $null
         return
     }
 
@@ -36,6 +37,16 @@ function Set-TailscaleExitNode($node) {
         $identifier = $node.Hostname
     } else {
         $identifier = $node.IP
+    }
+
+    # Fast-path cache to prevent waiting and resetting if it's already active
+    if ($Global:ActiveTailscaleNodeIdentifier -eq $identifier) {
+        try {
+            $check = Invoke-WebRequest -Uri "http://1.1.1.1" -Method Head -TimeoutSec 2 -ErrorAction SilentlyContinue 2>$null
+            if ($null -ne $check) {
+                return $true
+            }
+        } catch { }
     }
     
     $locationInfo = ""
@@ -65,6 +76,7 @@ function Set-TailscaleExitNode($node) {
                 $check = Invoke-WebRequest -Uri "http://1.1.1.1" -Method Head -TimeoutSec 3 -ErrorAction SilentlyContinue 2>$null
                 if ($null -ne $check) {
                     Write-Host "  [OK] Tailscale VPN established and verified." -ForegroundColor Green
+                    $Global:ActiveTailscaleNodeIdentifier = $identifier
                     return $true
                 }
              } catch { }
